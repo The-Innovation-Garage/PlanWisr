@@ -33,9 +33,26 @@ export default function NewProjectPage() {
   const user = { name: "John Doe" } // Replace with actual user data fetching logic
   const isLoading = false // Replace with actual loading state logic
   const router = useRouter()
-  const addProject = (project) => {
-    // Simulate adding project to a list
-    console.log("Project added:", project)
+  const addProject = async (project) => {
+    let token = localStorage.getItem("token")
+    const req = await fetch("/api/project/add-project", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(project),
+    })
+
+    const res = await req.json()
+
+    if (res.type === "success") {
+      alert(res.message)
+      router.push("/projects")
+    }
+    else {
+      alert(res.message)
+    }
     }
   
   // Form state
@@ -91,21 +108,15 @@ export default function NewProjectPage() {
         id: `project-${Date.now()}`,
         title,
         description,
-        dueDate: dueDate.toISOString(),
+        dueDate: dueDate,
         status,
         priority,
         progress,
         tags,
-        team: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       }
-      
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
+    
       
       addProject(newProject)
-      router.push("/projects")
     } catch (error) {
       console.error("Failed to create project:", error)
     } finally {
@@ -292,7 +303,7 @@ export default function NewProjectPage() {
                       </p>
                     </div>
                     
-                    <div className="md:col-span-2">
+                    {/* <div className="md:col-span-2">
                       <div className="space-y-2">
                         <Label htmlFor="progress">Progress ({progress}%)</Label>
                         <Slider
@@ -308,7 +319,7 @@ export default function NewProjectPage() {
                           Current completion percentage of the project.
                         </p>
                       </div>
-                    </div>
+                    </div> */}
                     
                     <div className="md:col-span-2">
                       <div className="space-y-2">
@@ -360,7 +371,7 @@ export default function NewProjectPage() {
                     </div>
                   </div>
                   
-                  <CardFooter className="flex justify-between px-0 pb-0">
+                  <CardFooter className="mt-10 flex justify-between px-0 pb-0">
                     <Button 
                       type="button" 
                       variant="outline" 

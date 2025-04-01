@@ -47,26 +47,28 @@ export default function ProjectsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [editingProject, setEditingProject] = useState(null)
 
-    const [projects, setProjects] = useState([
-    {
-      id: 1,
-      title: "Project 1",
-      description: "Description for project 1",
-      dueDate: new Date(),
-      status: "in-progress",
-      priority: "high",
-      team: ["User 1", "User 2"],
-      tags: ["Tag 1", "Tag 2"],
-      progress: 50,
-    },
-    {
-      id: 2,
-      title: "Project 2",
-      description: "Description for project 2",
-      dueDate: new Date(),
-      status: "completed",
-      priority: "medium",
-    }]);
+
+  const getProjects = async () => {
+    let token = localStorage.getItem("token");
+    const response = await fetch("/api/project/get-projects", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const data = await response.json()
+    if (data.type == "success") {
+      console.log(data.projects)
+      setProjects(data.projects)
+    }
+    else {
+      alert(data.message);
+    }
+  }
+
+    const [projects, setProjects] = useState([]);
 
 
 
@@ -84,10 +86,17 @@ export default function ProjectsPage() {
 
 
   useEffect(() => {
+
     if ( !user) {
       router.push("/login")
     }
+  
   }, [user, router])
+
+  useEffect(() => {
+    getProjects()
+  }
+, [])
 
   const handleCreateProject = (project) => {
     addProject(project)
@@ -341,7 +350,7 @@ export default function ProjectsPage() {
                   <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {sortedProjects.map((project) => (
                       <motion.div
-                        key={project.id}
+                        key={project._id}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
@@ -363,7 +372,7 @@ export default function ProjectsPage() {
                                     <DropdownMenuItem onClick={() => setEditingProject(project)}>Edit</DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
-                                      onClick={() => handleDeleteProject(project.id)}
+                                      onClick={() => handleDeleteProject(project._id)}
                                       className="text-red-600"
                                     >
                                       Delete
@@ -390,14 +399,7 @@ export default function ProjectsPage() {
                                   <span className="ml-2 capitalize">{project.priority}</span>
                                 </div>
 
-                                {project.team && project.team.length > 0 && (
-                                  <div className="flex items-center text-sm">
-                                    <Users className="mr-2 h-4 w-4 text-muted-foreground" />
-                                    <span>
-                                      {project.team.length} team member{project.team.length !== 1 ? "s" : ""}
-                                    </span>
-                                  </div>
-                                )}
+                               
                               </div>
 
                               <div className="mt-4 flex flex-wrap gap-2">

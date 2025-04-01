@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useTheme } from "next-themes"
-import { Navbar } from "@/components/navbar"
 
 export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -87,7 +86,7 @@ export default function LandingPage() {
 
   return (
     <div className="flex min-h-[100dvh] flex-col">
-      <Navbar />
+     
       <main className="flex-1">
         {/* Hero Section */}
         <section className="w-full py-20 md:py-32 lg:py-40 overflow-hidden">
