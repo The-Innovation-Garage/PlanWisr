@@ -5,7 +5,7 @@ import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/theme-provider"
 
 import './globals.css'
-import { Navbar } from "@/components/navbar"
+import { Navbar } from "@/components/Navbar"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
