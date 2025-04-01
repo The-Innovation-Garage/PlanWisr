@@ -3,7 +3,6 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Navbar } from "@/components/navbar"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BarChart, Users, Zap, ArrowUpRight } from "lucide-react"
@@ -28,8 +27,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
-      <Navbar />
+
       <main className="flex-1 py-12">
         <div className="container px-4 md:px-6">
           <motion.div
@@ -125,7 +123,7 @@ export default function DashboardPage() {
           </motion.div>
         </div>
       </main>
-    </div>
+ 
   )
 }
 

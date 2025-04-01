@@ -6,7 +6,6 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { format } from "date-fns"
 import { CalendarIcon, X, Plus, ChevronLeft, Loader2 } from 'lucide-react'
-import { Navbar } from "@/components/navbar"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
@@ -137,8 +136,7 @@ export default function NewProjectPage() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
-      <Navbar />
+  
       <main className="flex-1 py-8">
         <div className="container px-4 md:px-6">
           <motion.div
@@ -391,6 +389,5 @@ export default function NewProjectPage() {
           </motion.div>
         </div>
       </main>
-    </div>
   )
 }
