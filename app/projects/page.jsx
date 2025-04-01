@@ -191,8 +191,7 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
-      <Navbar />
+      <>
       <main className="flex-1 py-8">
         <div className="container px-4 md:px-6">
           <motion.div
@@ -549,7 +548,9 @@ export default function ProjectsPage() {
         />
       )}
        */}
-    </div>
+
+       </>
+ 
   )
 }
 

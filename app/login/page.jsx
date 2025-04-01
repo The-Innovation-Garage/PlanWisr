@@ -28,9 +28,30 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
-      toast.success("Login successful!")
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      })
+
+      const data = await response.json()
+
+      if (data.type === "error") {
+        toast.error(data.message);
+        setError(data.message);
+        alert(data.message);
+      }
+      else {
+        toast.success("Login successful!");
+        alert(data.message);
+        localStorage.setItem("token", data.token)
+        localStorage.setItem("refreshToken", data.refreshToken)
+      }
     } catch (err) {
-      toast.error("Login failed!")
+      toast.error("Login failed!");
+      console.log(err)
       setError("Invalid email or password. Please try again.")
     } finally {
       setIsLoading(false)
@@ -38,8 +59,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
-      <Navbar />
+
       <main className="flex-1 flex items-center justify-center py-12">
         <div className="container px-4 md:px-6">
           <div className="mx-auto grid w-full max-w-md gap-6">
@@ -64,7 +84,7 @@ export default function LoginPage() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="name@example.com"
+                    placeholder=""
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -167,7 +187,6 @@ export default function LoginPage() {
           </div>
         </div>
       </main>
-    </div>
   )
 }
 

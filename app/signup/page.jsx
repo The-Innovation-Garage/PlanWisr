@@ -59,9 +59,26 @@ export default function SignupPage() {
     setIsLoading(true)
 
     try {
-      toast.success("Account created successfully!")
-      router.push("/dashboard")
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      })
+      const data = await response.json()
+      if (data.type === "error") {
+        toast.error(data.message)
+        setError(data.message)
+        return
+      }
+      else {
+        toast.success(data.message)
+        alert(data.message)
+      }
     } catch (err) {
+      console.log(err)
+      alert(err)
       setError("Failed to create account. Please try again.")
     } finally {
       setIsLoading(false)
@@ -69,8 +86,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
-      <Navbar />
+  
       <main className="flex-1 flex items-center justify-center py-12">
         <div className="container px-4 md:px-6">
           <div className="mx-auto grid w-full max-w-md gap-6">
@@ -250,7 +266,7 @@ export default function SignupPage() {
           </div>
         </div>
       </main>
-    </div>
+  
   )
 }
 
