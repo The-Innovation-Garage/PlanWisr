@@ -45,7 +45,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
-
+import { ProjectTimer } from "@/components/project-timer"
+import { TimeEntriesList } from "@/components/time-entries-list"
 // Define the task statuses for the Kanban board
 const taskStatuses = ["todo", "in-progress", "review", "done"]
 
@@ -77,8 +78,68 @@ export default function ProjectDetailPage({ params }) {
   }
 
 
+  const [timeEntries, setTimeEntries] = useState([])
+
+  const handleSaveTimeEntry = (timeEntryData) => {
+    if (project) {
+      const newTimeEntry = {
+        ...timeEntryData,
+        id: `time-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+      }
+
+      const updatedTimeEntries = [...timeEntries, newTimeEntry]
+      setTimeEntries(updatedTimeEntries)
+
+      const updatedProject = {
+        ...project,
+        timeEntries: updatedTimeEntries,
+        updatedAt: new Date().toISOString(),
+      }
+
+      setProject(updatedProject)
+      updateProject(updatedProject)
+    }
+  }
+
+  const handleDeleteTimeEntry = (id) => {
+    if (window.confirm("Are you sure you want to delete this time entry?")) {
+      const updatedTimeEntries = timeEntries.filter((entry) => entry.id !== id)
+      setTimeEntries(updatedTimeEntries)
+
+      if (project) {
+        const updatedProject = {
+          ...project,
+          timeEntries: updatedTimeEntries,
+          updatedAt: new Date().toISOString(),
+        }
+
+        setProject(updatedProject)
+        updateProject(updatedProject)
+      }
+    }
+  }
+
+  const handleUpdateTimeEntry = (updatedEntry) => {
+    const updatedTimeEntries = timeEntries.map((entry) => (entry.id === updatedEntry.id ? updatedEntry : entry))
+
+    setTimeEntries(updatedTimeEntries)
+
+    if (project) {
+      const updatedProject = {
+        ...project,
+        timeEntries: updatedTimeEntries,
+        updatedAt: new Date().toISOString(),
+      }
+
+      setProject(updatedProject)
+      updateProject(updatedProject)
+    }
+  }
+
   
  // Replace your project state initialization with this:
+
 
 const [project, setProject] = useState({
     id: projectId,
@@ -532,6 +593,17 @@ const [project, setProject] = useState({
                   </div>
                 </CardContent>
               </Card>
+            </div>
+
+             {/* Timer Section */}
+             <div className="grid gap-6 md:grid-cols-2">
+              <ProjectTimer projectId={project._id} onSaveTimeEntry={handleSaveTimeEntry} />
+
+              <TimeEntriesList
+                timeEntries={timeEntries}
+                onDeleteTimeEntry={handleDeleteTimeEntry}
+                onUpdateTimeEntry={handleUpdateTimeEntry}
+              />
             </div>
             
             {/* Tabs for different views */}
