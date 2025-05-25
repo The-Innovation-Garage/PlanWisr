@@ -15,7 +15,13 @@ const handler = async (req, res) => {
             const token = signToken({userId: user._id, email: user.email,  firstName:user.firstName, lastName:user.lastName}, process.env.NEXT_PUBLIC_JWT_TOKEN, '1d');
             const refreshToken = signToken({userId: user._id, email: user.email,  firstName:user.firstName, lastName:user.lastName }, process.env.NEXT_PUBLIC_JWT_TOKEN, '7d');
 
-            return res.status(200).json({userId: user._id, email: user.email, message: "Logged In Successfully", type:"success", token: token, refreshToken: refreshToken})
+            const sendUser = {
+                _id: user._id,
+                email: user.email,
+                fullName: user.name
+            }
+
+            return res.status(200).json({user: sendUser, message: "Logged In Successfully", type:"success", token: token, refreshToken: refreshToken})
 
         }
         else {

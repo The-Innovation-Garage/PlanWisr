@@ -20,6 +20,9 @@ try{
         return res.status(200).json({type: "success", message: "Your account has been created successfully." })
     }
         catch(err) {
+            if (err.code === 11000) {
+                return res.status(200).json({type: "error", message: "Email already exists. Please use a different email.", errorCode: "EMAIL_EXISTS" })
+            }
             return res.status(200).json({type: "error", message: `${err.code}`, errorCode: err.code })
         }
    

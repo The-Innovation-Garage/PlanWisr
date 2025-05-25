@@ -16,6 +16,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useUserStore } from "@/store/store"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -26,7 +27,9 @@ export function Navbar() {
     name: "Psycho",
     email: "psycho@gmail.com"
   }
-  const router = useRouter()
+  const router = useRouter();
+
+  const {isLogin, fullName, lastName} = useUserStore();
 
   useEffect(() => {
     setMounted(true)
@@ -57,6 +60,7 @@ export function Navbar() {
       }`}
     >
       <div className="container flex h-16 items-center justify-between">
+        {/* Logo - visible on all screens */}
         <div className="flex items-center gap-2 font-bold">
           <Link href="/" className="flex items-center gap-2">
             <div className="size-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
@@ -65,6 +69,8 @@ export function Navbar() {
             <span>SaaSify</span>
           </Link>
         </div>
+
+        {/* Desktop Navigation Links */}
         <nav className="hidden md:flex gap-8">
           <Link
             href="/"
@@ -91,80 +97,96 @@ export function Navbar() {
             FAQ
           </Link>
         </nav>
-        <div className="hidden md:flex gap-4 items-center">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
-            {mounted && theme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
-            <span className="sr-only">Toggle theme</span>
-          </Button>
 
-          {user ?null: (
-            <>
-              <Link
-                href="/login"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Log in
-              </Link>
-              <Button className="rounded-full bg-primary hover:bg-primary/90">
-                <Link href="/signup" className="flex items-center">
-                  Get Started
-                  <ChevronRight className="ml-1 size-4" />
-                </Link>
-              </Button>
-            </>
-          )}
-        </div>
-        <div className="flex items-center gap-4 md:hidden">
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
-            {mounted && theme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
-          </Button>
-
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.avatar} alt={user.name} />
-                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-xs text-muted-foreground">{user.email}</p>
-                  </div>
-                </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/dashboard" className="cursor-pointer flex w-full">
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="cursor-pointer flex w-full">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-              <span className="sr-only">Toggle menu</span>
+        {/* Right side navigation elements */}
+        <div className="flex items-center">
+          {/* Desktop Actions */}
+          <div className="hidden md:flex gap-4 items-center">
+            {/* Theme toggle - desktop */}
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
+              {mounted && theme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
             </Button>
-          )}
+
+            {/* User menu or auth links - desktop */}
+            {isLogin ? null : (
+              <>
+                <Link
+                  href="/login"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Log in
+                </Link>
+                <Button className="rounded-full bg-primary hover:bg-primary/90">
+                  <Link href="/signup" className="flex items-center">
+                    Get Started
+                    <ChevronRight className="ml-1 size-4" />
+                  </Link>
+                </Button>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Menu Button - ONLY visible on mobile */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden" // This ensures it's only visible on mobile
+          >
+            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+            <span className="sr-only">Toggle menu</span>
+          </Button>
+
+          {/* Mobile Actions - separate from hamburger menu */}
+          <div className="md:hidden flex items-center gap-2 ml-2">
+            {/* Theme toggle - mobile */}
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
+              {mounted && theme === "dark" ? <Sun className="size-[18px]" /> : <Moon className="size-[18px]" />}
+            </Button>
+
+            {/* User avatar (if logged in) - mobile */}
+            {isLogin ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={fullName} alt={fullName} />
+                      <AvatarFallback>{fullName}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      <p className="font-medium">{fullName} {lastName}</p>
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard" className="cursor-pointer flex w-full">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings" className="cursor-pointer flex w-full">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : null}
+          </div>
         </div>
       </div>
-      {/* Mobile menu */}
+      
+      {/* Mobile menu dropdown */}
       {mobileMenuOpen && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -173,11 +195,11 @@ export function Navbar() {
           className="md:hidden absolute top-16 inset-x-0 bg-background/95 backdrop-blur-lg border-b"
         >
           <div className="container py-4 flex flex-col gap-4">
-            <Link href="/#features" className="py-2 text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
-              Projects
+            <Link href="/" className="py-2 text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
+              Home
             </Link>
-            <Link href="/#testimonials" className="py-2 text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
-              Test
+            <Link href="/projects" className="py-2 text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
+              Projects
             </Link>
             <Link href="/#pricing" className="py-2 text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
               Pricing
@@ -185,21 +207,22 @@ export function Navbar() {
             <Link href="/#faq" className="py-2 text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
               FAQ
             </Link>
-            <div className="flex flex-col gap-2 pt-2 border-t">
-              <Link href="/login" className="py-2 text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
-                Log in
-              </Link>
-              <Button className="rounded-full bg-primary hover:bg-primary/90">
-                <Link href="/signup" className="flex items-center">
-                  Get Started
-                  <ChevronRight className="ml-1 size-4" />
+            {!isLogin && (
+              <div className="flex flex-col gap-2 pt-2 border-t">
+                <Link href="/login" className="py-2 text-sm font-medium" onClick={() => setMobileMenuOpen(false)}>
+                  Log in
                 </Link>
-              </Button>
-            </div>
+                <Button className="rounded-full bg-primary hover:bg-primary/90">
+                  <Link href="/signup" className="flex items-center" onClick={() => setMobileMenuOpen(false)}>
+                    Get Started
+                    <ChevronRight className="ml-1 size-4" />
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
         </motion.div>
       )}
     </header>
   )
 }
-
