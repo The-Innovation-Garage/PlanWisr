@@ -47,11 +47,11 @@ export default function NewProjectPage() {
     const res = await req.json()
 
     if (res.type === "success") {
-      alert(res.message)
+      toast.success(res.message)
       router.push("/projects")
     }
     else {
-      alert(res.message)
+      toast.error(res.message || "Failed to create project")
     }
     }
   

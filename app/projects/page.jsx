@@ -412,7 +412,7 @@ export default function ProjectsPage() {
                               </div>
 
                               {project.progress !== undefined && (
-                                <div className="mt-4">
+                                <div className="my-5">
                                   <div className="flex justify-between text-xs mb-1">
                                     <span>Progress</span>
                                     <span>{project.progress}%</span>
@@ -425,6 +425,14 @@ export default function ProjectsPage() {
                                   </div>
                                 </div>
                               )}
+
+                             <div className="my-5">
+                             <Button asChild>
+                                <Link href={`/projects/${project._id}`}>
+                                Open Project
+                                </Link>
+                              </Button>
+                             </div>
                             </div>
                           </CardContent>
                         </Card>

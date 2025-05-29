@@ -48,13 +48,12 @@ import { Progress } from "@/components/ui/progress"
 import { ProjectTimer } from "@/components/project-timer"
 import { TimeEntriesList } from "@/components/time-entries-list"
 // Define the task statuses for the Kanban board
-const taskStatuses = ["todo", "in-progress", "review", "done"]
+const taskStatuses = ["not-started", "in-progress", "done"]
 
 // Define the task status labels
 const taskStatusLabels = {
-  "todo": "To Do",
+  "not-started": "Not Started",
   "in-progress": "In Progress",
-  "review": "Review",
   "done": "Done"
 }
 
@@ -139,7 +138,8 @@ export default function ProjectDetailPage({ params }) {
 
   
  // Replace your project state initialization with this:
-
+ const [dueState, setDueState] = useState(null);
+ const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
 const [project, setProject] = useState({
     id: projectId,
@@ -346,7 +346,7 @@ const [project, setProject] = useState({
     return Object.keys(newErrors).length === 0
   }
   
-  const handleTaskSubmit = () => {
+  const handleTaskSubmit = async() => {
     if (!validateTaskForm()) return
     
     setIsSubmitting(true)
@@ -362,13 +362,29 @@ const [project, setProject] = useState({
           description: taskDescription,
           status: taskStatus,
           priority: taskPriority,
+          dueDate: taskDueDate,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
+          project: projectId
         }
-        
-        if (taskAssignee) newTask.assignee = taskAssignee
-        if (taskDueDate) newTask.dueDate = taskDueDate
-        
+
+        console.log(newTask);
+        let token = localStorage.getItem("token")
+        const req = await fetch("/api/task/add-task", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(newTask),
+        })
+
+        const res = await req.json();
+
+        if (res.type == "success") {
+          
+
+    
         updatedTasks.push(newTask)
         setTotalTasks(prev => prev + 1)
         if (taskStatus === "done") {
@@ -405,6 +421,11 @@ const [project, setProject] = useState({
       setTasks(updatedTasks)
       saveTasksToProject(updatedTasks)
       setIsTaskDialogOpen(false)
+    }
+    else {
+      toast.error(res.message);
+    }
+
     } catch (error) {
       console.error("Failed to save task:", error)
     } finally {
@@ -564,18 +585,30 @@ const [project, setProject] = useState({
               </Card>
               
               <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Due Date</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center">
-                    <Calendar className="h-4 w-4 text-muted-foreground mr-2" />
-                    <span className="text-lg font-medium">
-                      {format(new Date(project.dueDate), "MMM d, yyyy")}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+  <CardHeader className="pb-2">
+    <CardTitle className="text-sm font-medium">Due Date</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="flex items-center justify-between">
+      <div className="flex items-center">
+        <Calendar className="h-4 w-4 text-muted-foreground mr-2" />
+        <span className="text-lg font-medium">
+          {format(new Date(dueState || project.dueDate), "MMM d, yyyy")}
+        </span>
+      </div>
+      <Button 
+        variant="ghost" 
+        size="sm" 
+        onClick={() => setIsDatePickerOpen(true)}
+        className="h-8 w-8 p-0"
+      >
+        <Edit className="h-4 w-4" />
+        <span className="sr-only">Edit due date</span>
+      </Button>
+    </div>
+  </CardContent>
+</Card>
+              
               
               <Card>
                 <CardHeader className="pb-2">
@@ -912,11 +945,7 @@ const [project, setProject] = useState({
         <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle>{isNewTask ? "Add New Task" : "Edit Task"}</DialogTitle>
-            <DialogDescription>
-              {isNewTask 
-                ? "Create a new task for this project." 
-                : "Update the details of this task."}
-            </DialogDescription>
+           
           </DialogHeader>
           
           <div className="grid gap-4 py-4">
@@ -983,7 +1012,7 @@ const [project, setProject] = useState({
             </div>
             
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <Label htmlFor="assignee">Assignee</Label>
                 <Input
                   id="assignee"
@@ -991,7 +1020,7 @@ const [project, setProject] = useState({
                   onChange={(e) => setTaskAssignee(e.target.value)}
                   placeholder="Optional assignee name"
                 />
-              </div>
+              </div> */}
               
               <div className="space-y-2">
                 <Label htmlFor="dueDate">Due Date</Label>
@@ -1037,6 +1066,43 @@ const [project, setProject] = useState({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+  <DialogContent className="sm:max-w-[425px]">
+    <DialogHeader>
+      <DialogTitle>Edit Due Date</DialogTitle>
+    </DialogHeader>
+    <div className="py-4">
+      <Label htmlFor="projectDueDate">Due Date</Label>
+      <Input
+        id="projectDueDate"
+        type="date"
+        value={dueState ? format(new Date(dueState), "yyyy-MM-dd") : format(new Date(project.dueDate), "yyyy-MM-dd")}
+        onChange={(e) => setDueState(new Date(e.target.value).toISOString())}
+        className="mt-2"
+      />
+    </div>
+    <DialogFooter>
+      <Button variant="outline" onClick={() => setIsDatePickerOpen(false)}>
+        Cancel
+      </Button>
+      <Button 
+        onClick={() => {
+          const updatedProject = {
+            ...project,
+            dueDate: dueState,
+            updatedAt: new Date().toISOString()
+          };
+          setProject(updatedProject);
+          updateProject(updatedProject);
+          setIsDatePickerOpen(false);
+        }}
+      >
+        Save Changes
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
     </>
   )
 }
