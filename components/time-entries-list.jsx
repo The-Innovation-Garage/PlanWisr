@@ -75,7 +75,7 @@ export function TimeEntriesList({ timeEntries, onDeleteTimeEntry, onUpdateTimeEn
             <div className="space-y-4">
               {sortedEntries.map((entry) => (
                 <div
-                  key={entry.id}
+                  key={entry._id}
                   className="flex items-start justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div className="space-y-1">
@@ -124,7 +124,7 @@ export function TimeEntriesList({ timeEntries, onDeleteTimeEntry, onUpdateTimeEn
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => onDeleteTimeEntry(entry.id)} className="text-red-600">
+                      <DropdownMenuItem onClick={() => onDeleteTimeEntry(entry._id)} className="text-red-600">
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete
                       </DropdownMenuItem>

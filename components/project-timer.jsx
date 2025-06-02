@@ -104,13 +104,24 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
     startTimeRef.current = null
   }
 
-  // Save time entry
   const saveTimeEntry = () => {
-    if (!startTimeRef.current) return
-
-    const endTime = new Date()
-    const duration = timerMode === "stopwatch" ? elapsedTime : hours * 3600 + minutes * 60 + seconds - countdownTime
-
+    if (!startTimeRef.current) return;
+  
+    const endTime = new Date();
+    let duration;
+  
+    if (timerMode === "stopwatch") {
+      // Calculate duration for stopwatch mode
+      duration = elapsedTime;
+    } else {
+      // Calculate duration for countdown mode
+      const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+  
+  
+      // Ensure duration is not negative or undefined
+      duration = Math.max(totalSeconds, 0);
+    }
+  
     const timeEntry = {
       projectId,
       taskId,
@@ -119,16 +130,15 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
       duration,
       description,
       mode: timerMode,
-    }
-
-    onSaveTimeEntry(timeEntry)
-
+    };
+  
+    onSaveTimeEntry(timeEntry);
+  
     // Reset state
-    setDescription("")
-    resetTimer()
-    setIsDialogOpen(false)
-  }
-
+    setDescription("");
+    resetTimer();
+    setIsDialogOpen(false);
+  };
   // Update countdown time when hours, minutes, or seconds change
   useEffect(() => {
     if (!isRunning && timerMode === "countdown") {

@@ -6,7 +6,6 @@ import { motion } from "framer-motion"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import { format } from "date-fns"
 import { Calendar, Clock, Flag, MoreHorizontal, Plus, Users, ChevronLeft, CheckCircle2, Circle, Loader2, AlertCircle, BarChart, Edit, Trash2 } from 'lucide-react'
-
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -80,13 +79,33 @@ export default function ProjectDetailPage({ params }) {
 
   const [timeEntries, setTimeEntries] = useState([])
 
-  const handleSaveTimeEntry = (timeEntryData) => {
+  const handleSaveTimeEntry = async(timeEntryData) => {
     if (project) {
       const newTimeEntry = {
         ...timeEntryData,
-        id: `time-${Date.now()}`,
         createdAt: new Date().toISOString(),
       }
+
+      console.log(newTimeEntry)
+
+      const req = await fetch("/api/time/save-time-entry", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({...newTimeEntry, projectId: projectId }),
+      })
+
+      const res = await req.json();
+
+      if (res.type === "error") {
+        toast.error(res.message)
+        return;
+      }
+      else {
+        toast.success(res.message)
+        newTimeEntry._id = res.entry._id;
 
       const updatedTimeEntries = [...timeEntries, newTimeEntry]
       setTimeEntries(updatedTimeEntries)
@@ -99,12 +118,14 @@ export default function ProjectDetailPage({ params }) {
 
       setProject(updatedProject)
       updateProject(updatedProject)
+      }
+      
     }
   }
 
   const handleDeleteTimeEntry = (id) => {
     if (window.confirm("Are you sure you want to delete this time entry?")) {
-      const updatedTimeEntries = timeEntries.filter((entry) => entry.id !== id)
+      const updatedTimeEntries = timeEntries.filter((entry) => entry._id !== id)
       setTimeEntries(updatedTimeEntries)
 
       if (project) {
@@ -121,7 +142,7 @@ export default function ProjectDetailPage({ params }) {
   }
 
   const handleUpdateTimeEntry = (updatedEntry) => {
-    const updatedTimeEntries = timeEntries.map((entry) => (entry.id === updatedEntry.id ? updatedEntry : entry))
+    const updatedTimeEntries = timeEntries.map((entry) => (entry._id === updatedEntry.id ? updatedEntry : entry))
 
     setTimeEntries(updatedTimeEntries)
 
@@ -272,13 +293,6 @@ export default function ProjectDetailPage({ params }) {
     console.log("Tasks: ", res.tasks)
     setTasks(res.tasks || [])
   }
-
-  useEffect(() => {
-    if (!user) {
-      router.push("/login")
-    }
-  }, [user, router])
-
   const getProjectDetails = async () => {
     const req = await fetch("/api/project/get-project-details", {
       method: "POST",
@@ -291,13 +305,35 @@ export default function ProjectDetailPage({ params }) {
 
     const res = await req.json();
 
-    console.log(res.project)
     setProjectDetails(res.project)
+  }
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login")
+    }
+  }, [user, router])
+
+  const getProjectEntries = async () => {
+    const req = await fetch("/api/time/get-project-entries", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ projectId }),
+    })
+
+    const res = await req.json();
+
+    console.log(res.entries)
+    setTimeEntries(res.entries || [])
   }
 
   useEffect(() => {
     getProjectDetails();
     getProjectTasks();
+    getProjectEntries()
   }, [])
 
   //   useEffect(() => {
@@ -510,7 +546,7 @@ export default function ProjectDetailPage({ params }) {
         }
       }  
       setIsTaskDialogOpen(false)
-      
+
     } catch (error) {
       console.error("Failed to save task:", error)
     } finally {
@@ -615,6 +651,15 @@ export default function ProjectDetailPage({ params }) {
     )
   }
 
+  const formatDuration = (seconds) => {
+    if (!seconds) return '0h 0m';
+    
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    
+    return `${hours}h ${minutes}m`;
+  };
+
   return (
     <>
       <main className="flex-1 py-8">
@@ -712,26 +757,35 @@ export default function ProjectDetailPage({ params }) {
 
 
               <Card>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-sm font-medium">Progress</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-lg font-medium">{project.progress || 0}%</span>
-                      <span className="text-muted-foreground text-sm">
-                        {completedTasks} of {totalTasks} tasks
-                      </span>
-                    </div>
-                    <Progress value={project.progress || 0} className="h-2" />
-                  </div>
-                </CardContent>
-              </Card>
+  <CardHeader className="pb-2">
+    <CardTitle className="text-sm font-medium">Progress</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <div className="space-y-2">
+      <div className="flex justify-between">
+        <span className="text-lg font-medium">{project.progress || 0}%</span>
+        <span className="text-muted-foreground text-sm">
+          {completedTasks} of {totalTasks} tasks
+        </span>
+      </div>
+      <Progress value={project.progress || 0} className="h-2" />
+      <div className="flex items-center justify-between mt-2 text-sm text-muted-foreground">
+        <div className="flex items-center gap-1">
+          <Clock className="h-4 w-4" />
+          <span>Total Time:</span>
+        </div>
+        <span>
+          {formatDuration(timeEntries.reduce((total, entry) => total + (entry.duration || 0), 0))}
+        </span>
+      </div>
+    </div>
+  </CardContent>
+</Card>
             </div>
 
             {/* Timer Section */}
             <div className="grid gap-6 md:grid-cols-2">
-              <ProjectTimer projectId={project._id} onSaveTimeEntry={handleSaveTimeEntry} />
+              <ProjectTimer projectId={projectId} onSaveTimeEntry={handleSaveTimeEntry} />
 
               <TimeEntriesList
                 timeEntries={timeEntries}
