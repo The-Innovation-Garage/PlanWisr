@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
-import { toast } from "sonner"
+import toast from "react-hot-toast"
 import { useUserStore } from "@/store/store"
 
 export function Navbar() {
@@ -30,6 +30,7 @@ export function Navbar() {
   const router = useRouter();
 
   const {isLogin, fullName, lastName} = useUserStore();
+  const {SetIsLogin, SetFullName, SetUsername, SetEmail, SetUserId} = useUserStore();
 
   useEffect(() => {
     setMounted(true)
@@ -45,12 +46,43 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  useEffect(() => {
+    verifyToken();
+  }, [])
+
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark")
   }
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    SetIsLogin(false);
+    SetFullName("");
+    SetUserId("");
+    SetEmail("");
     toast.success("Logged out successfully")
+  }
+
+  const verifyToken = async() => {
+    if (!localStorage.getItem("token")) return;
+    const token = localStorage.getItem("token");
+    const req = await fetch(`/api/auth/verify`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token }),
+    });
+    const res = await req.json();
+
+    console.log(res)
+
+    if (res.type == "success") {
+      SetIsLogin(true);
+      SetFullName(res.user.name);
+      SetUserId(res.user._id);
+      SetEmail(res.user.email);
+    }
   }
 
   return (
@@ -158,7 +190,7 @@ export function Navbar() {
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex items-center justify-start gap-2 p-2">
                     <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium">{fullName} {lastName}</p>
+                      <p className="font-medium">{fullName}</p>
                     </div>
                   </div>
                   <DropdownMenuSeparator />

@@ -12,13 +12,13 @@ const handler = async (req, res) => {
 
         if (user && (await bcrypt.compare(rPassword, user.password))) {
        
-            const token = signToken({userId: user._id, email: user.email,  firstName:user.firstName, lastName:user.lastName}, process.env.NEXT_PUBLIC_JWT_TOKEN, '1d');
-            const refreshToken = signToken({userId: user._id, email: user.email,  firstName:user.firstName, lastName:user.lastName }, process.env.NEXT_PUBLIC_JWT_TOKEN, '7d');
+            const token = signToken({userId: user._id, email: user.email,  name:user.name}, process.env.NEXT_PUBLIC_JWT_TOKEN, '1d');
+            const refreshToken = signToken({userId: user._id, email: user.email,  name:user.name }, process.env.NEXT_PUBLIC_JWT_TOKEN, '7d');
 
             const sendUser = {
                 _id: user._id,
                 email: user.email,
-                fullName: user.name
+                name: user.name
             }
 
             return res.status(200).json({user: sendUser, message: "Logged In Successfully", type:"success", token: token, refreshToken: refreshToken})

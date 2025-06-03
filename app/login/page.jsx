@@ -49,7 +49,7 @@ export default function LoginPage() {
         localStorage.setItem("token", data.token)
         localStorage.setItem("refreshToken", data.refreshToken)
         SetIsLogin(true);
-        SetFullName(data.user.fullName);
+        SetFullName(data.user.name);
         SetUserId(data.user._id);
         SetEmail(data.user.email);
         router.push("/projects");

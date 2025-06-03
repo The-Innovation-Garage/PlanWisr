@@ -1,129 +1,270 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import FullCalendar from "@fullcalendar/react"
+import dayGridPlugin from "@fullcalendar/daygrid"
+import interactionPlugin from "@fullcalendar/interaction"
+import { Card, CardContent } from "@/components/ui/card"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { BarChart, Users, Zap, ArrowUpRight } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { toast } from "sonner"
 
 export default function DashboardPage() {
-  const user = { name: "John Doe" } // Replace with actual user data fetching logic
-  const isLoading = false // Replace with actual loading state logic
+  const [tasks, setTasks] = useState([])
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [currentTask, setCurrentTask] = useState(null)
+  const [taskTitle, setTaskTitle] = useState("")
+  const [taskDescription, setTaskDescription] = useState("")
+  const [taskProject, setTaskProject] = useState("")
+  const [taskDate, setTaskDate] = useState("")
+  const [projects, setProjects] = useState([])
   const router = useRouter()
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.push("/login")
-    }
-  }, [user, isLoading, router])
+    fetchTasks()
+    fetchProjects()
+  }, [])
 
-  if (isLoading || !user) {
-    return (
-      <div className="flex min-h-[100dvh] items-center justify-center">
-        <div className="h-16 w-16 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-      </div>
-    )
+  const fetchTasks = async () => {
+    try {
+      const req = await fetch("/api/task/get-tasks", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      const res = await req.json()
+
+      const calendarTasks = res.tasks.map((task) => ({
+        id: task._id,
+        title: task.title,
+        start: task.dueDate,
+        extendedProps: {
+          description: task.description,
+          project: task.project,
+          status: task.status,
+          priority: task.priority
+        },
+      }))
+
+      setTasks(calendarTasks)
+    } catch (error) {
+      console.error("Error fetching tasks:", error)
+      toast.error("Failed to load tasks")
+    }
+  }
+
+  const fetchProjects = async () => {
+    try {
+      const req = await fetch("/api/project/get-projects", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      })
+      const res = await req.json()
+      setProjects(res.projects)
+    } catch (error) {
+      console.error("Error fetching projects:", error)
+      toast.error("Failed to load projects")
+    }
+  }
+
+  const handleDateClick = (arg) => {
+    setCurrentTask(null)
+    setTaskTitle("")
+    setTaskDescription("")
+    setTaskProject("")
+    setTaskDate(arg.dateStr)
+    setIsDialogOpen(true)
+  }
+
+  const handleEventClick = (arg) => {
+    const task = arg.event
+    setCurrentTask(task)
+    setTaskTitle(task.title)
+    setTaskDescription(task.extendedProps.description)
+    setTaskProject(task.extendedProps.project)
+    setTaskDate(task.start.toISOString().split('T')[0])
+    setIsDialogOpen(true)
+  }
+
+  const handleEventDrop = async (arg) => {
+    try {
+      const req = await fetch("/api/task/update-task-dashboard", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          taskId: arg.event.id,
+          dueDate: arg.event.start.toISOString(),
+        }),
+      })
+
+      const res = await req.json()
+      if (res.type === "success") {
+        toast.success("Task updated successfully")
+        fetchTasks()
+      } else {
+        arg.revert()
+        toast.error("Failed to update task")
+      }
+    } catch (error) {
+      console.error("Error updating task:", error)
+      arg.revert()
+      toast.error("Failed to update task")
+    }
+  }
+
+  const handleTaskSubmit = async () => {
+    if (!taskTitle || !taskProject || !taskDate) {
+      toast.error("Please fill in all required fields")
+      return
+    }
+
+    try {
+      const endpoint = currentTask ? "/api/task/update-task" : "/api/task/add-task"
+      const payload = {
+        title: taskTitle,
+        description: taskDescription,
+        project: taskProject,
+        dueDate: new Date(taskDate).toISOString(),
+        status: "not-started",
+        priority: "medium"
+      }
+
+      if (currentTask) {
+        payload.taskId = currentTask.id
+      }
+
+      const req = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const res = await req.json()
+      if (res.type === "success") {
+        toast.success(currentTask ? "Task updated successfully" : "Task created successfully")
+        fetchTasks()
+        setIsDialogOpen(false)
+        resetForm()
+      } else {
+        toast.error(res.message || "Failed to save task")
+      }
+    } catch (error) {
+      console.error("Error saving task:", error)
+      toast.error("Failed to save task")
+    }
+  }
+
+  const resetForm = () => {
+    setCurrentTask(null)
+    setTaskTitle("")
+    setTaskDescription("")
+    setTaskProject("")
+    setTaskDate("")
   }
 
   return (
+    <main className="flex-1 py-8">
+      <div className="container px-4 md:px-6">
+        <Card>
+          <CardContent className="p-6">
+            <FullCalendar
+              plugins={[dayGridPlugin, interactionPlugin]}
+              initialView="dayGridMonth"
+              events={tasks}
+              editable={true}
+              selectable={true}
+              dateClick={handleDateClick}
+              eventClick={handleEventClick}
+              eventDrop={handleEventDrop}
+              height="80vh"
+            />
+          </CardContent>
+        </Card>
+      </div>
 
-      <main className="flex-1 py-12">
-        <div className="container px-4 md:px-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col gap-8"
-          >
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user.name}</h1>
-              <p className="text-muted-foreground">Here's what's happening with your account today.</p>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{currentTask ? "Edit Task" : "Create Task"}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">Title *</Label>
+              <Input
+                id="title"
+                value={taskTitle}
+                onChange={(e) => setTaskTitle(e.target.value)}
+                placeholder="Task title"
+              />
             </div>
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                  <BarChart className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">$45,231.89</div>
-                  <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Subscriptions</CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">+2350</div>
-                  <p className="text-xs text-muted-foreground">+180.1% from last month</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Active Now</CardTitle>
-                  <Zap className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">+573</div>
-                  <p className="text-xs text-muted-foreground">+201 since last hour</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
-                  <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">3.2%</div>
-                  <p className="text-xs text-muted-foreground">+5% from last month</p>
-                </CardContent>
-              </Card>
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={taskDescription}
+                onChange={(e) => setTaskDescription(e.target.value)}
+                placeholder="Task description"
+              />
             </div>
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-4">
-                <CardHeader>
-                  <CardTitle>Overview</CardTitle>
-                </CardHeader>
-                <CardContent className="h-[200px] flex items-center justify-center border-t">
-                  <p className="text-muted-foreground">Chart will be displayed here</p>
-                </CardContent>
-              </Card>
-              <Card className="col-span-3">
-                <CardHeader>
-                  <CardTitle>Recent Activities</CardTitle>
-                  <CardDescription>You had 12 activities this week</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="flex items-center gap-4">
-                        <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center">
-                          <Zap className="size-4 text-primary" />
-                        </div>
-                        <div className="flex-1 space-y-1">
-                          <p className="text-sm font-medium leading-none">New subscription started</p>
-                          <p className="text-xs text-muted-foreground">
-                            {i} hour{i !== 1 ? "s" : ""} ago
-                          </p>
-                        </div>
-                        <Button variant="ghost" size="icon" className="rounded-full">
-                          <ArrowUpRight className="size-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+            <div className="grid gap-2">
+              <Label htmlFor="project">Project *</Label>
+              <select
+                id="project"
+                value={taskProject}
+                onChange={(e) => setTaskProject(e.target.value)}
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="">Select a project</option>
+                {projects.map((project) => (
+                  <option key={project._id} value={project._id}>
+                    {project.title}
+                  </option>
+                ))}
+              </select>
             </div>
-          </motion.div>
-        </div>
-      </main>
- 
+            <div className="grid gap-2">
+              <Label htmlFor="date">Due Date *</Label>
+              <Input
+                id="date"
+                type="date"
+                value={taskDate}
+                onChange={(e) => setTaskDate(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setIsDialogOpen(false)
+              resetForm()
+            }}>
+              Cancel
+            </Button>
+            <Button onClick={handleTaskSubmit}>
+              {currentTask ? "Update Task" : "Create Task"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </main>
   )
 }
-

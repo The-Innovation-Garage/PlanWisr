@@ -35,6 +35,7 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
   // Refs
   const startTimeRef = useRef(null)
   const timerRef = useRef(null)
+  const [startTime, setStartTime] = useState(null)
 
   // Format time as HH:MM:SS
   const formatTime = (timeInSeconds) => {
@@ -45,36 +46,47 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
     return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
 
-  // Start the timer
-  const startTimer = () => {
-    if (!isRunning) {
-      startTimeRef.current = new Date()
-      setIsRunning(true)
+ // Update the startTimer function
+const startTimer = () => {
+  if (!isRunning) {
+    const now = new Date()
+    startTimeRef.current = now
+    setStartTime(now)
+    setIsRunning(true)
 
-      timerRef.current = setInterval(() => {
-        if (timerMode === "stopwatch") {
-          setElapsedTime((prev) => prev + 1)
-        } else {
-          setCountdownTime((prev) => {
-            if (prev <= 1) {
-              stopTimer()
-              return 0
-            }
-            return prev - 1
-          })
-        }
-      }, 1000)
-    }
+    timerRef.current = setInterval(() => {
+      if (timerMode === "stopwatch") {
+        const currentTime = new Date()
+        const timeDiff = Math.floor((currentTime - startTime) / 1000)
+        setElapsedTime(timeDiff)
+      } else {
+        setCountdownTime((prev) => {
+          if (prev <= 1) {
+            stopTimer()
+            return 0
+          }
+          return prev - 1
+        })
+      }
+    }, 1000)
   }
+}
 
-  // Pause the timer
-  const pauseTimer = () => {
-    if (isRunning && timerRef.current) {
-      clearInterval(timerRef.current)
-      timerRef.current = null
-      setIsRunning(false)
-    }
+
+
+ 
+// Update the pauseTimer function
+const pauseTimer = () => {
+  if (isRunning && timerRef.current) {
+    clearInterval(timerRef.current)
+    timerRef.current = null
+    setIsRunning(false)
+    // Save the current elapsed time when pausing
+    const currentTime = new Date()
+    const timeDiff = Math.floor((currentTime - startTime) / 1000)
+    setElapsedTime(timeDiff)
   }
+}
 
   // Stop the timer and open dialog
   const stopTimer = () => {
@@ -87,58 +99,61 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
     setIsDialogOpen(true)
   }
 
-  // Reset the timer
-  const resetTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current)
-      timerRef.current = null
-    }
-
-    setIsRunning(false)
-    if (timerMode === "stopwatch") {
-      setElapsedTime(0)
-    } else {
-      const totalSeconds = hours * 3600 + minutes * 60 + seconds
-      setCountdownTime(totalSeconds > 0 ? totalSeconds : 25 * 60)
-    }
-    startTimeRef.current = null
+  // Update the resetTimer function
+const resetTimer = () => {
+  if (timerRef.current) {
+    clearInterval(timerRef.current)
+    timerRef.current = null
   }
 
-  const saveTimeEntry = () => {
-    if (!startTimeRef.current) return;
-  
-    const endTime = new Date();
-    let duration;
-  
-    if (timerMode === "stopwatch") {
-      // Calculate duration for stopwatch mode
-      duration = elapsedTime;
-    } else {
-      // Calculate duration for countdown mode
-      const totalSeconds = hours * 3600 + minutes * 60 + seconds;
-  
-  
-      // Ensure duration is not negative or undefined
-      duration = Math.max(totalSeconds, 0);
-    }
-  
-    const timeEntry = {
-      projectId,
-      taskId,
-      startTime: startTimeRef.current.toISOString(),
-      endTime: endTime.toISOString(),
-      duration,
-      description,
-      mode: timerMode,
-    };
-  
-    onSaveTimeEntry(timeEntry);
-  
-    // Reset state
-    setDescription("");
-    resetTimer();
-    setIsDialogOpen(false);
+  setIsRunning(false)
+  setStartTime(null)
+  if (timerMode === "stopwatch") {
+    setElapsedTime(0)
+  } else {
+    const totalSeconds = hours * 3600 + minutes * 60 + seconds
+    setCountdownTime(totalSeconds > 0 ? totalSeconds : 25 * 60)
+  }
+  startTimeRef.current = null
+}
+
+// Update the saveTimeEntry function
+const saveTimeEntry = () => {
+  if (!startTimeRef.current) return;
+
+  const endTime = new Date();
+  let duration;
+
+  if (timerMode === "stopwatch") {
+    // Calculate duration based on actual start and end time
+    duration = Math.floor((endTime - startTimeRef.current) / 1000);
+  } else {
+    // For countdown, use the set time minus remaining time
+    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+    const remainingTime = countdownTime;
+    duration = totalSeconds - remainingTime;
+  }
+
+  const timeEntry = {
+    projectId,
+    taskId,
+    startTime: startTimeRef.current.toISOString(),
+    endTime: endTime.toISOString(),
+    duration,
+    description,
+    mode: timerMode,
   };
+
+  onSaveTimeEntry(timeEntry);
+
+  // Reset state
+  setDescription("");
+  resetTimer();
+  setIsDialogOpen(false);
+};
+
+
+ 
   // Update countdown time when hours, minutes, or seconds change
   useEffect(() => {
     if (!isRunning && timerMode === "countdown") {

@@ -461,7 +461,7 @@ export default function ProjectDetailPage({ params }) {
 
       if (isNewTask) {
         // Create new task
-        const newTask = {
+        let newTask = {
           id: `task-${Date.now()}`,
           title: taskTitle,
           description: taskDescription,
@@ -485,13 +485,22 @@ export default function ProjectDetailPage({ params }) {
         })
 
         const res = await req.json();
-          newtask._id = res.taskId
-          updatedTasks.push(newTask)
-          setTotalTasks(prev => prev + 1)
-          if (taskStatus === "done") {
-            setCompletedTasks(prev => prev + 1)
+          newTask._id = res.taskId
+          if (res.type == "success") {
+            toast.success(res.message)
+            updatedTasks.push(newTask)
+            setTasks(updatedTasks)
+            setTotalTasks(prev => prev + 1)
+            if (taskStatus === "done") {
+              setCompletedTasks(prev => prev + 1)
+            }
+          
           }
-        
+          else {
+            toast.error(res.message)
+            return;
+          }
+         
         
       
          
