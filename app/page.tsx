@@ -11,6 +11,16 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useTheme } from "next-themes"
+import {
+  FolderKanban,
+  CheckCircle,
+  Timer,
+  CalendarClock,
+  BellRing,
+  BarChart2,
+  Smartphone
+} from "lucide-react";
+
 
 export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -50,112 +60,218 @@ export default function LandingPage() {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 },
   }
-
+  
   const features = [
+  {
+    icon: <FolderKanban className="text-primary w-6 h-6" />,
+    title: "Project Management",
+    description: "Create and organize unlimited projects, assign tasks, and define milestones in a clean visual layout."
+  },
+  {
+    icon: <CheckCircle className="text-primary w-6 h-6" />,
+    title: "Smart Task Tracking",
+    description: "Prioritize tasks, set due dates, and track status with AI-generated suggestions and auto-updates."
+  },
+  {
+    icon: <Timer className="text-primary w-6 h-6" />,
+    title: "Time Tracking",
+    description: "Automatically track how much time you spend on each task to improve productivity and focus."
+  },
+  {
+    icon: <CalendarClock className="text-primary w-6 h-6" />,
+    title: "AI-Powered Scheduling",
+    description: "Our AI recommends optimal time slots for your tasks based on urgency, deadlines, and past habits."
+  },
+  {
+    icon: <BellRing className="text-primary w-6 h-6" />,
+    title: "Sync & Smart Reminders",
+    description: "Stay on track with real-time sync across devices and intelligent reminders before important tasks."
+  },
+  {
+    icon: <BarChart2 className="text-primary w-6 h-6" />,
+    title: "Progress Insights",
+    description: "Gain visual insights into your time usage, task completion, and productivity trends over time."
+  },
+  {
+    icon: <Users className="text-primary w-6 h-6" />,
+    title: "Team Collaboration (Coming Soon)",
+    description: "Invite team members, assign roles, and collaborate on projects with seamless updates and comments."
+  },
+  {
+    icon: <Smartphone className="text-primary w-6 h-6" />,
+    title: "Mobile App (Upcoming)",
+    description: "Take Planwise on the go with our sleek mobile app — manage tasks from anywhere, anytime."
+  }
+  ];
+
+  const getPlans = () => {
+  const common = [
     {
-      title: "Smart Automation",
-      description: "Automate repetitive tasks and workflows to save time and reduce errors.",
-      icon: <Zap className="size-5" />,
+      name: "Starter",
+      price: 0,
+      description: "Perfect for small teams and startups.",
+      features: ["Up to 5 team members", "Basic analytics", "5GB storage", "Email support"],
+      cta: "Sign up now",
     },
     {
-      title: "Advanced Analytics",
-      description: "Gain valuable insights with real-time data visualization and reporting.",
-      icon: <BarChart className="size-5" />,
+      name: "Professional",
+      price: 15,
+      description: "Ideal for growing businesses.",
+      features: [
+        "Up to 20 team members",
+        "Advanced analytics",
+        "25GB storage",
+        "Priority email support",
+        "API access",
+      ],
+      cta: "Start Free Trial",
+      popular: true,
     },
     {
-      title: "Team Collaboration",
-      description: "Work together seamlessly with integrated communication tools.",
-      icon: <Users className="size-5" />,
+      name: "Enterprise",
+      price: 30,
+      description: "For large organizations with complex needs.",
+      features: [
+        "Unlimited team members",
+        "Custom analytics",
+        "Unlimited storage",
+        "24/7 phone & email support",
+        "Advanced API access",
+        "Custom integrations",
+      ],
+      cta: "Contact Sales",
     },
-    {
-      title: "Enterprise Security",
-      description: "Keep your data safe with end-to-end encryption and compliance features.",
-      icon: <Shield className="size-5" />,
-    },
-    {
-      title: "Seamless Integration",
-      description: "Connect with your favorite tools through our extensive API ecosystem.",
-      icon: <Layers className="size-5" />,
-    },
-    {
-      title: "24/7 Support",
-      description: "Get help whenever you need it with our dedicated support team.",
-      icon: <Star className="size-5" />,
-    },
-  ]
+  ];
+  return common;
+};
+
 
   return (
     <div className="flex min-h-[100dvh] flex-col">
      
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full py-20 md:py-32 lg:py-40 overflow-hidden">
-          <div className="container px-4 md:px-6 relative">
-            <div className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]"></div>
+        <section className="w-full py-24 md:py-36 lg:py-44 bg-white dark:bg-black relative overflow-hidden">
+          <div className="container mx-auto px-6 md:px-10 relative z-10">
+            {/* Background Grid overlay */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(to_right,#e5e7eb_1px,transparent_1px),linear-gradient(to_bottom,#e5e7eb_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#374151_1px,transparent_1px),linear-gradient(to_bottom,#374151_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]"
+            ></div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-center max-w-3xl mx-auto mb-12"
+              transition={{ duration: 0.6 }}
+              className="max-w-4xl mx-auto text-center"
             >
-              <Badge className="mb-4 rounded-full px-4 py-1.5 text-sm font-medium" variant="secondary">
+              <Badge
+                className="inline-block mb-5 rounded-full bg-secondary/20 text-black px-5 py-1.5 font-semibold tracking-wide text-sm shadow-md"
+                variant="secondary"
+              >
                 Launching Soon
               </Badge>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text mb-8">
                 Elevate Your Workflow with SaaSify
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+
+              <p className="text-lg md:text-l max-w-3xl mx-auto text-gray-500 dark:text-gray-300 mb-12 leading-relaxed">
                 The all-in-one platform that helps teams collaborate, automate, and deliver exceptional results.
                 Streamline your processes and focus on what matters most.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" className="rounded-full h-12 px-8 text-base">
+
+              <div className="flex flex-col sm:flex-row justify-center gap-6 max-w-md mx-auto">
+                <Button
+                  size="lg"
+                  className="group rounded-full h-14 px-10 text-base font-semibold bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800
+                    shadow-lg hover:shadow-xl hover:scale-[1.05] transform transition duration-400 ease-out text-white flex items-center justify-center"
+                >
                   Start Free Trial
-                  <ArrowRight className="ml-2 size-4" />
+                  <span className="ml-3 w-5 h-5 transition-transform duration-400 ease-out group-hover:translate-x-2 will-change-transform">
+                    <ArrowRight />
+                  </span>
                 </Button>
-                <Button size="lg" variant="outline" className="rounded-full h-12 px-8 text-base">
+                
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full h-14 px-10 text-base font-semibold border-indigo-600 text-indigo-600
+                    hover:bg-indigo-600 hover:text-white shadow-md hover:shadow-lg hover:scale-[1.05] transform transition duration-300 ease-in-out"
+                >
                   Book a Demo
                 </Button>
               </div>
-              <div className="flex items-center justify-center gap-4 mt-6 text-sm text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Check className="size-4 text-primary" />
-                  <span>No credit card</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Check className="size-4 text-primary" />
-                  <span>14-day trial</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Check className="size-4 text-primary" />
-                  <span>Cancel anytime</span>
-                </div>
+
+              <div className="flex flex-wrap justify-center gap-8 mt-8 text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                {[
+                  "No credit card",
+                  "14-day trial",
+                  "Cancel anytime"
+                ].map((text, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Check className="w-5 h-5 text-indigo-600 animate-pulse-slow" />
+                    <span>{text}</span>
+                  </div>
+                ))}
               </div>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2 }}
-              className="relative mx-auto max-w-5xl"
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="mt-20 relative max-w-6xl mx-auto rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-gradient-to-b from-white to-indigo-50 dark:from-gray-900 dark:to-indigo-900"
             >
-              <div className="rounded-xl overflow-hidden shadow-2xl border border-border/40 bg-gradient-to-b from-background to-muted/20">
-                <Image
-                  src="https://cdn.dribbble.com/userupload/12302729/file/original-fa372845e394ee85bebe0389b9d86871.png?resize=1504x1128&vertical=center"
-                  width={1280}
-                  height={720}
-                  alt="SaaSify dashboard"
-                  className="w-full h-auto"
-                  priority
+              <Image
+                src="https://cdn.dribbble.com/userupload/12302729/file/original-fa372845e394ee85bebe0389b9d86871.png?resize=1504x1128&vertical=center"
+                alt="SaaSify dashboard"
+                width={1280}
+                height={720}
+                className="w-full h-auto object-cover"
+                priority
+              />
+              <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-indigo-200 dark:ring-indigo-700 pointer-events-none"></div>
+              {/* Subtle floating effect */}
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -bottom-10 -right-10 w-[280px] h-[280px] rounded-full bg-gradient-to-br from-indigo-300 to-purple-400 opacity-40 blur-3xl pointer-events-none"
+              />
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-10 -left-10 w-[280px] h-[280px] rounded-full bg-gradient-to-br from-purple-300 to-indigo-500 opacity-40 blur-3xl pointer-events-none"
+              />
+            </motion.div>
+
+            {/* Optional: Client logos strip */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="mt-24 flex items-center justify-center flex-wrap gap-12 max-w-5xl mx-auto"
+              aria-label="Trusted by companies"
+            >
+              {[
+                "/logos/google.svg",
+                "/logos/microsoft.svg",
+                "/logos/airbnb.svg",
+                "/logos/slack.svg",
+                "/logos/dropbox.svg"
+              ].map((logo, idx) => (
+                <img
+                  key={idx}
+                  src={logo}
+                  alt="Company logo"
+                  className="h-10 grayscale opacity-70 hover:opacity-100 transition"
+                  loading="lazy"
                 />
-                <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-black/10 dark:ring-white/10"></div>
-              </div>
-              <div className="absolute -bottom-6 -right-6 -z-10 h-[300px] w-[300px] rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 blur-3xl opacity-70"></div>
-              <div className="absolute -top-6 -left-6 -z-10 h-[300px] w-[300px] rounded-full bg-gradient-to-br from-secondary/30 to-primary/30 blur-3xl opacity-70"></div>
+              ))}
             </motion.div>
           </div>
         </section>
+
 
         {/* Logos Section */}
         <section className="w-full py-12 border-y bg-muted/30">
@@ -179,48 +295,64 @@ export default function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="w-full py-20 md:py-32">
+        <section id="features" className="w-full py-20 md:py-32 bg-muted/30 relative overflow-hidden">
           <div className="container px-4 md:px-6">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-col items-center justify-center space-y-4 text-center mb-12"
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
             >
-              <Badge className="rounded-full px-4 py-1.5 text-sm font-medium" variant="secondary">
-                Features
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Everything You Need to Succeed</h2>
-              <p className="max-w-[800px] text-muted-foreground md:text-lg">
-                Our comprehensive platform provides all the tools you need to streamline your workflow, boost
-                productivity, and achieve your goals.
+              <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
+                <Badge
+                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-primary/90 text-white hover:text-black dark:hover:text-white shadow-md"
+                  variant="secondary"
+                >
+                  <CheckCircle className="mr-2 h-4 w-4 group-hover:text-black dark:group-hover:text-white" />
+                  Core Features
+                </Badge>
+              </motion.div>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-lg">
+                Smart Tools for Smarter Work
+              </h2>
+              <p className="max-w-[700px] text-muted-foreground md:text-lg">
+                Planwise combines intelligent automation, sleek UI, and powerful insights to help you stay organized and perform at your peak.
               </p>
             </motion.div>
 
             <motion.div
-              variants={container}
-              initial="hidden"
-              whileInView="show"
-              viewport={{ once: true }}
-              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          variants={container}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true }}
+          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2"
+        >
+          {features.map((feature, i) => (
+            <motion.div
+              key={i}
+              variants={item}
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.3 }}
             >
-              {features.map((feature, i) => (
-                <motion.div key={i} variants={item}>
-                  <Card className="h-full overflow-hidden border-border/40 bg-gradient-to-b from-background to-muted/10 backdrop-blur transition-all hover:shadow-md">
-                    <CardContent className="p-6 flex flex-col h-full">
-                      <div className="size-10 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary mb-4">
-                        {feature.icon}
-                      </div>
-                      <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                      <p className="text-muted-foreground">{feature.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+              <Card className="h-full overflow-hidden border-border/40 bg-white/60 dark:bg-background/80 backdrop-blur-md transition-all hover:shadow-xl">
+                <CardContent className="p-6 flex flex-row gap-4 items-start">
+                  <div className="min-w-[40px] mt-1">{feature.icon}</div>
+                  <div>
+                    <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">{feature.description}</p>
+                  </div>
+                </CardContent>
+              </Card>
             </motion.div>
+          ))}
+        </motion.div>
+
           </div>
         </section>
+
 
         {/* How It Works Section */}
         <section className="w-full py-20 md:py-32 bg-muted/30 relative overflow-hidden">
@@ -228,18 +360,26 @@ export default function LandingPage() {
 
           <div className="container px-4 md:px-6 relative">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
               className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
             >
-              <Badge className="rounded-full px-4 py-1.5 text-sm font-medium" variant="secondary">
-                How It Works
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Simple Process, Powerful Results</h2>
-              <p className="max-w-[800px] text-muted-foreground md:text-lg">
-                Get started in minutes and see the difference our platform can make for your business.
+              <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
+                <Badge
+                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-primary/90 text-white hover:text-black dark:hover:text-white shadow-md"
+                  variant="secondary"
+                >
+                  <CalendarClock className="mr-2 h-4 w-4 group-hover:text-black dark:group-hover:text-white" />
+                  How it works
+                </Badge>
+              </motion.div>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-lg">
+                Simple Process, Powerful Results
+              </h2>
+              <p className="max-w-[700px] text-muted-foreground md:text-lg">
+                Start in just minutes and discover the game-changing impact our platform can have on your business!
               </p>
             </motion.div>
 
@@ -283,7 +423,7 @@ export default function LandingPage() {
         </section>
 
         {/* Testimonials Section */}
-        <section id="testimonials" className="w-full py-20 md:py-32">
+        {/* <section id="testimonials" className="w-full py-20 md:py-32">
           <div className="container px-4 md:px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -378,89 +518,66 @@ export default function LandingPage() {
               ))}
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Pricing Section */}
-        <section id="pricing" className="w-full py-20 md:py-32 bg-muted/30 relative overflow-hidden">
-          <div className="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-black bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,#000_40%,transparent_100%)]"></div>
+        <section id="pricing" className="w-full py-20 md:py-32 relative overflow-hidden">
+          {/* Animated Grid Background */}
+          <div className="absolute inset-0 -z-10 opacity-40"></div>
+
+          {/* Floating Elements */}
+          <div className="absolute -top-10 left-10 w-40 h-40 bg-purple-300/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-10 right-10 w-64 h-64 bg-pink-400/20 rounded-full blur-2xl animate-spin-slow" />
 
           <div className="container px-4 md:px-6 relative">
+            {/* Header */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-col items-center justify-center space-y-4 text-center mb-12"
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
             >
-              <Badge className="rounded-full px-4 py-1.5 text-sm font-medium" variant="secondary">
-                Pricing
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Simple, Transparent Pricing</h2>
-              <p className="max-w-[800px] text-muted-foreground md:text-lg">
+              <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
+                <Badge
+                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-primary/90 text-white hover:text-black dark:hover:text-white shadow-md"
+                  variant="secondary"
+                >
+                  <BarChart2 className="mr-2 h-4 w-4 group-hover:text-black dark:group-hover:text-white" />
+                  Pricing
+                </Badge>
+              </motion.div>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-lg">
+                Simple, Transparent Pricing
+              </h2>
+              <p className="max-w-[700px] text-muted-foreground md:text-lg">
                 Choose the plan that's right for your business. All plans include a 14-day free trial.
               </p>
             </motion.div>
 
-            <div className="mx-auto max-w-5xl">
-              <Tabs defaultValue="monthly" className="w-full">
-                <div className="flex justify-center mb-8">
-                  <TabsList className="rounded-full p-1">
-                    <TabsTrigger value="monthly" className="rounded-full px-6">
-                      Monthly
-                    </TabsTrigger>
-                    <TabsTrigger value="annually" className="rounded-full px-6">
-                      Annually (Save 20%)
-                    </TabsTrigger>
-                  </TabsList>
-                </div>
-                <TabsContent value="monthly">
-                  <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
-                    {[
-                      {
-                        name: "Starter",
-                        price: "$29",
-                        description: "Perfect for small teams and startups.",
-                        features: ["Up to 5 team members", "Basic analytics", "5GB storage", "Email support"],
-                        cta: "Start Free Trial",
-                      },
-                      {
-                        name: "Professional",
-                        price: "$79",
-                        description: "Ideal for growing businesses.",
-                        features: [
-                          "Up to 20 team members",
-                          "Advanced analytics",
-                          "25GB storage",
-                          "Priority email support",
-                          "API access",
-                        ],
-                        cta: "Start Free Trial",
-                        popular: true,
-                      },
-                      {
-                        name: "Enterprise",
-                        price: "$199",
-                        description: "For large organizations with complex needs.",
-                        features: [
-                          "Unlimited team members",
-                          "Custom analytics",
-                          "Unlimited storage",
-                          "24/7 phone & email support",
-                          "Advanced API access",
-                          "Custom integrations",
-                        ],
-                        cta: "Contact Sales",
-                      },
-                    ].map((plan, i) => (
+            {/* Tabs */}
+            <Tabs defaultValue="monthly" className="w-full">
+              <div className="flex justify-center mb-10">
+                <TabsList className="rounded-full p-1 bg-muted/20 backdrop-blur">
+                  <TabsTrigger value="monthly" className="rounded-full px-6 text-base">Monthly</TabsTrigger>
+                </TabsList>
+              </div>
+
+              {/* Cards */}
+              <TabsContent value="monthly" key="monthly">
+                  <div className="grid gap-8 lg:grid-cols-3">
+                    {getPlans().map((plan, i) => (
                       <motion.div
                         key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                        whileInView={{ opacity: 1, scale: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: i * 0.1 }}
+                        transition={{ duration: 0.5, delay: i * 0.15 }}
                       >
                         <Card
-                          className={`relative overflow-hidden h-full ${plan.popular ? "border-primary shadow-lg" : "border-border/40 shadow-md"} bg-gradient-to-b from-background to-muted/10 backdrop-blur`}
+                          className={`relative h-full overflow-hidden border border-border/40 rounded-2xl dark:bg-black/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] ${
+                            plan.popular ? "ring-2 ring-primary" : ""
+                          }`}
                         >
                           {plan.popular && (
                             <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg">
@@ -468,13 +585,13 @@ export default function LandingPage() {
                             </div>
                           )}
                           <CardContent className="p-6 flex flex-col h-full">
-                            <h3 className="text-2xl font-bold">{plan.name}</h3>
+                            <h3 className="text-2xl font-bold text-primary">{plan.name}</h3>
                             <div className="flex items-baseline mt-4">
-                              <span className="text-4xl font-bold">{plan.price}</span>
+                              <span className="text-4xl font-bold">${plan.price}</span>
                               <span className="text-muted-foreground ml-1">/month</span>
                             </div>
                             <p className="text-muted-foreground mt-2">{plan.description}</p>
-                            <ul className="space-y-3 my-6 flex-grow">
+                            <ul className="space-y-3 my-6 flex-grow text-sm">
                               {plan.features.map((feature, j) => (
                                 <li key={j} className="flex items-center">
                                   <Check className="mr-2 size-4 text-primary" />
@@ -483,7 +600,11 @@ export default function LandingPage() {
                               ))}
                             </ul>
                             <Button
-                              className={`w-full mt-auto rounded-full ${plan.popular ? "bg-primary hover:bg-primary/90" : "bg-muted hover:bg-muted/80"}`}
+                              className={`w-full mt-auto rounded-full transition-all duration-200 ${
+                                plan.popular
+                                  ? "bg-primary hover:scale-105"
+                                  : "bg-muted hover:bg-muted/80 hover:scale-105"
+                              }`}
                               variant={plan.popular ? "default" : "outline"}
                             >
                               {plan.cta}
@@ -494,112 +615,39 @@ export default function LandingPage() {
                     ))}
                   </div>
                 </TabsContent>
-                <TabsContent value="annually">
-                  <div className="grid gap-6 lg:grid-cols-3 lg:gap-8">
-                    {[
-                      {
-                        name: "Starter",
-                        price: "$23",
-                        description: "Perfect for small teams and startups.",
-                        features: ["Up to 5 team members", "Basic analytics", "5GB storage", "Email support"],
-                        cta: "Start Free Trial",
-                      },
-                      {
-                        name: "Professional",
-                        price: "$63",
-                        description: "Ideal for growing businesses.",
-                        features: [
-                          "Up to 20 team members",
-                          "Advanced analytics",
-                          "25GB storage",
-                          "Priority email support",
-                          "API access",
-                        ],
-                        cta: "Start Free Trial",
-                        popular: true,
-                      },
-                      {
-                        name: "Enterprise",
-                        price: "$159",
-                        description: "For large organizations with complex needs.",
-                        features: [
-                          "Unlimited team members",
-                          "Custom analytics",
-                          "Unlimited storage",
-                          "24/7 phone & email support",
-                          "Advanced API access",
-                          "Custom integrations",
-                        ],
-                        cta: "Contact Sales",
-                      },
-                    ].map((plan, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: i * 0.1 }}
-                      >
-                        <Card
-                          className={`relative overflow-hidden h-full ${plan.popular ? "border-primary shadow-lg" : "border-border/40 shadow-md"} bg-gradient-to-b from-background to-muted/10 backdrop-blur`}
-                        >
-                          {plan.popular && (
-                            <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg">
-                              Most Popular
-                            </div>
-                          )}
-                          <CardContent className="p-6 flex flex-col h-full">
-                            <h3 className="text-2xl font-bold">{plan.name}</h3>
-                            <div className="flex items-baseline mt-4">
-                              <span className="text-4xl font-bold">{plan.price}</span>
-                              <span className="text-muted-foreground ml-1">/month</span>
-                            </div>
-                            <p className="text-muted-foreground mt-2">{plan.description}</p>
-                            <ul className="space-y-3 my-6 flex-grow">
-                              {plan.features.map((feature, j) => (
-                                <li key={j} className="flex items-center">
-                                  <Check className="mr-2 size-4 text-primary" />
-                                  <span>{feature}</span>
-                                </li>
-                              ))}
-                            </ul>
-                            <Button
-                              className={`w-full mt-auto rounded-full ${plan.popular ? "bg-primary hover:bg-primary/90" : "bg-muted hover:bg-muted/80"}`}
-                              variant={plan.popular ? "default" : "outline"}
-                            >
-                              {plan.cta}
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </div>
+            </Tabs>
           </div>
         </section>
+
 
         {/* FAQ Section */}
         <section id="faq" className="w-full py-20 md:py-32">
           <div className="container px-4 md:px-6">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-              className="flex flex-col items-center justify-center space-y-4 text-center mb-12"
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="flex flex-col items-center justify-center space-y-4 text-center mb-16"
             >
-              <Badge className="rounded-full px-4 py-1.5 text-sm font-medium" variant="secondary">
-                FAQ
-              </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Frequently Asked Questions</h2>
-              <p className="max-w-[800px] text-muted-foreground md:text-lg">
+              <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
+                <Badge
+                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-primary/90 text-white hover:text-black dark:hover:text-white shadow-md"
+                  variant="secondary"
+                >
+                  <BellRing className="mr-2 h-4 w-4 group-hover:text-black dark:group-hover:text-white" />
+                  FAQ
+                </Badge>
+              </motion.div>
+              <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-lg">
+                Frequently Asked Questions
+              </h2>
+              <p className="max-w-[700px] text-muted-foreground md:text-lg">
                 Find answers to common questions about our platform.
               </p>
             </motion.div>
 
-            <div className="mx-auto max-w-3xl">
+            <div className="mx-auto max-w-2xl space-y-4">
               <Accordion type="single" collapsible className="w-full">
                 {[
                   {
@@ -637,15 +685,27 @@ export default function LandingPage() {
                     key={i}
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.08 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                    className="transition-all duration-300"
                   >
-                    <AccordionItem value={`item-${i}`} className="border-b border-border/40 py-2">
-                      <AccordionTrigger className="text-left font-medium hover:no-underline">
-                        {faq.question}
-                      </AccordionTrigger>
-                      <AccordionContent className="text-muted-foreground">{faq.answer}</AccordionContent>
-                    </AccordionItem>
+                    <motion.div
+                      whileHover={{
+                        scale: 1.02,
+                        boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.08)",
+                      }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      className="rounded-md border border-border/40 bg-background px-4 py-3 shadow-sm"
+                    >
+                      <AccordionItem value={`item-${i}`}>
+                        <AccordionTrigger className="text-left font-semibold hover:no-underline transition-all duration-300">
+                          {faq.question}
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground">
+                          {faq.answer}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </motion.div>
                   </motion.div>
                 ))}
               </Accordion>
@@ -694,6 +754,7 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
+
       <footer className="w-full border-t bg-background/95 backdrop-blur-sm">
         <div className="container flex flex-col gap-8 px-4 py-10 md:px-6 lg:py-16">
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
