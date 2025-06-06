@@ -36,6 +36,8 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
   const startTimeRef = useRef(null)
   const timerRef = useRef(null)
   const [startTime, setStartTime] = useState(null)
+  const [pausedTime, setPausedTime] = useState(0)
+
 
   // Format time as HH:MM:SS
   const formatTime = (timeInSeconds) => {
@@ -45,19 +47,18 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
 
     return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
-
- // Update the startTimer function
+// Replace the startTimer function
 const startTimer = () => {
   if (!isRunning) {
     const now = new Date()
-    startTimeRef.current = now
+    startTimeRef.current = startTimeRef.current || now
     setStartTime(now)
     setIsRunning(true)
 
     timerRef.current = setInterval(() => {
       if (timerMode === "stopwatch") {
         const currentTime = new Date()
-        const timeDiff = Math.floor((currentTime - startTime) / 1000)
+        const timeDiff = Math.floor((currentTime - now) / 1000) + pausedTime
         setElapsedTime(timeDiff)
       } else {
         setCountdownTime((prev) => {
@@ -73,20 +74,16 @@ const startTimer = () => {
 }
 
 
-
- 
-// Update the pauseTimer function
+// Replace the pauseTimer function
 const pauseTimer = () => {
   if (isRunning && timerRef.current) {
     clearInterval(timerRef.current)
     timerRef.current = null
     setIsRunning(false)
-    // Save the current elapsed time when pausing
-    const currentTime = new Date()
-    const timeDiff = Math.floor((currentTime - startTime) / 1000)
-    setElapsedTime(timeDiff)
+    setPausedTime(elapsedTime) // Store the current elapsed time
   }
 }
+
 
   // Stop the timer and open dialog
   const stopTimer = () => {
@@ -99,7 +96,7 @@ const pauseTimer = () => {
     setIsDialogOpen(true)
   }
 
-  // Update the resetTimer function
+  // Replace the resetTimer function
 const resetTimer = () => {
   if (timerRef.current) {
     clearInterval(timerRef.current)
@@ -108,13 +105,15 @@ const resetTimer = () => {
 
   setIsRunning(false)
   setStartTime(null)
+  setPausedTime(0)
+  startTimeRef.current = null
+  
   if (timerMode === "stopwatch") {
     setElapsedTime(0)
   } else {
     const totalSeconds = hours * 3600 + minutes * 60 + seconds
     setCountdownTime(totalSeconds > 0 ? totalSeconds : 25 * 60)
   }
-  startTimeRef.current = null
 }
 
 // Update the saveTimeEntry function
