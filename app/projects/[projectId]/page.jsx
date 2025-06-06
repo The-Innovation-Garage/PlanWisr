@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import { format } from "date-fns"
-import { Calendar, Clock, Flag, MoreHorizontal, Plus, Users, ChevronLeft, CheckCircle2, Circle, Loader2, AlertCircle, BarChart, Edit, Trash2 } from 'lucide-react'
+import { Clock, Flag, MoreHorizontal, Plus, ChevronLeft, CheckCircle2, Circle, Loader2, AlertCircle, BarChart, Edit, Trash2, Calendar, Users, Receipt } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -79,7 +79,7 @@ export default function ProjectDetailPage({ params }) {
 
   const [timeEntries, setTimeEntries] = useState([])
 
-  const handleSaveTimeEntry = async(timeEntryData) => {
+  const handleSaveTimeEntry = async (timeEntryData) => {
     if (project) {
       const newTimeEntry = {
         ...timeEntryData,
@@ -94,7 +94,7 @@ export default function ProjectDetailPage({ params }) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-        body: JSON.stringify({...newTimeEntry, projectId: projectId }),
+        body: JSON.stringify({ ...newTimeEntry, projectId: projectId }),
       })
 
       const res = await req.json();
@@ -107,19 +107,19 @@ export default function ProjectDetailPage({ params }) {
         toast.success(res.message)
         newTimeEntry._id = res.entry._id;
 
-      const updatedTimeEntries = [...timeEntries, newTimeEntry]
-      setTimeEntries(updatedTimeEntries)
+        const updatedTimeEntries = [...timeEntries, newTimeEntry]
+        setTimeEntries(updatedTimeEntries)
 
-      const updatedProject = {
-        ...project,
-        timeEntries: updatedTimeEntries,
-        updatedAt: new Date().toISOString(),
+        const updatedProject = {
+          ...project,
+          timeEntries: updatedTimeEntries,
+          updatedAt: new Date().toISOString(),
+        }
+
+        setProject(updatedProject)
+        updateProject(updatedProject)
       }
 
-      setProject(updatedProject)
-      updateProject(updatedProject)
-      }
-      
     }
   }
 
@@ -485,30 +485,30 @@ export default function ProjectDetailPage({ params }) {
         })
 
         const res = await req.json();
-          newTask._id = res.taskId
-          if (res.type == "success") {
-            toast.success(res.message)
-            updatedTasks.push(newTask)
-            setTasks(updatedTasks)
-            setTotalTasks(prev => prev + 1)
-            if (taskStatus === "done") {
-              setCompletedTasks(prev => prev + 1)
-            }
-          
+        newTask._id = res.taskId
+        if (res.type == "success") {
+          toast.success(res.message)
+          updatedTasks.push(newTask)
+          setTasks(updatedTasks)
+          setTotalTasks(prev => prev + 1)
+          if (taskStatus === "done") {
+            setCompletedTasks(prev => prev + 1)
           }
-          else {
-            toast.error(res.message)
-            return;
-          }
-         
-        
-      
-         
+
+        }
+        else {
+          toast.error(res.message)
+          return;
+        }
+
+
+
+
       }
       else if (currentTask) {
         // Update existing task
         const taskIndex = updatedTasks.findIndex(t => t._id === currentTask._id)
-        console.log("Current task:", currentTask,taskIndex)
+        console.log("Current task:", currentTask, taskIndex)
 
         if (taskIndex !== -1) {
           const wasCompleted = updatedTasks[taskIndex].status === "done"
@@ -551,9 +551,9 @@ export default function ProjectDetailPage({ params }) {
           }
           else {
             toast.error(res.message)
-          }         
+          }
         }
-      }  
+      }
       setIsTaskDialogOpen(false)
 
     } catch (error) {
@@ -662,10 +662,10 @@ export default function ProjectDetailPage({ params }) {
 
   const formatDuration = (seconds) => {
     if (!seconds) return '0h 0m';
-    
+
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+
     return `${hours}h ${minutes}m`;
   };
 
@@ -766,30 +766,30 @@ export default function ProjectDetailPage({ params }) {
 
 
               <Card>
-  <CardHeader className="pb-2">
-    <CardTitle className="text-sm font-medium">Progress</CardTitle>
-  </CardHeader>
-  <CardContent>
-    <div className="space-y-2">
-      <div className="flex justify-between">
-        <span className="text-lg font-medium">{project.progress || 0}%</span>
-        <span className="text-muted-foreground text-sm">
-          {completedTasks} of {totalTasks} tasks
-        </span>
-      </div>
-      <Progress value={project.progress || 0} className="h-2" />
-      <div className="flex items-center justify-between mt-2 text-sm text-muted-foreground">
-        <div className="flex items-center gap-1">
-          <Clock className="h-4 w-4" />
-          <span>Total Time:</span>
-        </div>
-        <span>
-          {formatDuration(timeEntries.reduce((total, entry) => total + (entry.duration || 0), 0))}
-        </span>
-      </div>
-    </div>
-  </CardContent>
-</Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Progress</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-lg font-medium">{project.progress || 0}%</span>
+                      <span className="text-muted-foreground text-sm">
+                        {completedTasks} of {totalTasks} tasks
+                      </span>
+                    </div>
+                    <Progress value={project.progress || 0} className="h-2" />
+                    <div className="flex items-center justify-between mt-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        <span>Total Time:</span>
+                      </div>
+                      <span>
+                        {formatDuration(timeEntries.reduce((total, entry) => total + (entry.duration || 0), 0))}
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Timer Section */}
@@ -810,6 +810,8 @@ export default function ProjectDetailPage({ params }) {
                   <TabsTrigger value="board">Board</TabsTrigger>
                   <TabsTrigger value="list">List</TabsTrigger>
                   <TabsTrigger value="stats">Stats</TabsTrigger>
+                  <TabsTrigger value="invoices">Invoices</TabsTrigger>
+
                 </TabsList>
 
                 <Button
@@ -1098,6 +1100,35 @@ export default function ProjectDetailPage({ params }) {
                     </CardContent>
                   </Card>
                 </div>
+              </TabsContent>
+
+              <TabsContent value="invoices" className="mt-0">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle>Project Invoices</CardTitle>
+                    <Button
+                      onClick={() => router.push(`/projects/${projectId}/invoices/create`)}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Invoice
+                    </Button>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-center py-8">
+                      <Receipt className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                      <h3 className="text-lg font-medium mb-2">Manage Project Invoices</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Create and manage invoices for this project
+                      </p>
+                      <Button
+                        variant="outline"
+                        onClick={() => router.push(`/projects/${projectId}/invoices`)}
+                      >
+                        View All Invoices
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </motion.div>
