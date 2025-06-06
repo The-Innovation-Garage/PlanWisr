@@ -59,7 +59,13 @@ export function TimeEntriesList({ timeEntries, onDeleteTimeEntry, onUpdateTimeEn
 
   return (
     <>
-      <Card>
+      <Card
+      style={{
+        maxHeight: "300px", // Adjust based on your layout
+        minHeight: "300px", // Minimum height for the card
+
+      }}
+      className="h-72 overflow-y-auto overflow-x-hidden flex flex-col">
         <CardHeader>
           <CardTitle className="flex items-center">
             <Clock className="mr-2 h-5 w-5" />

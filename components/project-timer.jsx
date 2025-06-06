@@ -172,7 +172,9 @@ const saveTimeEntry = () => {
 
   return (
     <>
-      <Card>
+      <Card style={{
+        height: "300px"
+      }} className="!h-72 flex flex-col">
         <CardHeader>
           <CardTitle className="flex items-center">
             <Clock className="mr-2 h-5 w-5" />
@@ -181,7 +183,7 @@ const saveTimeEntry = () => {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="stopwatch" onValueChange={(value) => setTimerMode(value)}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="stopwatch" disabled={isRunning}>
                 <Clock className="mr-2 h-4 w-4" />
                 Stopwatch
