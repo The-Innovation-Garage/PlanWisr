@@ -8,7 +8,7 @@ const EntrySchema = new Schema({
     trim: true
   },
   duration: {
-    type: Number,
+    type: Number, // in seconds
     required: [true, 'Duration is required'],
   },
   startTime: {

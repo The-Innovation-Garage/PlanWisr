@@ -18,6 +18,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { format } from "date-fns"
+
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState([])
@@ -28,11 +31,14 @@ export default function DashboardPage() {
   const [taskProject, setTaskProject] = useState("")
   const [taskDate, setTaskDate] = useState("")
   const [projects, setProjects] = useState([])
+  const [hoursData, setHoursData] = useState([])
+
   const router = useRouter()
 
   useEffect(() => {
-    fetchTasks()
-    fetchProjects()
+    fetchTasks();
+    fetchProjects();
+    getHoursData();
   }, [])
 
   const fetchTasks = async () => {
@@ -182,8 +188,98 @@ export default function DashboardPage() {
     setTaskDate("")
   }
 
+
+
+  const getHoursData = async() => {
+    try {
+      const req = await fetch("/api/analytics/get-hours-data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
+  
+      const res = await req.json();
+
+      console.log('Hours Data Response:', res.entries);
+      
+      if (res.type === 'success' && res.entries?.length > 0) {
+        // Get min and max dates from the data
+        const dates = res.entries.map(entry => new Date(entry._id));
+        // const minDate = new Date(Math.min(...dates));
+        // start of this month
+        const minDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const maxDate = new Date(Math.max(...dates));
+  
+        // Create an array of all dates between min and max
+        const allDates = [];
+        const currentDate = new Date(minDate);
+        
+        while (currentDate <= maxDate) {
+          allDates.push(new Date(currentDate));
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+  
+        // Create a map of existing entries
+        const entriesMap = new Map(
+          res.entries.map(entry => [
+            new Date(entry._id).toISOString().split('T')[0],
+            entry
+          ])
+        );
+  
+        // Format data with zero values for missing dates
+        const formattedData = allDates.map(date => {
+          const dateKey = date.toISOString().split('T')[0];
+          const entry = entriesMap.get(dateKey);
+  
+          if (entry) {
+            return {
+              date: format(date, 'MMM d'),
+              minutes: Number(entry.totalMinutes.toFixed(2)),
+              hours: Math.floor(entry.totalMinutes / 60),
+              remainingMinutes: Math.round(entry.totalMinutes % 60)
+            };
+          }
+  
+          return {
+            date: format(date, 'MMM d'),
+            minutes: 0,
+            hours: 0,
+            remainingMinutes: 0
+          };
+        });
+        
+        console.log('Formatted Data with zero values:', formattedData);
+        setHoursData(formattedData);
+      }
+    } catch (error) {
+      console.error('Error fetching hours data:', error);
+    }
+  };
+  // Add this custom tooltip component
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const { hours, remainingMinutes } = payload[0].payload
+      return (
+        <div className="bg-background border rounded-lg p-4 shadow-lg">
+          <p className="font-medium">{label}</p>
+          <p className="text-primary">
+            {hours > 0 ? `${hours}h ` : ''}{remainingMinutes}m
+          </p>
+        </div>
+      )
+    }
+    return null
+  }
+
+
   return (
     <main className="flex-1 py-8">
+        <h1  style={{
+        margin: "50px"
+      }} className="text-center my-10 font-bold text-3xl">Your Tasks</h1>
       <div className="container px-4 md:px-6">
         <Card>
           <CardContent className="p-6">
@@ -201,6 +297,48 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <h1 style={{
+        margin: "50px"
+      }} className="text-center my-10 font-bold text-3xl">Analytics</h1>
+
+      {/* Graph */}
+      <div className="container px-4 md:px-6">
+  <Card>
+    <CardContent className="pt-6">
+      <h2 className="text-xl font-semibold mb-4">Time Tracking Overview</h2>
+      <div className="h-[400px] w-full">
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            data={hoursData}
+            margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+          >
+            <XAxis 
+              dataKey="date"
+              tick={{ fill: 'currentColor' }}
+            />
+            <YAxis 
+              tick={{ fill: 'currentColor' }}
+              label={{ 
+                value: 'Minutes', 
+                angle: -90, 
+                position: 'insideLeft',
+                fill: 'currentColor'
+              }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar 
+              dataKey="minutes" 
+              fill="hsl(var(--primary))"
+              radius={[4, 4, 0, 0]}
+              name="Time Spent"
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </CardContent>
+  </Card>
+</div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
