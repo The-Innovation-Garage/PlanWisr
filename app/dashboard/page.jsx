@@ -201,18 +201,15 @@ export default function DashboardPage() {
       });
   
       const res = await req.json();
-
-      console.log('Hours Data Response:', res.entries);
       
       if (res.type === 'success' && res.entries?.length > 0) {
-        // Get min and max dates from the data
+        // Get current month's start and end dates
         const dates = res.entries.map(entry => new Date(entry._id));
-        // const minDate = new Date(Math.min(...dates));
-        // start of this month
-        const minDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-        const maxDate = new Date(Math.max(...dates));
+        const now = new Date();
+        const minDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        const maxDate = new Date(Math.max(...dates)); // Last day of month
   
-        // Create an array of all dates between min and max
+        // Create an array of all dates in the month
         const allDates = [];
         const currentDate = new Date(minDate);
         
@@ -221,25 +218,26 @@ export default function DashboardPage() {
           currentDate.setDate(currentDate.getDate() + 1);
         }
   
-        // Create a map of existing entries
+        // Create a map of existing entries with the date string as key
         const entriesMap = new Map(
           res.entries.map(entry => [
-            new Date(entry._id).toISOString().split('T')[0],
+            entry._id, // Use the _id directly since it's already in YYYY-MM-DD format
             entry
           ])
         );
   
         // Format data with zero values for missing dates
         const formattedData = allDates.map(date => {
-          const dateKey = date.toISOString().split('T')[0];
+          const dateKey = format(date, 'yyyy-MM-dd'); // Format to match API's _id format
           const entry = entriesMap.get(dateKey);
   
           if (entry) {
+            const totalMinutes = Number(entry.totalMinutes.toFixed(2));
             return {
               date: format(date, 'MMM d'),
-              minutes: Number(entry.totalMinutes.toFixed(2)),
-              hours: Math.floor(entry.totalMinutes / 60),
-              remainingMinutes: Math.round(entry.totalMinutes % 60)
+              minutes: totalMinutes,
+              hours: Math.floor(totalMinutes / 60),
+              remainingMinutes: Math.round(totalMinutes % 60)
             };
           }
   
