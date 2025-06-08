@@ -21,7 +21,7 @@ const handler = async (req, res) => {
             return res.status(403).json({ message: "Forbidden: You are not allowed to delete this task", type: "error" });
          }
          // delete the task
-            await Project.findByIdAndDelete(taskId);
+            await Project.findByIdAndDelete(projectId);
        return res.status(200).json({ message: "Project deleted successfully", type: "success" });
     }
     catch (error) {
