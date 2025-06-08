@@ -291,6 +291,11 @@ export default function ProjectDetailPage({ params }) {
     const res = await req.json();
 
     console.log("Tasks: ", res.tasks)
+    setTotalTasks(res.tasks.length);
+    let CompletedTasks = res.tasks.filter(task => task.status === "done").length;
+    console.log(`Completed Tasks: `, CompletedTasks)
+    console.log(`Pending Tasks: `, res.tasks.length-CompletedTasks)
+    setCompletedTasks(CompletedTasks);
     setTasks(res.tasks || [])
   }
   const getProjectDetails = async () => {
@@ -774,7 +779,7 @@ export default function ProjectDetailPage({ params }) {
                     <div className="flex justify-between">
                       <span className="text-lg font-medium">{project.progress || 0}%</span>
                       <span className="text-muted-foreground text-sm">
-                        {completedTasks} of {totalTasks} tasks
+                        {completedTasks} of {totalTasks} tasks completed
                       </span>
                     </div>
                     <Progress value={project.progress || 0} className="h-2" />

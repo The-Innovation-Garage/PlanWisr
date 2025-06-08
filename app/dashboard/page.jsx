@@ -23,6 +23,8 @@ import { format } from "date-fns"
 
 import { PieChart, Pie, Cell, Legend } from 'recharts'
 
+import { Badge } from "@/components/ui/badge"
+import { Edit, Sparkles } from "lucide-react"
 
 
 export default function DashboardPage() {
@@ -36,10 +38,40 @@ export default function DashboardPage() {
   const [projects, setProjects] = useState([])
   const [hoursData, setHoursData] = useState([]);
 
+
+  // State for projects data for pie chart of time spend per project
   const [projectsData, setProjectsData] = useState([])
+
+  // State for today's tasks
+  const [todayTasks, setTodayTasks] = useState([])
 
 
   const router = useRouter()
+
+  const getTodayTasks = async() => {
+    try {
+      const req = await fetch("/api/task/get-today-task", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      const res = await req.json();
+
+      if (res.type === "success") {
+        setTodayTasks(res.tasks)
+        console.log(`Today's tasks fetched successfully:`, res.tasks)
+      }
+      else {
+        toast.error(res.message || "Failed to load today's tasks")
+      }
+
+    } catch (error) {
+      console.error("Error fetching tasks:", error)
+      toast.error("Failed to load tasks")
+    }
+  }
 
 
   const fetchTasks = async () => {
@@ -306,6 +338,7 @@ export default function DashboardPage() {
     fetchProjects();
     getHoursData();
     getProjectsData();
+    getTodayTasks();
   }, [])
 
 
@@ -334,7 +367,78 @@ export default function DashboardPage() {
       </div>
 
       {/* Add after the existing bar chart Card */}
-<div className="container px-4 md:px-6 mt-6">
+<div style={{
+  margin: "20px 0px"
+}} className="container px-4 md:px-6 mt-6">
+<div className="grid md:grid-cols-2 gap-6">
+  {/* Today's Tasks Card */}
+  <Card>
+      <CardContent className="pt-6">
+      <div className="flex items-center justify-between mb-4">
+      <h2 className="text-xl font-semibold">Today's Tasks</h2>
+      <Button
+        variant="outline"
+        size="sm"
+        className="flex items-center gap-2"
+      
+      >
+        <Sparkles className="h-4 w-4" />
+        AI Prioritize
+      </Button>
+    </div>
+        <div className="h-[400px] overflow-auto">
+          {todayTasks.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+              <p>No tasks due today</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {todayTasks.map((task) => (
+                <div
+                  key={task._id}
+                  className="p-4 rounded-lg border hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-medium">{task.title}</h3>
+                      {task.description && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {task.description}
+                        </p>
+                      )}
+                      <Badge className="mt-2" variant="secondary">
+                        {task.project ? task.project.title : "No Project"}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={task.status === 'completed' ? 'default' : 'secondary'}>
+                        {task.status === 'completed' ? 'Done' : 'Pending'}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setCurrentTask(task);
+                          setTaskTitle(task.title);
+                          setTaskDescription(task.description);
+                          setTaskProject(task.project);
+                          setTaskDate(new Date(task.dueDate).toISOString().split('T')[0]);
+                          setIsDialogOpen(true);
+                        }}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+
+  {/* Projects Time Distribution Card */}
   <Card>
     <CardContent className="pt-6">
       <h2 className="text-xl font-semibold mb-4">Time Distribution by Project</h2>
@@ -388,6 +492,8 @@ export default function DashboardPage() {
       </div>
     </CardContent>
   </Card>
+  
+  </div>
 </div>
 
 
