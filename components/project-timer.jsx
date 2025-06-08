@@ -38,6 +38,9 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
   const [startTime, setStartTime] = useState(null)
   const [pausedTime, setPausedTime] = useState(0)
 
+  const [pauseStartTime, setPauseStartTime] = useState(null)
+const [totalPauseDuration, setTotalPauseDuration] = useState(0)
+
 
   // Format time as HH:MM:SS
   const formatTime = (timeInSeconds) => {
@@ -47,10 +50,18 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
 
     return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
-// Replace the startTimer function
+// Update the startTimer function to handle resume after pause
 const startTimer = () => {
   if (!isRunning) {
     const now = new Date()
+    
+    // If this is a resume after pause, calculate pause duration
+    if (pauseStartTime) {
+      const pauseDuration = Math.floor((now - pauseStartTime) / 1000)
+      setTotalPauseDuration(prev => prev + pauseDuration)
+      setPauseStartTime(null)
+    }
+
     startTimeRef.current = startTimeRef.current || now
     setStartTime(now)
     setIsRunning(true)
@@ -74,16 +85,16 @@ const startTimer = () => {
 }
 
 
-// Replace the pauseTimer function
+// Update the pauseTimer function
 const pauseTimer = () => {
   if (isRunning && timerRef.current) {
     clearInterval(timerRef.current)
     timerRef.current = null
     setIsRunning(false)
-    setPausedTime(elapsedTime) // Store the current elapsed time
+    setPauseStartTime(new Date()) // Record when we paused
+    setPausedTime(elapsedTime)
   }
 }
-
 
   // Stop the timer and open dialog
   const stopTimer = () => {
@@ -96,7 +107,7 @@ const pauseTimer = () => {
     setIsDialogOpen(true)
   }
 
-  // Replace the resetTimer function
+// Update the resetTimer function
 const resetTimer = () => {
   if (timerRef.current) {
     clearInterval(timerRef.current)
@@ -107,6 +118,8 @@ const resetTimer = () => {
   setStartTime(null)
   setPausedTime(0)
   startTimeRef.current = null
+  setPauseStartTime(null)
+  setTotalPauseDuration(0)
   
   if (timerMode === "stopwatch") {
     setElapsedTime(0)
@@ -124,8 +137,8 @@ const saveTimeEntry = () => {
   let duration;
 
   if (timerMode === "stopwatch") {
-    // Calculate duration based on actual start and end time
-    duration = Math.floor((endTime - startTimeRef.current) / 1000);
+    // Calculate duration excluding pause time
+    duration = Math.floor((endTime - startTimeRef.current) / 1000) - totalPauseDuration;
   } else {
     // For countdown, use the set time minus remaining time
     const totalSeconds = hours * 3600 + minutes * 60 + seconds;

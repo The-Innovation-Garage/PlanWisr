@@ -21,6 +21,9 @@ import { toast } from "sonner"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { format } from "date-fns"
 
+import { PieChart, Pie, Cell, Legend } from 'recharts'
+
+
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState([])
@@ -31,15 +34,13 @@ export default function DashboardPage() {
   const [taskProject, setTaskProject] = useState("")
   const [taskDate, setTaskDate] = useState("")
   const [projects, setProjects] = useState([])
-  const [hoursData, setHoursData] = useState([])
+  const [hoursData, setHoursData] = useState([]);
+
+  const [projectsData, setProjectsData] = useState([])
+
 
   const router = useRouter()
 
-  useEffect(() => {
-    fetchTasks();
-    fetchProjects();
-    getHoursData();
-  }, [])
 
   const fetchTasks = async () => {
     try {
@@ -207,7 +208,7 @@ export default function DashboardPage() {
         const dates = res.entries.map(entry => new Date(entry._id));
         const now = new Date();
         const minDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        const maxDate = new Date(Math.max(...dates)); // Last day of month
+        const maxDate = new Date(now.getFullYear(), now.getMonth(), now.getDate()); //current day
   
         // Create an array of all dates in the month
         const allDates = [];
@@ -256,6 +257,8 @@ export default function DashboardPage() {
       console.error('Error fetching hours data:', error);
     }
   };
+
+
   // Add this custom tooltip component
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -271,6 +274,40 @@ export default function DashboardPage() {
     }
     return null
   }
+  const getProjectsData = async () => {
+    try {
+      const req = await fetch("/api/analytics/get-projects-data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      const res = await req.json()
+      if (res.type === "success") {
+        // Format the data for the pie chart
+        const formattedData = res.entries.map(entry => ({
+          name: entry.projectName,
+          value: Number(entry.totalMinutes.toFixed(2))
+        }))
+        setProjectsData(formattedData)
+      } else {
+        toast.error(res.message || "Failed to load projects data")
+      }
+    } catch (error) {
+      console.error("Error fetching projects data:", error)
+      toast.error("Failed to load projects data")
+    }
+  }
+
+
+  useEffect(() => {
+    fetchTasks();
+    fetchProjects();
+    getHoursData();
+    getProjectsData();
+  }, [])
+
 
 
   return (
@@ -295,6 +332,66 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add after the existing bar chart Card */}
+<div className="container px-4 md:px-6 mt-6">
+  <Card>
+    <CardContent className="pt-6">
+      <h2 className="text-xl font-semibold mb-4">Time Distribution by Project</h2>
+      <div className="h-[400px] w-full">
+        <ResponsiveContainer width="100%" height={400}>
+          <PieChart>
+            <Pie
+              data={projectsData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={150}
+              label={({
+                cx,
+                cy,
+                midAngle,
+                innerRadius,
+                outerRadius,
+                value,
+                name
+              }) => {
+                const RADIAN = Math.PI / 180
+                const radius = innerRadius + (outerRadius - innerRadius) * 0.5
+                const x = cx + radius * Math.cos(-midAngle * RADIAN)
+                const y = cy + radius * Math.sin(-midAngle * RADIAN)
+
+                return (
+                  <text
+                    x={x}
+                    y={y}
+                    fill="currentColor"
+                    textAnchor={x > cx ? 'start' : 'end'}
+                    dominantBaseline="central"
+                  >
+                    {`${name} (${value.toFixed(0)}m)`}
+                  </text>
+                )
+              }}
+            >
+              {projectsData.map((entry, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={`hsl(${index * (360 / projectsData.length)}, 70%, 50%)`}
+                />
+              ))}
+            </Pie>
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+    </CardContent>
+  </Card>
+</div>
+
+
+
 
       <h1 style={{
         margin: "50px"

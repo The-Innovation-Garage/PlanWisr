@@ -183,7 +183,7 @@ export function Navbar() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard" className="flex items-center gap-2 w-full">
-                      <User className="w-4 h-4" /> Profile
+                      <User className="w-4 h-4" /> Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
@@ -222,44 +222,7 @@ export function Navbar() {
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </Button>
 
-          {/* Mobile theme toggle & user avatar */}
-          <div className="flex md:hidden items-center gap-2 ml-2">
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full" aria-label="Toggle theme">
-              {mounted && theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </Button>
-
-            {isLogin ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full" aria-label="User menu" title={fullName}>
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback>{fullName ? fullName.charAt(0) : "U"}</AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="flex items-center gap-2 w-full">
-                      <User className="w-4 h-4" /> Profile
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/settings" className="flex items-center gap-2 w-full">
-                      <Settings className="w-4 h-4" /> Settings
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="cursor-pointer flex items-center gap-2">
-                    <LogOut className="w-4 h-4" /> Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-                Log in
-              </Link>
-            )}
-          </div>
+       
         </div>
       </div>
 
