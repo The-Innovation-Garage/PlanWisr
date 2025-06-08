@@ -32,6 +32,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Link from "next/link"
+import toast from "react-hot-toast"
 
 export default function ProjectsPage() {
 
@@ -80,8 +81,30 @@ export default function ProjectsPage() {
     // Update project logic here
     }
 
-    const deleteProject = (id) => {
-    // Delete project logic here
+    const deleteProject = async(id) => {
+    console.log("Deleting project with id:", id)
+
+    toast.loading("Deleting project...")
+
+    const req = await fetch(`/api/project/delete-project`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ projectId: id }),
+    })
+
+    const res = await req.json()
+    toast.dismiss()
+
+    if (res.type === "success") {
+      setProjects((prevProjects) => prevProjects.filter((project) => project._id !== id))
+      toast.success("Project deleted successfully")
+    }
+    else {
+      toast.error(res.message || "Failed to delete project")
+    }
     }
 
 
