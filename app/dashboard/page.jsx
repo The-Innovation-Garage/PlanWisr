@@ -372,9 +372,13 @@ export default function DashboardPage() {
 }} className="container px-4 md:px-6 mt-6">
 <div className="grid md:grid-cols-2 gap-6">
   {/* Today's Tasks Card */}
-  <Card>
+  <Card  style={{
+        maxHeight: "500px", // Adjust based on your layout
+        minHeight: "500px", // Minimum height for the card
+
+      }} className="overflow-y-auto overflow-x-hidden ">
       <CardContent className="pt-6">
-      <div className="flex items-center justify-between mb-4">
+      <div className=" flex items-center justify-between mb-4">
       <h2 className="text-xl font-semibold">Today's Tasks</h2>
       <Button
         variant="outline"

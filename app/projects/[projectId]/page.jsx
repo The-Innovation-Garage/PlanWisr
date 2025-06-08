@@ -65,6 +65,9 @@ const priorityColors = {
 }
 
 export default function ProjectDetailPage({ params }) {
+  const [shareLink, setShareLink] = useState("")
+const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
+
   const { projectId } = use(params)
   const user = {
     name: "psycho"
@@ -674,6 +677,35 @@ export default function ProjectDetailPage({ params }) {
     return `${hours}h ${minutes}m`;
   };
 
+
+  const generateShareLink = async () => {
+    try {
+      let link = `https://planwise-two.vercel.app/view/${projectId}`
+      setShareLink(link);
+        setIsLinkDialogOpen(true);
+      // const req = await fetch("/api/project/generate-share-link", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: `Bearer ${localStorage.getItem("token")}`,
+      //   },
+      //   body: JSON.stringify({ projectId }),
+      // });
+  
+      // const res = await req.json();
+      // if (res.type === "success") {
+      //   const link = `${window.location.origin}/share/${res.shareId}`;
+      //   setShareLink(link);
+      //   setIsLinkDialogOpen(true);
+      // } else {
+      //   toast.error(res.message || "Failed to generate link");
+      // }
+    } catch (error) {
+      console.error("Error generating share link:", error);
+      toast.error("Failed to generate link");
+    }
+  };
+
   return (
     <>
       <main className="flex-1 py-8">
@@ -703,6 +735,16 @@ export default function ProjectDetailPage({ params }) {
                   <h1 className="text-3xl font-bold tracking-tight">{projectDetails.title}</h1>
                   <p className="text-muted-foreground">{projectDetails.description}</p>
                 </div>
+                <div className="flex gap-2">
+  
+                <Button
+      variant="outline"
+      onClick={generateShareLink}
+      className="gap-2"
+    >
+      <Users className="h-4 w-4" />
+      Generate Link
+    </Button>
                 <Button
                   variant="outline"
                   onClick={() => router.push("/projects")}
@@ -711,6 +753,7 @@ export default function ProjectDetailPage({ params }) {
                   <ChevronLeft className="h-4 w-4" />
                   Back to Projects
                 </Button>
+                </div>
               </div>
             </div>
 
@@ -1303,6 +1346,40 @@ export default function ProjectDetailPage({ params }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={isLinkDialogOpen} onOpenChange={setIsLinkDialogOpen}>
+  <DialogContent className="sm:max-w-[425px]">
+    <DialogHeader>
+      <DialogTitle>Share Project</DialogTitle>
+      <DialogDescription>
+        Share this link with your client to let them view the project progress.
+      </DialogDescription>
+    </DialogHeader>
+    <div className="grid gap-4 py-4">
+      <div className="flex items-center gap-2">
+        <Input
+          readOnly
+          value={shareLink}
+          className="flex-1"
+        />
+        <Button
+          variant="secondary"
+          onClick={() => {
+            navigator.clipboard.writeText(shareLink);
+            toast.success("Link copied to clipboard!");
+          }}
+        >
+          Copy
+        </Button>
+      </div>
+    </div>
+    <DialogFooter>
+      <Button variant="outline" onClick={() => setIsLinkDialogOpen(false)}>
+        Close
+      </Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
     </>
   )
 }
