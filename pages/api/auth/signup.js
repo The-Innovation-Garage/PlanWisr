@@ -14,6 +14,7 @@ try{
             email: req.body.email,
             name: req.body.name,
             password: hashedPassword,
+            aiLimit: 10
         })
     
         await user.save();

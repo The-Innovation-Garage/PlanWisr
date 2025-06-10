@@ -32,7 +32,15 @@ const TaskSchema = new Schema({
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  rank: {
+    type: Number,
+    default: 0
+},
+lastPrioritized: {
+    type: Date,
+    default: null
+},
 }, {
   timestamps: true
 });

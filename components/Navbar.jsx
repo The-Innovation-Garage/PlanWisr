@@ -27,7 +27,7 @@ export function Navbar() {
 
   // User state from store
   const { isLogin, fullName, lastName } = useUserStore()
-  const { SetIsLogin, SetFullName, SetUsername, SetEmail, SetUserId } = useUserStore()
+  const { SetIsLogin, aiLimit, SetAiLimit, SetFullName, SetUsername, SetEmail, SetUserId } = useUserStore()
 
   // Scroll effect for navbar background
   useEffect(() => {
@@ -55,12 +55,16 @@ export function Navbar() {
         body: JSON.stringify({ token }),
       })
       const data = await res.json()
+      console.log("Token verification response:", data)
 
       if (data.type === "success") {
         SetIsLogin(true)
         SetFullName(data.user.name)
         SetUserId(data.user._id)
         SetEmail(data.user.email)
+        let limit = data.user.aiLimit || 0
+        console.log(limit, data.user.aiLimit)
+        SetAiLimit(limit) // Default AI limit if not set
       } else {
         SetIsLogin(false)
       }
@@ -112,9 +116,8 @@ export function Navbar() {
   return (
     <header
       aria-label="Primary Navigation"
-      className={`sticky top-0 z-50 w-full backdrop-blur-lg transition-all duration-300 ${
-        isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"
-      }`}
+      className={`sticky top-0 z-50 w-full backdrop-blur-lg transition-all duration-300 ${isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"
+        }`}
     >
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
@@ -175,9 +178,20 @@ export function Navbar() {
                     <Avatar className="h-10 w-10">
                       <AvatarFallback>{fullName ? fullName.charAt(0) : "U"}</AvatarFallback>
                     </Avatar>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col space-y-1">
                       <p className="font-medium">{fullName}</p>
-                      {/* Could add email or role here */}
+                      <div className="flex flex-col space-y-1">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">AI Credits</span>
+                          <span className="text-muted-foreground">{aiLimit}/10</span>
+                        </div>
+                        <div className="h-1 w-full bg-secondary rounded-full">
+                          <div
+                            className="h-full bg-primary rounded-full transition-all duration-300"
+                            style={{ width: `${(aiLimit / 10) * 100}%` }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <DropdownMenuSeparator />
@@ -222,7 +236,7 @@ export function Navbar() {
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </Button>
 
-       
+
         </div>
       </div>
 

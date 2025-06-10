@@ -12,7 +12,7 @@ const handler = async (req, res) => {
         console.log("Token:", token);
        const decoded = verifyToken(token, process.env.NEXT_PUBLIC_JWT_TOKEN);
        const userId = decoded.userId;
-       const tasks = await Task.find({ project: projectId, createdBy: userId });
+       const tasks = await Task.find({ project: projectId, createdBy: userId })
         return res.status(200).json({ type: "success", tasks: tasks });
     }
     catch (error) {

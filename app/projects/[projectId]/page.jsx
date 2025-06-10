@@ -365,26 +365,28 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
 
   const handleDragEnd = async (result) => {
     if (!result.destination) return
-
+  
     const { source, destination } = result
-
+  
     // If dropped in a different column
     if (source.droppableId !== destination.droppableId) {
       const updatedTasks = [...tasks]
       const taskIndex = updatedTasks.findIndex(task => task._id === result.draggableId)
-      console.log(updatedTasks, taskIndex, result.draggableId)
-
-
-
+  
       if (taskIndex !== -1) {
         // Update the task status
         updatedTasks[taskIndex] = {
           ...updatedTasks[taskIndex],
           status: destination.droppableId
         }
-
+  
         setTasks(updatedTasks)
         saveTasksToProject(updatedTasks)
+  
+        // Update completion counts based on the new status
+        const newCompletedCount = updatedTasks.filter(task => task.status === "done").length
+        setCompletedTasks(newCompletedCount)
+        
         const task = updatedTasks[taskIndex];
         const req = await fetch("/api/task/update-task-status", {
           method: "POST",
@@ -399,28 +401,12 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
           }),
         })
         const res = await req.json();
-        if (res.type == "success") {
+        if (res.type === "success") {
           toast.success(res.message);
-
-        }
-        else {
+        } else {
           toast.error(res.message)
         }
-
-        // Update stats if moved to/from done
-        if (destination.droppableId === "done") {
-          setCompletedTasks(prev => prev + 1)
-        } else if (source.droppableId === "done") {
-          setCompletedTasks(prev => prev - 1)
-        }
       }
-
-
-    }
-    // If reordered within the same column
-    else if (source.index !== destination.index) {
-      // For now, we're not implementing reordering within columns
-      // This would require adding a position/order field to tasks
     }
   }
 
@@ -820,12 +806,13 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
                 <CardContent>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-lg font-medium">{project.progress || 0}%</span>
+                      <span className="text-lg font-medium">{(completedTasks/totalTasks*100).toFixed(1) || 0}%</span>
                       <span className="text-muted-foreground text-sm">
-                        {completedTasks} of {totalTasks} tasks completed
+                        {completedTasks} of {totalTasks} tasks done
                       </span>
                     </div>
-                    <Progress value={project.progress || 0} className="h-2" />
+                    <Progress value={completedTasks/totalTasks*100}
+                     className="h-2" />
                     <div className="flex items-center justify-between mt-2 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />

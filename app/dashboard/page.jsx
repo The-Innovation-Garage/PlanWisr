@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { toast } from "sonner"
+import toast from "react-hot-toast"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
 import { format } from "date-fns"
 
@@ -25,6 +25,7 @@ import { PieChart, Pie, Cell, Legend } from 'recharts'
 
 import { Badge } from "@/components/ui/badge"
 import { Edit, Sparkles } from "lucide-react"
+import { useUserStore } from "@/store/store"
 
 
 export default function DashboardPage() {
@@ -44,6 +45,9 @@ export default function DashboardPage() {
 
   // State for today's tasks
   const [todayTasks, setTodayTasks] = useState([])
+
+
+  const {SetAiLimit} = useUserStore();
 
 
   const router = useRouter()
@@ -342,6 +346,37 @@ export default function DashboardPage() {
   }, [])
 
 
+  const taskPrioritize = async () => {
+
+    try {
+      toast.loading("Prioritizing tasks with AI...")
+      const req = await fetch("/api/ai/prioritize", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ tasks: todayTasks }),
+      })
+
+      const res = await req.json()
+      toast.dismiss()
+      if (res.type === "success") {
+        toast.success("Tasks prioritized successfully")
+        setTodayTasks(res.tasks)
+        SetAiLimit(res.remainingLimit)
+        console.log("Tasks prioritized successfully:", res.tasks)
+        console.log("Remaining AI Limit:", res.remainingLimit)
+      } else {
+        toast.error(res.message || "Failed to prioritize tasks")
+      }
+    } catch (error) {
+      console.error("Error prioritizing tasks:", error)
+      toast.error("Failed to prioritize tasks")
+    }
+  }
+
+
 
   return (
     <main className="flex-1 py-8">
@@ -381,6 +416,7 @@ export default function DashboardPage() {
       <div className=" flex items-center justify-between mb-4">
       <h2 className="text-xl font-semibold">Today's Tasks</h2>
       <Button
+      onClick={taskPrioritize}
         variant="outline"
         size="sm"
         className="flex items-center gap-2"

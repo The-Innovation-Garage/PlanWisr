@@ -6,6 +6,7 @@ const userSchema = new Schema({
   email: { type: String, unique:true },
   password: { type: String },
   isAdmin: { type: Boolean, default: false },
+  aiLimit: { type: Number, default: 10 }, // Default AI limit
 }, { timestamps: true });
 
 
