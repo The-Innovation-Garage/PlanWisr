@@ -1,6 +1,6 @@
 // pages/api/webhook.js
-import connectDB from "../../../middlewares/connectDB";
-import User from "../../../models/User"
+import connectDB from "../../middlewares/connectDB";
+import User from "../../models/User"
 
 const handler = async (req, res) => {
     if (req.method !== 'POST') {
