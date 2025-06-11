@@ -14,7 +14,7 @@ const handler = async (req, res) => {
       const email = event.customer?.email;
       const productId = event.product?.id;
       const orderId = event.order?.id;
-  
+      console.log("📦 Webhook Event:", event);
       console.log("📩 Event received:", eventType);
         console.log("📧 Customer Email:", email)
         console.log("🛒 Product ID:", productId)
