@@ -8,18 +8,13 @@ const handler = async (req, res) => {
     }
   
     try {
-      const event = req.body;
-      const eventType = event.type || "";
+        const eventType = req.headers['x-pocketsflow-event']; // ✅ this is where the event type lives
+        const payload = req.body;
   
-      const email = event.customer?.email;
-      const productId = event.product?.id;
-      const orderId = event.order?.id;
-      console.log("📦 Webhook Event:", event);
+      console.log("📦 Webhook Event:", payload);
       console.log("📩 Event received:", eventType);
-        console.log("📧 Customer Email:", email)
-        console.log("🛒 Product ID:", productId)
-        console.log("📦 Order ID:", orderId);
-  
+     
+    
       switch (eventType) {
         case 'order.completed':
           console.log("✅ New Order Completed:", email);
