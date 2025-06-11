@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Crown } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
@@ -26,7 +27,7 @@ export function Navbar() {
   const router = useRouter()
 
   // User state from store
-  const { isLogin, fullName, lastName } = useUserStore()
+  const { isLogin, fullName, lastName, IsPro } = useUserStore()
   const { SetIsLogin, aiLimit, SetAiLimit, SetFullName, SetUsername, SetEmail, SetUserId } = useUserStore()
 
   // Scroll effect for navbar background
@@ -166,17 +167,32 @@ export function Navbar() {
             {isLogin ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full" aria-label="User menu" title={fullName}>
-                    <Avatar className="h-8 w-8">
-                      {/* Placeholder image can be user's avatar url if available */}
-                      <AvatarFallback>{fullName ? fullName.charAt(0) : "U"}</AvatarFallback>
-                    </Avatar>
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                    aria-label="User menu"
+                    title={fullName}
+                  >
+                    <div className="relative h-8 w-8">
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback>{fullName ? fullName.charAt(0) : "U"}</AvatarFallback>
+                      </Avatar>
+
+                      {IsPro && (
+                        <Crown
+                          className="absolute -top-1 -right-1 h-4 w-4 text-yellow-500 drop-shadow-md"
+                          strokeWidth={2}
+                          fill="currentColor"
+                        />
+                      )}
+                    </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex items-center gap-2 p-3">
                     <Avatar className="h-10 w-10">
                       <AvatarFallback>{fullName ? fullName.charAt(0) : "U"}</AvatarFallback>
+
                     </Avatar>
                     <div className="flex flex-col space-y-1">
                       <p className="font-medium">{fullName}</p>
