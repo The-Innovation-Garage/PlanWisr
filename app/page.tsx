@@ -60,95 +60,87 @@ export default function LandingPage() {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0 },
   }
-  
+
   const features = [
-  {
-    icon: <FolderKanban className="text-primary w-6 h-6" />,
-    title: "Project Management",
-    description: "Create and organize unlimited projects, assign tasks, and define milestones in a clean visual layout."
-  },
-  {
-    icon: <CheckCircle className="text-primary w-6 h-6" />,
-    title: "Smart Task Tracking",
-    description: "Prioritize tasks, set due dates, and track status with AI-generated suggestions and auto-updates."
-  },
-  {
-    icon: <Timer className="text-primary w-6 h-6" />,
-    title: "Time Tracking",
-    description: "Automatically track how much time you spend on each task to improve productivity and focus."
-  },
-  {
-    icon: <CalendarClock className="text-primary w-6 h-6" />,
-    title: "AI-Powered Scheduling",
-    description: "Our AI recommends optimal time slots for your tasks based on urgency, deadlines, and past habits."
-  },
-  {
-    icon: <BellRing className="text-primary w-6 h-6" />,
-    title: "Sync & Smart Reminders",
-    description: "Stay on track with real-time sync across devices and intelligent reminders before important tasks."
-  },
-  {
-    icon: <BarChart2 className="text-primary w-6 h-6" />,
-    title: "Progress Insights",
-    description: "Gain visual insights into your time usage, task completion, and productivity trends over time."
-  },
-  {
-    icon: <Users className="text-primary w-6 h-6" />,
-    title: "Team Collaboration (Coming Soon)",
-    description: "Invite team members, assign roles, and collaborate on projects with seamless updates and comments."
-  },
-  {
-    icon: <Smartphone className="text-primary w-6 h-6" />,
-    title: "Mobile App (Upcoming)",
-    description: "Take Planwise on the go with our sleek mobile app — manage tasks from anywhere, anytime."
-  }
+    {
+      icon: <FolderKanban className="text-primary w-6 h-6" />,
+      title: "Project Management",
+      description: "Create and organize unlimited projects, assign tasks, and define milestones in a clean visual layout."
+    },
+    {
+      icon: <CheckCircle className="text-primary w-6 h-6" />,
+      title: "Smart Task Tracking",
+      description: "Prioritize tasks, set due dates, and track status with AI-generated suggestions and auto-updates."
+    },
+    {
+      icon: <Timer className="text-primary w-6 h-6" />,
+      title: "Time Tracking",
+      description: "Automatically track how much time you spend on each task to improve productivity and focus."
+    },
+    {
+      icon: <CalendarClock className="text-primary w-6 h-6" />,
+      title: "AI-Powered Scheduling",
+      description: "Our AI recommends optimal time slots for your tasks based on urgency, deadlines, and past habits."
+    },
+    {
+      icon: <BellRing className="text-primary w-6 h-6" />,
+      title: "Sync & Smart Reminders",
+      description: "Stay on track with real-time sync across devices and intelligent reminders before important tasks."
+    },
+    {
+      icon: <BarChart2 className="text-primary w-6 h-6" />,
+      title: "Progress Insights",
+      description: "Gain visual insights into your time usage, task completion, and productivity trends over time."
+    },
+    {
+      icon: <Users className="text-primary w-6 h-6" />,
+      title: "Team Collaboration (Coming Soon)",
+      description: "Invite team members, assign roles, and collaborate on projects with seamless updates and comments."
+    },
+    {
+      icon: <Smartphone className="text-primary w-6 h-6" />,
+      title: "Mobile App (Upcoming)",
+      description: "Take Planwise on the go with our sleek mobile app — manage tasks from anywhere, anytime."
+    }
   ];
 
   const getPlans = () => {
-  const common = [
-    {
-      name: "Starter",
-      price: 0,
-      description: "Perfect for small teams and startups.",
-      features: ["Up to 5 team members", "Basic analytics", "5GB storage", "Email support"],
-      cta: "Sign up now",
-    },
-    {
-      name: "Professional",
-      price: 15,
-      description: "Ideal for growing businesses.",
-      features: [
-        "Up to 20 team members",
-        "Advanced analytics",
-        "25GB storage",
-        "Priority email support",
-        "API access",
-      ],
-      cta: "Start Free Trial",
-      popular: true,
-    },
-    {
-      name: "Enterprise",
-      price: 30,
-      description: "For large organizations with complex needs.",
-      features: [
-        "Unlimited team members",
-        "Custom analytics",
-        "Unlimited storage",
-        "24/7 phone & email support",
-        "Advanced API access",
-        "Custom integrations",
-      ],
-      cta: "Contact Sales",
-    },
-  ];
-  return common;
-};
+    const plans = [
+      {
+        name: "Free Plan",
+        price: 0,
+        description: "Perfect for individuals and freelancers starting out.",
+        features: [
+          "Project management (up to 5 projects)",
+          "Time tracking for each project",
+          "Basic analytics for overall performance",
+          "50 AI credits per month"
+        ],
+        cta: "Get Started for Free",
+      },
+      {
+        name: "Paid Plan",
+        price: 15,
+        description: "Ideal for growing teams and businesses.",
+        features: [
+          "All Free Plan features",
+          "Unlimited project creation",
+          "Smart AI task prioritization",
+          "Advanced analytics for deeper insights",
+          "500 AI credits per month",
+        ],
+        cta: "Start Free Trial",
+        popular: true,
+      },
+    ];
+    return plans;
+  };
+
 
 
   return (
     <div className="flex min-h-[100dvh] flex-col">
-     
+
       <main className="flex-1">
         {/* Hero Section */}
         <section className="pb-10 w-full bg-white dark:bg-black relative overflow-hidden">
@@ -169,15 +161,15 @@ export default function LandingPage() {
                 className="mt-5 inline-block mb-5 rounded-full bg-white text-black px-5 py-1.5 font-semibold tracking-wide text-sm shadow-md"
                 variant="secondary"
               >
-                 🧠 Powered by AI
+                🧠 Powered by AI
               </Badge>
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text mb-8">
-              One Dashboard to Manage Everything You Build
+                One Dashboard to Manage Everything You Build
               </h1>
 
               <p className="text-lg md:text-l max-w-3xl mx-auto text-gray-500 dark:text-gray-300 mb-12 leading-relaxed">
-              Whether you're a freelancer, indie hacker, or entrepreneur — Effinova brings your projects, tasks, time, and finances into one clean, AI-powered workspace. Build smarter. Stay focused. Grow faster.
+                Whether you're a freelancer, indie hacker, or entrepreneur — Effinova brings your projects, tasks, time, and finances into one clean, AI-powered workspace. Build smarter. Stay focused. Grow faster.
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center gap-6 max-w-md mx-auto">
@@ -191,7 +183,7 @@ export default function LandingPage() {
                     <ArrowRight />
                   </span>
                 </Button>
-                
+
                 {/* <Button
                   size="lg"
                   variant="outline"
@@ -204,9 +196,9 @@ export default function LandingPage() {
 
               <div className="flex flex-wrap justify-center gap-8 mt-8 text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">
                 {[
-                  "No credit card",
-                  "14-day trial",
-                  "Cancel anytime"
+                  "Built for productivity",
+                  "Designed to help you scale",
+                  "Your workflow, finally unified"
                 ].map((text, i) => (
                   <div key={i} className="flex items-center gap-2">
                     <Check className="w-5 h-5 text-indigo-600 animate-pulse-slow" />
@@ -216,14 +208,14 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-          
-          
+
+
           </div>
         </section>
 
 
         {/* Logos Section */}
-        <section className="w-full py-12 border-y bg-muted/30">
+        {/* <section className="w-full py-12 border-y bg-muted/30">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <p className="text-sm font-medium text-muted-foreground">Trusted by innovative companies worldwide</p>
@@ -241,7 +233,7 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Features Section */}
         <section id="features" className="w-full py-20 md:py-32 bg-muted/30 relative overflow-hidden">
@@ -271,33 +263,33 @@ export default function LandingPage() {
             </motion.div>
 
             <motion.div
-          variants={container}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true }}
-          className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2"
-        >
-          {features.map((feature, i) => (
-            <motion.div
-              key={i}
-              variants={item}
-              whileHover={{ scale: 1.02 }}
-              transition={{ duration: 0.3 }}
+              variants={container}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true }}
+              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2"
             >
-              <Card className="h-full overflow-hidden border-border/40 bg-white/60 dark:bg-background/80 backdrop-blur-md transition-all hover:shadow-xl">
-                <CardContent className="p-6 flex flex-row gap-4 items-start">
-                  <div className="min-w-[40px] mt-1">{feature.icon}</div>
-                  <div>
-                    <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">{feature.description}</p>
-                  </div>
-                </CardContent>
-              </Card>
+              {features.map((feature, i) => (
+                <motion.div
+                  key={i}
+                  variants={item}
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <Card className="h-full overflow-hidden border-border/40 bg-white/60 dark:bg-background/80 backdrop-blur-md transition-all hover:shadow-xl">
+                    <CardContent className="p-6 flex flex-row gap-4 items-start">
+                      <div className="min-w-[40px] mt-1">{feature.icon}</div>
+                      <div>
+                        <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">
+                          {feature.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">{feature.description}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
             </motion.div>
-          ))}
-        </motion.div>
 
           </div>
         </section>
@@ -325,10 +317,11 @@ export default function LandingPage() {
                 </Badge>
               </motion.div>
               <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white drop-shadow-lg">
-                Simple Process, Powerful Results
+              From Idea to Invoice — All in One Place
               </h2>
               <p className="max-w-[700px] text-muted-foreground md:text-lg">
-                Start in just minutes and discover the game-changing impact our platform can have on your business!
+                Effinova simplifies every step of your workflow — from planning tasks to getting paid. Just focus on building.
+
               </p>
             </motion.div>
 
@@ -338,35 +331,35 @@ export default function LandingPage() {
               {[
                 {
                   step: "01",
-                  title: "Create Account",
-                  description: "Sign up in seconds with just your email. No credit card required to get started.",
+                  title: "Create Your Workspace",
+                  description: "Sign up and instantly create your workspace — no credit card required. It's free to get started.",
                 },
                 {
                   step: "02",
-                  title: "Configure Workspace",
-                  description: "Customize your workspace to match your team's unique workflow and requirements.",
+                  title: "Manage Projects & Tasks",
+                  description: "Create projects, add tasks with deadlines, and organize your workday using the built-in calendar.",
                 },
                 {
                   step: "03",
-                  title: "Boost Productivity",
-                  description: "Start using our powerful features to streamline processes and achieve your goals.",
+                  title: "Track Time & Send Invoices",
+                  description: "Log your work hours, view progress insights, and generate branded invoices — all from one dashboard.",
                 },
               ].map((step, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="relative z-10 flex flex-col items-center text-center space-y-4"
-                >
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground text-xl font-bold shadow-lg">
-                    {step.step}
-                  </div>
-                  <h3 className="text-xl font-bold">{step.title}</h3>
-                  <p className="text-muted-foreground">{step.description}</p>
-                </motion.div>
-              ))}
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    className="relative z-10 flex flex-col items-center text-center space-y-4"
+                  >
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground text-xl font-bold shadow-lg">
+                      {step.step}
+                    </div>
+                    <h3 className="text-xl font-bold">{step.title}</h3>
+                    <p className="text-muted-foreground">{step.description}</p>
+                  </motion.div>
+                ))}
             </div>
           </div>
         </section>
@@ -514,56 +507,54 @@ export default function LandingPage() {
 
               {/* Cards */}
               <TabsContent value="monthly" key="monthly">
-                  <div className="grid gap-8 lg:grid-cols-3">
-                    {getPlans().map((plan, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, scale: 0.95, y: 30 }}
-                        whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.5, delay: i * 0.15 }}
-                      >
-                        <Card
-                          className={`relative h-full overflow-hidden border border-border/40 rounded-2xl dark:bg-black/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] ${
-                            plan.popular ? "ring-2 ring-primary" : ""
+                <div className="grid gap-8 lg:grid-cols-2">
+                  {getPlans().map((plan, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: i * 0.15 }}
+                    >
+                      <Card
+                        className={`relative h-full overflow-hidden border border-border/40 rounded-2xl dark:bg-black/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] ${plan.popular ? "ring-2 ring-primary" : ""
                           }`}
-                        >
-                          {plan.popular && (
-                            <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg">
-                              Most Popular
-                            </div>
-                          )}
-                          <CardContent className="p-6 flex flex-col h-full">
-                            <h3 className="text-2xl font-bold text-primary">{plan.name}</h3>
-                            <div className="flex items-baseline mt-4">
-                              <span className="text-4xl font-bold">${plan.price}</span>
-                              <span className="text-muted-foreground ml-1">/month</span>
-                            </div>
-                            <p className="text-muted-foreground mt-2">{plan.description}</p>
-                            <ul className="space-y-3 my-6 flex-grow text-sm">
-                              {plan.features.map((feature, j) => (
-                                <li key={j} className="flex items-center">
-                                  <Check className="mr-2 size-4 text-primary" />
-                                  <span>{feature}</span>
-                                </li>
-                              ))}
-                            </ul>
-                            <Button
-                              className={`w-full mt-auto rounded-full transition-all duration-200 ${
-                                plan.popular
-                                  ? "bg-primary hover:scale-105"
-                                  : "bg-muted hover:bg-muted/80 hover:scale-105"
+                      >
+                        {plan.popular && (
+                          <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg">
+                            Most Popular
+                          </div>
+                        )}
+                        <CardContent className="p-6 flex flex-col h-full">
+                          <h3 className="text-2xl font-bold text-primary">{plan.name}</h3>
+                          <div className="flex items-baseline mt-4">
+                            <span className="text-4xl font-bold">${plan.price}</span>
+                            <span className="text-muted-foreground ml-1">/month</span>
+                          </div>
+                          <p className="text-muted-foreground mt-2">{plan.description}</p>
+                          <ul className="space-y-3 my-6 flex-grow text-sm">
+                            {plan.features.map((feature, j) => (
+                              <li key={j} className="flex items-center">
+                                <Check className="mr-2 size-4 text-primary" />
+                                <span>{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <Button
+                            className={`w-full mt-auto rounded-full transition-all duration-200 ${plan.popular
+                              ? "bg-primary hover:scale-105"
+                              : "bg-muted hover:bg-muted/80 hover:scale-105"
                               }`}
-                              variant={plan.popular ? "default" : "outline"}
-                            >
-                              {plan.cta}
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
-                  </div>
-                </TabsContent>
+                            variant={plan.popular ? "default" : "outline"}
+                          >
+                            {plan.cta}
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </div>
+              </TabsContent>
             </Tabs>
           </div>
         </section>
@@ -600,35 +591,30 @@ export default function LandingPage() {
               <Accordion type="single" collapsible className="w-full">
                 {[
                   {
-                    question: "How does the 14-day free trial work?",
+                    question: "Who is Effinova for?",
                     answer:
-                      "Our 14-day free trial gives you full access to all features of your selected plan. No credit card is required to sign up, and you can cancel at any time during the trial period with no obligation.",
+                      "Effinova is designed for freelancers, indie hackers, entrepreneurs, and anyone who manages multiple projects — whether you're working solo or in a small team.",
                   },
                   {
-                    question: "Can I change plans later?",
+                    question: "Is Effinova free to use?",
                     answer:
-                      "Yes, you can upgrade or downgrade your plan at any time. If you upgrade, the new pricing will be prorated for the remainder of your billing cycle. If you downgrade, the new pricing will take effect at the start of your next billing cycle.",
+                      "Yes! You can get started with Effinova for free. We also offer premium features for advanced users like AI-based task scheduling, branded invoices, and more.",
                   },
                   {
-                    question: "Is there a limit to how many users I can add?",
+                    question: "Can I track time and view progress?",
                     answer:
-                      "The number of users depends on your plan. The Starter plan allows up to 5 team members, the Professional plan allows up to 20, and the Enterprise plan has no limit on team members.",
+                      "Absolutely. Effinova includes built-in time tracking and visual insights so you can monitor your productivity and understand where your time goes.",
                   },
                   {
-                    question: "Do you offer discounts for nonprofits or educational institutions?",
+                    question: "Do I need to use multiple tools with Effinova?",
                     answer:
-                      "Yes, we offer special pricing for nonprofits, educational institutions, and open-source projects. Please contact our sales team for more information.",
+                      "Nope. Effinova is built to replace your calendar, task manager, invoice generator, and time tracker — all in one clean, unified workspace.",
                   },
                   {
-                    question: "How secure is my data?",
+                    question: "Will Effinova get more features in the future?",
                     answer:
-                      "We take security very seriously. All data is encrypted both in transit and at rest. We use industry-standard security practices and regularly undergo security audits. Our platform is compliant with GDPR, CCPA, and other relevant regulations.",
-                  },
-                  {
-                    question: "What kind of support do you offer?",
-                    answer:
-                      "Support varies by plan. All plans include email support, with the Professional plan offering priority email support. The Enterprise plan includes 24/7 phone and email support. We also have an extensive knowledge base and community forum available to all users.",
-                  },
+                      "Yes! We're constantly improving Effinova based on user feedback. Expect powerful updates like mobile support, integrations, AI enhancements, and more.",
+                  }
                 ].map((faq, i) => (
                   <motion.div
                     key={i}
@@ -663,7 +649,7 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground relative overflow-hidden">
+        {/* <section className="w-full py-20 md:py-32 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground relative overflow-hidden">
           <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
           <div className="absolute -top-24 -left-24 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
@@ -701,21 +687,21 @@ export default function LandingPage() {
               </p>
             </motion.div>
           </div>
-        </section>
+        </section> */}
       </main>
 
       <footer className="w-full border-t bg-background/95 backdrop-blur-sm">
         <div className="container flex flex-col gap-8 px-4 py-10 md:px-6 lg:py-16">
-          <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center sm:items-center gap-8">
             <div className="space-y-4">
               <div className="flex items-center gap-2 font-bold">
                 <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
-                  S
+                  E
                 </div>
-                <span>SaaSify</span>
+                <span>Effinova</span>
               </div>
               <p className="text-sm text-muted-foreground">
-                Streamline your workflow with our all-in-one SaaS platform. Boost productivity and scale your business.
+                Simplify how you work. Effinova brings your projects, time, and productivity under one roof.
               </p>
               <div className="flex gap-4">
                 <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
@@ -773,87 +759,13 @@ export default function LandingPage() {
                 </Link>
               </div>
             </div>
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold">Product</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Features
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Integrations
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                    API
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold">Resources</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Documentation
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Guides
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Support
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-4">
-              <h4 className="text-sm font-bold">Company</h4>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                    Terms of Service
-                  </Link>
-                </li>
-              </ul>
-            </div>
+
           </div>
           <div className="flex flex-col gap-4 sm:flex-row justify-between items-center border-t border-border/40 pt-8">
             <p className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} SaaSify. All rights reserved.
+              &copy; {new Date().getFullYear()} Effinova. All rights reserved.
             </p>
-            <div className="flex gap-4">
+            {/* <div className="flex gap-4">
               <Link href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
                 Privacy Policy
               </Link>
@@ -863,7 +775,7 @@ export default function LandingPage() {
               <Link href="#" className="text-xs text-muted-foreground hover:text-foreground transition-colors">
                 Cookie Policy
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
       </footer>
