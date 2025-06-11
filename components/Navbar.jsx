@@ -123,10 +123,10 @@ export function Navbar() {
         {/* Logo */}
         <div className="flex items-center gap-2 font-bold text-primary">
           <Link href="/" className="flex items-center gap-2" aria-label="Go to homepage">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black select-none">
-              P
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-black bg-gradient-to-r from-indigo-600 to-purple-600 text-black select-none">
+              E
             </div>
-            <span className="text-xl">Planwise</span>
+            <span className="text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">Effinova</span>
           </Link>
         </div>
 

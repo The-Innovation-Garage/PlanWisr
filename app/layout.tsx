@@ -3,6 +3,7 @@ import "@/styles/globals.css"
 import { Inter } from "next/font/google"
 import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/theme-provider"
+import FeedbackWidget from "@/components/FeedbackWidget" // Fix the import path
 
 import './globals.css'
 import { Navbar } from "@/components/Navbar"
@@ -25,6 +26,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <Toaster/>
           <Navbar/>
+          {/* <FeedbackWidget/> */}
           {children}
         </ThemeProvider>
       </body>

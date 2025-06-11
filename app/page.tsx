@@ -151,7 +151,7 @@ export default function LandingPage() {
      
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="w-full py-24 md:py-36 lg:py-44 bg-white dark:bg-black relative overflow-hidden">
+        <section className="pb-10 w-full bg-white dark:bg-black relative overflow-hidden">
           <div className="container mx-auto px-6 md:px-10 relative z-10">
             {/* Background Grid overlay */}
             <div
@@ -166,19 +166,18 @@ export default function LandingPage() {
               className="max-w-4xl mx-auto text-center"
             >
               <Badge
-                className="inline-block mb-5 rounded-full bg-secondary/20 text-black px-5 py-1.5 font-semibold tracking-wide text-sm shadow-md"
+                className="mt-5 inline-block mb-5 rounded-full bg-white text-black px-5 py-1.5 font-semibold tracking-wide text-sm shadow-md"
                 variant="secondary"
               >
-                Launching Soon
+                 🧠 Powered by AI
               </Badge>
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text mb-8">
-                Elevate Your Workflow with SaaSify
+              One Dashboard to Manage Everything You Build
               </h1>
 
               <p className="text-lg md:text-l max-w-3xl mx-auto text-gray-500 dark:text-gray-300 mb-12 leading-relaxed">
-                The all-in-one platform that helps teams collaborate, automate, and deliver exceptional results.
-                Streamline your processes and focus on what matters most.
+              Whether you're a freelancer, indie hacker, or entrepreneur — Effinova brings your projects, tasks, time, and finances into one clean, AI-powered workspace. Build smarter. Stay focused. Grow faster.
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center gap-6 max-w-md mx-auto">
@@ -187,20 +186,20 @@ export default function LandingPage() {
                   className="group rounded-full h-14 px-10 text-base font-semibold bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800
                     shadow-lg hover:shadow-xl hover:scale-[1.05] transform transition duration-400 ease-out text-white flex items-center justify-center"
                 >
-                  Start Free Trial
+                  Get Started
                   <span className="ml-3 w-5 h-5 transition-transform duration-400 ease-out group-hover:translate-x-2 will-change-transform">
                     <ArrowRight />
                   </span>
                 </Button>
                 
-                <Button
+                {/* <Button
                   size="lg"
                   variant="outline"
                   className="rounded-full h-14 px-10 text-base font-semibold border-indigo-600 text-indigo-600
                     hover:bg-indigo-600 hover:text-white shadow-md hover:shadow-lg hover:scale-[1.05] transform transition duration-300 ease-in-out"
                 >
                   Book a Demo
-                </Button>
+                </Button> */}
               </div>
 
               <div className="flex flex-wrap justify-center gap-8 mt-8 text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">
@@ -217,58 +216,8 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="mt-20 relative max-w-6xl mx-auto rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-gradient-to-b from-white to-indigo-50 dark:from-gray-900 dark:to-indigo-900"
-            >
-              <Image
-                src="https://cdn.dribbble.com/userupload/12302729/file/original-fa372845e394ee85bebe0389b9d86871.png?resize=1504x1128&vertical=center"
-                alt="SaaSify dashboard"
-                width={1280}
-                height={720}
-                className="w-full h-auto object-cover"
-                priority
-              />
-              <div className="absolute inset-0 rounded-xl ring-1 ring-inset ring-indigo-200 dark:ring-indigo-700 pointer-events-none"></div>
-              {/* Subtle floating effect */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-10 -right-10 w-[280px] h-[280px] rounded-full bg-gradient-to-br from-indigo-300 to-purple-400 opacity-40 blur-3xl pointer-events-none"
-              />
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -top-10 -left-10 w-[280px] h-[280px] rounded-full bg-gradient-to-br from-purple-300 to-indigo-500 opacity-40 blur-3xl pointer-events-none"
-              />
-            </motion.div>
-
-            {/* Optional: Client logos strip */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="mt-24 flex items-center justify-center flex-wrap gap-12 max-w-5xl mx-auto"
-              aria-label="Trusted by companies"
-            >
-              {[
-                "/logos/google.svg",
-                "/logos/microsoft.svg",
-                "/logos/airbnb.svg",
-                "/logos/slack.svg",
-                "/logos/dropbox.svg"
-              ].map((logo, idx) => (
-                <img
-                  key={idx}
-                  src={logo}
-                  alt="Company logo"
-                  className="h-10 grayscale opacity-70 hover:opacity-100 transition"
-                  loading="lazy"
-                />
-              ))}
-            </motion.div>
+          
+          
           </div>
         </section>
 
@@ -317,7 +266,7 @@ export default function LandingPage() {
                 Smart Tools for Smarter Work
               </h2>
               <p className="max-w-[700px] text-muted-foreground md:text-lg">
-                Planwise combines intelligent automation, sleek UI, and powerful insights to help you stay organized and perform at your peak.
+                Effinova combines intelligent automation, sleek UI, and powerful insights to help you stay organized and perform at your peak.
               </p>
             </motion.div>
 
