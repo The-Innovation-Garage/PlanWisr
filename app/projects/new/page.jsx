@@ -31,8 +31,11 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { cn } from "@/lib/utils"
 import { Switch } from "@/components/ui/switch"
+import { useUserStore } from "@/store/store"
 
 export default function NewProjectPage() {
+  const {SetAiLimit} = useUserStore();
+
   const user = { name: "John Doe" } // Replace with actual user data fetching logic
   const isLoading = false // Replace with actual loading state logic
   const router = useRouter()
@@ -53,11 +56,13 @@ export default function NewProjectPage() {
     if (res.type === "success") {
       toast.dismiss()
       toast.success(res.message)
+      SetAiLimit(res.remainingLimit)
       router.push(`/projects/${projectId}`)
     }
     else {
       toast.dismiss()
       toast.error(res.message || "Failed to create tasks")
+      router.push(`/projects/${projectId}`) // Redirect to project page even if task generation fails
     }
   }
   const addProject = async (project) => {
@@ -79,11 +84,17 @@ export default function NewProjectPage() {
       toast.dismiss()
       toast.success(res.message)
       console.log(res)
-      generateTasks(project.title, project.description, project.dueDate, res.project._id)
+      if (useAITasks) {
+        generateTasks(project.title, project.description, project.dueDate, res.project._id)
+      } else {
+        // Redirect to the project page after successful creation
+        router.push(`/projects/${res.project._id}`)
+      }
     }
     else {
       toast.dismiss()
       toast.error(res.message || "Failed to create project")
+
     }
   }
 
