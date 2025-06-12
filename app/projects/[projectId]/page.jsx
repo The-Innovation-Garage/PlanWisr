@@ -900,9 +900,9 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
                                               <Badge variant="outline" className={`${priorityColors[task.priority]} text-white`}>
                                                 {task.priority}
                                               </Badge>
-                                              <span className="text-xs text-muted-foreground">
+                                              {/* <span className="text-xs text-muted-foreground">
                                                 {task.assignee ? task.assignee : "Unassigned"}
-                                              </span>
+                                              </span> */}
                                             </div>
                                             <div className="flex items-center justify-between mt-1">
                                               <span className="text-xs text-muted-foreground">
