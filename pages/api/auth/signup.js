@@ -2,37 +2,50 @@
 import User from "../../../models/User"
 import connectDB from "../../../middlewares/connectDB";
 import bcrypt from "bcryptjs";
-const handler = async (req, res) => {
-    console.log("DONE")
-    if (req.method == "POST") {
-try{
-            const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-        console.log(req.body)
-        let user = new User({
-            email: req.body.email,
-            name: req.body.name,
-            password: hashedPassword,
-            aiLimit: 10
-        })
-    
-        await user.save();
-        return res.status(200).json({type: "success", message: "Your account has been created successfully." })
+const handler = async (req, res) => {
+  if (req.method !== "POST") {
+    return res.status(405).json({ type: "error", message: "Method not allowed" });
+  }
+
+  try {
+    const { email, name, password } = req.body;
+
+    if (!email || !name || !password) {
+      return res.status(400).json({ type: "error", message: "Missing required fields." });
     }
-        catch(err) {
-            if (err.code === 11000) {
-                return res.status(200).json({type: "error", message: "Email already exists. Please use a different email.", errorCode: "EMAIL_EXISTS" })
-            }
-            return res.status(200).json({type: "error", message: `${err.code}`, errorCode: err.code })
-        }
-   
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = new User({
+      email,
+      name,
+      password: hashedPassword,
+      aiLimit: 10,
+    });
+
+    await user.save();
+
+    return res.status(201).json({ type: "success", message: "Account created successfully." });
+
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({
+        type: "error",
+        message: "Email already exists. Please use a different email.",
+        errorCode: "EMAIL_EXISTS",
+      });
     }
-    
-    else {
-        return res.status(200).json({type: "error", message: "ERROR occured while creating your account. Please try again." })
-    }
-}
+
+    console.error("Signup error:", err);
+    return res.status(500).json({
+      type: "error",
+      message: "Server error occurred.",
+      error: err.message,
+    });
+  }
+};
 
 
 export default connectDB(handler); 
