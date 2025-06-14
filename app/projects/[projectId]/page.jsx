@@ -245,16 +245,7 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
       },
     ],
   });
-  useEffect(() => {
-    // Initialize tasks from project.tasks
-    if (project && project.tasks) {
-      // setTasks(project.tasks);
-
-      // Calculate stats
-      setTotalTasks(project.tasks.length);
-      setCompletedTasks(project.tasks.filter(task => task.status === "done").length);
-    }
-  }, [project]);
+ 
   const [tasks, setTasks] = useState([])
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false)
   const [currentTask, setCurrentTask] = useState(null)
@@ -279,9 +270,13 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
   const [totalTasks, setTotalTasks] = useState(0)
 
   const [projects, setProjects] = useState({});
-
+// Add these state declarations at the top with other states
+const [isLoading, setIsLoading] = useState(true);
+const [loadingProgress, setLoadingProgress] = useState(0);
 
   const getProjectTasks = async () => {
+    setLoadingProgress(66);
+
     const req = await fetch("/api/task/get-project-tasks", {
       method: "POST",
       headers: {
@@ -302,6 +297,8 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
     setTasks(res.tasks || [])
   }
   const getProjectDetails = async () => {
+    setLoadingProgress(33);
+
     const req = await fetch("/api/project/get-project-details", {
       method: "POST",
       headers: {
@@ -316,13 +313,10 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
     setProjectDetails(res.project)
   }
 
-  useEffect(() => {
-    if (!user) {
-      router.push("/login")
-    }
-  }, [user, router])
 
   const getProjectEntries = async () => {
+    setLoadingProgress(100);
+
     const req = await fetch("/api/time/get-project-entries", {
       method: "POST",
       headers: {
@@ -339,10 +333,16 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
   }
 
   useEffect(() => {
-    getProjectDetails();
-    getProjectTasks();
-    getProjectEntries()
-  }, [])
+    const loadData = async () => {
+      setIsLoading(true);
+      await getProjectDetails();
+      await getProjectTasks();
+      await getProjectEntries();
+      setIsLoading(false);
+    };
+    
+    loadData();
+  }, []);
 
   //   useEffect(() => {
   //     if (projects.length > 0) {
@@ -692,6 +692,47 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
     }
   };
 
+  // Add this before the main return statement
+if (isLoading) {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="w-full max-w-md mx-auto p-6">
+        <div className="flex flex-col items-center gap-6">
+          <div className="w-16 h-16 relative animate-spin">
+            <div className="w-full h-full rounded-full border-4 border-primary/10"></div>
+            <div 
+              className="w-full h-full rounded-full border-4 border-t-primary absolute top-0 left-0"
+              style={{ 
+                animation: "spin 1s linear infinite",
+                transformOrigin: "center center" 
+              }}
+            ></div>
+          </div>
+          
+          <div className="w-full space-y-4">
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Loading project data...</span>
+              <span className="text-primary font-medium">{loadingProgress}%</span>
+            </div>
+            <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-primary transition-all duration-300 ease-out"
+                style={{ width: `${loadingProgress}%` }}
+              ></div>
+            </div>
+            <div className="text-center text-sm text-muted-foreground animate-pulse">
+              {loadingProgress < 33 && "Loading project details..."}
+              {loadingProgress >= 33 && loadingProgress < 66 && "Loading tasks..."}
+              {loadingProgress >= 66 && loadingProgress < 100 && "Loading time entries..."}
+              {loadingProgress === 100 && "Almost there..."}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
   return (
     <>
       <main className="flex-1 py-8">
@@ -880,48 +921,51 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
                             >
                               {tasks
                                 .filter(task => task.status === status)
-                                .map((task, index) => (
-                                  <Draggable key={task._id} draggableId={task._id} index={index}>
-                                    {(provided) => (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        className="mb-2"
-                                      >
-                                        {/* Rest of your Card content */}
-                                        <Card className="hover:shadow-md transition-shadow">
-                                          <CardHeader className="p-2">
-                                            <CardTitle className="text-sm font-medium">{task.title}</CardTitle>
-                                            <p className="text-xs text-muted-foreground">{task.description}</p>
-                                          </CardHeader>
-                                          <CardContent className="p-2">
-                                            <div className="flex items-center justify-between">
-                                              <Badge variant="outline" className={`${priorityColors[task.priority]} text-white`}>
-                                                {task.priority}
-                                              </Badge>
-                                              {/* <span className="text-xs text-muted-foreground">
-                                                {task.assignee ? task.assignee : "Unassigned"}
-                                              </span> */}
-                                            </div>
-                                            <div className="flex items-center justify-between mt-1">
-                                              <span className="text-xs text-muted-foreground">
-                                                {task.dueDate ? format(new Date(task.dueDate), "MMM d, yyyy") : "No due date"}
-                                              </span>
-                                              <Button variant="ghost" size="icon" onClick={() => openTaskDialog(task)}>
-                                                <Edit className="h-4 w-4" />
-                                              </Button>
-                                            </div>
-                                          </CardContent>
-                                          <CardFooter className="p-2">
-                                            <Progress value={task.progress || 0} className="h-2" />
-                                          </CardFooter>
+                                .map((task, index) => {
+                                  console.log(`Rendering Draggable: ${task._id}, index: ${index}`);
+                                 return (
+                                  <Draggable key={task._id} draggableId={task._id.toString()} index={index}>
+                                  {(provided) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      className="mb-2"
+                                    >
+                                      {/* Rest of your Card content */}
+                                      <Card className="hover:shadow-md transition-shadow">
+                                        <CardHeader className="p-2">
+                                          <CardTitle className="text-sm font-medium">{task.title}</CardTitle>
+                                          <p className="text-xs text-muted-foreground">{task.description}</p>
+                                        </CardHeader>
+                                        <CardContent className="p-2">
+                                          <div className="flex items-center justify-between">
+                                            <Badge variant="outline" className={`${priorityColors[task.priority]} text-white`}>
+                                              {task.priority}
+                                            </Badge>
+                                            {/* <span className="text-xs text-muted-foreground">
+                                              {task.assignee ? task.assignee : "Unassigned"}
+                                            </span> */}
+                                          </div>
+                                          <div className="flex items-center justify-between mt-1">
+                                            <span className="text-xs text-muted-foreground">
+                                              {task.dueDate ? format(new Date(task.dueDate), "MMM d, yyyy") : "No due date"}
+                                            </span>
+                                            <Button variant="ghost" size="icon" onClick={() => openTaskDialog(task)}>
+                                              <Edit className="h-4 w-4" />
+                                            </Button>
+                                          </div>
+                                        </CardContent>
+                                        <CardFooter className="p-2">
+                                          <Progress value={task.progress || 0} className="h-2" />
+                                        </CardFooter>
 
-                                        </Card>
-                                      </div>
-                                    )}
-                                  </Draggable>
-                                ))}
+                                      </Card>
+                                    </div>
+                                  )}
+                                </Draggable>
+                                 )
+})}
                               {provided.placeholder}
 
                               {tasks.filter(task => task.status === status).length === 0 && (
