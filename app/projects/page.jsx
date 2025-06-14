@@ -43,7 +43,7 @@ import toast from "react-hot-toast"
 
 // Animation variants
 const containerVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
     y: 20
   },
@@ -59,8 +59,8 @@ const containerVariants = {
 }
 
 const itemVariants = {
-  hidden: { 
-    opacity: 0, 
+  hidden: {
+    opacity: 0,
     y: 20,
     scale: 0.95
   },
@@ -88,16 +88,15 @@ const cardHoverVariants = {
 }
 
 const progressVariants = {
-  initial: { width: 0 },
+  initial: { scaleX: 0, originX: 0 },
   animate: (progress) => ({
-    width: `${progress}%`,
+    scaleX: progress / 100,
     transition: {
-      duration: 1.2,
-      ease: "easeInOut",
-      delay: 0.3
+      duration: 0.8,
+      ease: "easeOut"
     }
   })
-}
+};
 
 // Constants
 const PRIORITY_ORDER = { high: 3, medium: 2, low: 1 }
@@ -132,94 +131,95 @@ export default function ProjectsPage() {
 
   // API Functions
   // API Functions
-const fetchProjects = async () => {
-  setIsLoading(true)
-  try {
-    // Check if we're in the browser before accessing localStorage
-    if (typeof window === 'undefined') {
-      setIsLoading(false)
-      return
-    }
-
-    const token = localStorage.getItem("token")
-    if (!token) {
-      toast.error("No authentication token found")
-      router.push("/login")
-      return
-    }
-
-    const response = await fetch("/api/project/get-projects", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    const data = await response.json()
-    if (data.type === "success") {
-      setProjects(data.projects)
-    } else {
-      toast.error(data.message || "Failed to fetch projects")
-    }
-  } catch (error) {
-    console.error("Error fetching projects:", error)
-    toast.error("An error occurred while fetching projects")
-  } finally {
-    setIsLoading(false)
-  }
-}
-
-const deleteProject = async (id) => {
-  const deletePromise = new Promise(async (resolve, reject) => {
+  const fetchProjects = async () => {
+    setIsLoading(true)
     try {
       // Check if we're in the browser before accessing localStorage
       if (typeof window === 'undefined') {
-        reject(new Error("Cannot access localStorage on server"))
+        setIsLoading(false)
         return
       }
 
       const token = localStorage.getItem("token")
       if (!token) {
-        reject(new Error("No authentication token found"))
+        toast.error("No authentication token found")
+        router.push("/login")
         return
       }
 
-      const response = await fetch(`/api/project/delete-project`, {
-        method: "POST",
+      const response = await fetch("/api/project/get-projects", {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ projectId: id }),
       })
 
-      const result = await response.json()
-      
-      if (result.type === "success") {
-        setProjects(prev => prev.filter(project => project._id !== id))
-        resolve("Project deleted successfully")
+      const data = await response.json()
+      if (data.type === "success") {
+        setProjects(data.projects)
+        console.log(data.projects)
       } else {
-        reject(new Error(result.message || "Failed to delete project"))
+        toast.error(data.message || "Failed to fetch projects")
       }
     } catch (error) {
-      reject(error)
+      console.error("Error fetching projects:", error)
+      toast.error("An error occurred while fetching projects")
+    } finally {
+      setIsLoading(false)
     }
-  })
+  }
 
-  toast.promise(deletePromise, {
-    loading: "Deleting project...",
-    success: "Project deleted successfully!",
-    error: "Failed to delete project"
-  })
-}
+  const deleteProject = async (id) => {
+    const deletePromise = new Promise(async (resolve, reject) => {
+      try {
+        // Check if we're in the browser before accessing localStorage
+        if (typeof window === 'undefined') {
+          reject(new Error("Cannot access localStorage on server"))
+          return
+        }
+
+        const token = localStorage.getItem("token")
+        if (!token) {
+          reject(new Error("No authentication token found"))
+          return
+        }
+
+        const response = await fetch(`/api/project/delete-project`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ projectId: id }),
+        })
+
+        const result = await response.json()
+
+        if (result.type === "success") {
+          setProjects(prev => prev.filter(project => project._id !== id))
+          resolve("Project deleted successfully")
+        } else {
+          reject(new Error(result.message || "Failed to delete project"))
+        }
+      } catch (error) {
+        reject(error)
+      }
+    })
+
+    toast.promise(deletePromise, {
+      loading: "Deleting project...",
+      success: "Project deleted successfully!",
+      error: "Failed to delete project"
+    })
+  }
   // Computed values
   const filteredAndSortedProjects = useMemo(() => {
     let filtered = projects.filter(project => {
-      const matchesSearch = 
+      const matchesSearch =
         project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         project.description.toLowerCase().includes(searchQuery.toLowerCase())
-      
+
       const matchesStatus = statusFilter === "all" || project.status === statusFilter
       const matchesPriority = priorityFilter === "all" || project.priority === priorityFilter
 
@@ -228,7 +228,7 @@ const deleteProject = async (id) => {
 
     return filtered.sort((a, b) => {
       let comparison = 0
-      
+
       switch (sortBy) {
         case "dueDate":
           comparison = new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
@@ -242,7 +242,7 @@ const deleteProject = async (id) => {
         default:
           return 0
       }
-      
+
       return sortOrder === "asc" ? comparison : -comparison
     })
   }, [projects, searchQuery, statusFilter, priorityFilter, sortBy, sortOrder])
@@ -254,7 +254,7 @@ const deleteProject = async (id) => {
       inProgress: projects.filter(p => p.status === "in-progress").length,
       overdue: projects.filter(p => new Date(p.dueDate) < new Date() && p.status !== "completed").length
     }
-    
+
     return {
       ...stats,
       completionRate: stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0
@@ -277,31 +277,31 @@ const deleteProject = async (id) => {
   }
 
   useEffect(() => {
-  // Only run on client side
-  if (typeof window === 'undefined') return
-  
-  const token = localStorage.getItem("token")
-  if (!token) {
-    router.push("/login")
-    return
-  }
-  
-  fetchProjects()
-}, [router])
+    // Only run on client side
+    if (typeof window === 'undefined') return
 
-// Replace the user variable with this:
-const [user, setUser] = useState(null)
-
-// Add this useEffect to check authentication
-useEffect(() => {
-  if (typeof window !== 'undefined') {
     const token = localStorage.getItem("token")
-    if (token) {
-      // You can decode the token here to get user info, or set a default user
-      setUser({ name: "John Doe" }) // Replace with actual user data from token
+    if (!token) {
+      router.push("/login")
+      return
     }
-  }
-}, []);
+
+    fetchProjects()
+  }, [router])
+
+  // Replace the user variable with this:
+  const [user, setUser] = useState(null)
+
+  // Add this useEffect to check authentication
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem("token")
+      if (token) {
+        // You can decode the token here to get user info, or set a default user
+        setUser({ name: "John Doe" }) // Replace with actual user data from token
+      }
+    }
+  }, []);
 
   // Loading state
   if (isLoading) {
@@ -377,7 +377,7 @@ useEffect(() => {
             <CardContent className="p-0">
               {/* Status indicator */}
               <div className={`h-1 w-full ${statusConfig.color}`} />
-              
+
               <div className="p-6">
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
@@ -389,12 +389,12 @@ useEffect(() => {
                       {project.description}
                     </p>
                   </div>
-                  
+
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-slate-100"
                       >
                         <MoreHorizontal className="h-4 w-4" />
@@ -431,7 +431,7 @@ useEffect(() => {
                         {project.status.replace("-", " ")}
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center text-sm">
                       <PriorityIcon className={`mr-2 h-4 w-4 ${priorityConfig.color}`} />
                       <span className="capitalize text-slate-700">{project.priority}</span>
@@ -445,7 +445,7 @@ useEffect(() => {
                     {project.tags.slice(0, 3).map((tag, i) => (
                       <Badge
                         key={i}
-                        variant="secondary"
+                        variant="primary"
                         className="text-xs px-2 py-1 bg-slate-100 text-slate-700 border-0 hover:bg-slate-200 transition-colors"
                       >
                         {tag}
@@ -460,27 +460,34 @@ useEffect(() => {
                 )}
 
                 {/* Progress bar */}
-                {project.progress !== undefined && (
-                  <div className="mb-4">
-                    <div className="flex justify-between text-xs text-slate-600 mb-2">
-                      <span>Progress</span>
-                      <span className="font-medium">{project.progress}%</span>
-                    </div>
-                    <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                      <motion.div
-                        className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
-                        variants={progressVariants}
-                        initial="initial"
-                        animate="animate"
-                        custom={project.progress}
-                      />
-                    </div>
-                  </div>
-                )}
+                {(project.progress !== undefined && project.progress !== null) && (
+  <div className="mb-4">
+    <div style={{
+      margin: "10px 0px"
+    }} className="flex justify-between text-xs text-slate-600 mb-2">
+      <span>Progress</span>
+      <span className="font-medium">
+        {Math.round(project.progress)}%
+      </span>
+    </div>
+    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+      <motion.div
+        className="h-full bg-gradient-to-r from-indigo-600 to-purple-600"
+        style={{ 
+          transformOrigin: "left",
+          width: `${Math.max(0, Math.min(100, project.progress || 0))}%`
+        }}
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      />
+    </div>
+  </div>
+)}
 
                 {/* Action button */}
-                <Button 
-                  asChild 
+                <Button
+                  asChild
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-300"
                 >
                   <Link href={`/projects/${project._id}`}>
@@ -510,22 +517,22 @@ useEffect(() => {
           <Plus className="h-4 w-4 text-white" />
         </div>
       </div>
-      
+
       <h3 className="text-xl font-semibold text-slate-900 mb-2">
-        {filteredAndSortedProjects.length === 0 && projects.length > 0 
-          ? "No projects match your filters" 
+        {filteredAndSortedProjects.length === 0 && projects.length > 0
+          ? "No projects match your filters"
           : "No projects yet"
         }
       </h3>
-      
+
       <p className="text-slate-600 mb-6 max-w-md leading-relaxed">
         {filteredAndSortedProjects.length === 0 && projects.length > 0
           ? "Try adjusting your search query or filters to find what you're looking for."
           : "Create your first project to start organizing your work and tracking progress."
         }
       </p>
-      
-      <Button 
+
+      <Button
         asChild
         size="lg"
         className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
@@ -652,7 +659,7 @@ useEffect(() => {
                 <p className="text-sm text-slate-600">
                   Showing {filteredAndSortedProjects.length} of {projects.length} projects
                 </p>
-                
+
                 <Tabs value={viewMode} onValueChange={setViewMode} className="w-auto">
                   <TabsList className="bg-white/80 border border-slate-200">
                     <TabsTrigger value="grid" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
@@ -822,8 +829,8 @@ useEffect(() => {
 
 
 
- {/* Create Project Dialog */}
-      {/* <ProjectDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} onSubmit={handleCreateProject} />
+{/* Create Project Dialog */ }
+{/* <ProjectDialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen} onSubmit={handleCreateProject} />
 
       
       {editingProject && (

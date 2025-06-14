@@ -1007,7 +1007,7 @@ if (isLoading) {
                             </tr>
                           ) : (
                             tasks.map((task) => (
-                              <tr key={task.id} className="border-b hover:bg-muted/50">
+                              <tr key={task._id} className="border-b hover:bg-muted/50">
                                 <td className="py-3 px-4">
                                   <div>
                                     <p className="font-medium">{task.title}</p>

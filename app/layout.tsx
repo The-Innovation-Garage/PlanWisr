@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import type { Metadata } from "next"
 import { ThemeProvider } from "@/components/theme-provider"
 import FeedbackWidget from "@/components/FeedbackWidget" // Fix the import path
+import {Footer} from "@/components/Footer" // Fix the import path
 
 import './globals.css'
 import { Navbar } from "@/components/Navbar"
@@ -33,6 +34,7 @@ export default function RootLayout({
           <Navbar/>
           {/* <FeedbackWidget/> */}
           {children}
+          <Footer/>
         </ThemeProvider>
       </body>
     </html>
