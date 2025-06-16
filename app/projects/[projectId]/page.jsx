@@ -91,6 +91,8 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
 
       console.log(newTimeEntry)
 
+      toast.loading("Saving time entry...")
+
       const req = await fetch("/api/time/save-time-entry", {
         method: "POST",
         headers: {
@@ -103,10 +105,12 @@ const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
       const res = await req.json();
 
       if (res.type === "error") {
+        toast.dismiss()
         toast.error(res.message)
         return;
       }
       else {
+        toast.dismiss()
         toast.success(res.message)
         newTimeEntry._id = res.entry._id;
 

@@ -461,29 +461,29 @@ export default function ProjectsPage() {
 
                 {/* Progress bar */}
                 {(project.progress !== undefined && project.progress !== null) && (
-  <div className="mb-4">
-    <div style={{
-      margin: "10px 0px"
-    }} className="flex justify-between text-xs text-slate-600 mb-2">
-      <span>Progress</span>
-      <span className="font-medium">
-        {Math.round(project.progress)}%
-      </span>
-    </div>
-    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
-      <motion.div
-        className="h-full bg-gradient-to-r from-indigo-600 to-purple-600"
-        style={{ 
-          transformOrigin: "left",
-          width: `${Math.max(0, Math.min(100, project.progress || 0))}%`
-        }}
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      />
-    </div>
-  </div>
-)}
+                  <div className="mb-4">
+                    <div style={{
+                      margin: "10px 0px"
+                    }} className="flex justify-between text-xs text-slate-600 mb-2">
+                      <span>Progress</span>
+                      <span className="font-medium">
+                        {Math.round(project.progress)}%
+                      </span>
+                    </div>
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                      <motion.div
+                        className="h-full bg-gradient-to-r from-indigo-600 to-purple-600"
+                        style={{
+                          transformOrigin: "left",
+                          width: `${Math.max(0, Math.min(100, project.progress || 0))}%`
+                        }}
+                        initial={{ scaleX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                      />
+                    </div>
+                  </div>
+                )}
 
                 {/* Action button */}
                 <Button
@@ -756,18 +756,21 @@ export default function ProjectsPage() {
                                     {project.progress !== undefined ? (
                                       <div className="flex items-center space-x-3">
                                         <div className="flex-1">
-                                          <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                          <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
                                             <motion.div
-                                              className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
-                                              variants={progressVariants}
-                                              initial="initial"
-                                              animate="animate"
-                                              custom={project.progress}
+                                              className="h-full bg-gradient-to-r from-indigo-600 to-purple-600"
+                                              style={{
+                                                transformOrigin: "left",
+                                                width: `${Math.max(0, Math.min(100, project.progress || 0))}%`
+                                              }}
+                                              initial={{ scaleX: 0 }}
+                                              animate={{ scaleX: 1 }}
+                                              transition={{ duration: 0.8, ease: "easeOut" }}
                                             />
                                           </div>
                                         </div>
-                                        <span className="text-sm font-medium text-slate-700 min-w-[3rem]">
-                                          {project.progress}%
+                                        <span className="mx-3 text-sm font-medium text-slate-700 min-w-[3rem]">
+                                          {project.progress.toFixed(0)}%
                                         </span>
                                       </div>
                                     ) : (

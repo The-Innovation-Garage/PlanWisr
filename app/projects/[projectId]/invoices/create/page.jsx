@@ -73,6 +73,17 @@ export default function CreateInvoicePage({params}) {
     terms: "Net 30"
   })
 
+  const [selectedTemplate, setSelectedTemplate] = useState('modern')
+
+// Add template options constant
+const INVOICE_TEMPLATES = {
+  modern: 'Modern',
+  classic: 'Classic', 
+  minimal: 'Minimal',
+  corporate: 'Corporate'
+}
+
+
   const [projects, setProjects] = useState([])
   const [isPreviewMode, setIsPreviewMode] = useState(false)
   function formatCurrency(amount) {
@@ -146,88 +157,343 @@ useEffect(() => {
     }))
   }
 
-  const generatePDF = () => {
-    const doc = new jsPDF()
-    
-    // Add header
-    doc.setFontSize(20)
-    doc.text('INVOICE', 14, 22)
-    
-    doc.setFontSize(10)
-    doc.text(`Invoice #: ${invoiceData.number}`, 14, 35)
-    doc.text(`Date: ${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 14, 40)
-    doc.text(`Due Date: ${format(new Date(invoiceData.dueDate), "MMM d, yyyy")}`, 14, 45)
+// Enhanced generatePDF function with templates
+const generatePDF = () => {
+  const doc = new jsPDF()
   
-    // Add client info
-    doc.text('Bill To:', 14, 60)
-    doc.text(invoiceData.client.name || 'Client Name', 14, 65)
-    doc.text(invoiceData.client.company || 'Company Name', 14, 70)
-    doc.text(invoiceData.client.address || 'Address', 14, 75)
-  
-    // Add items table with formatted data
-    const tableData = invoiceData.items.map(item => [
-      item.feature || '',
-      item.description || '',
-      item.hours || '0',
-      formatCurrency(item.rate || 0),
-      formatCurrency((item.hours || 0) * (item.rate || 0))
-    ])
-  
-    // Use autoTable plugin
-    doc.autoTable({
-      margin: { top: 85 },
-      head: [['Feature', 'Description', 'Hours', 'Rate', 'Amount']],
-      body: tableData,
-      theme: 'striped',
-      headStyles: {
-        fillColor: [41, 128, 185],
-        textColor: [255, 255, 255],
-        fontSize: 10
-      },
-      styles: {
-        fontSize: 8,
-        cellPadding: 2
-      },
-      columnStyles: {
-        0: { cellWidth: 40 },
-        1: { cellWidth: 60 },
-        2: { cellWidth: 20, halign: 'right' },
-        3: { cellWidth: 30, halign: 'right' },
-        4: { cellWidth: 30, halign: 'right' }
-      }
-    })
-    // Add totals with proper formatting
-    const finalY = doc.lastAutoTable.finalY + 10
-    doc.text(`Subtotal:`, 140, finalY)
-    doc.text(formatCurrency(invoiceData.subtotal || 0), 170, finalY, { align: 'right' })
-    
-    doc.text(`Tax (${invoiceData.tax || 0}%):`, 140, finalY + 5)
-    doc.text(formatCurrency((invoiceData.subtotal || 0) * ((invoiceData.tax || 0) / 100)), 170, finalY + 5, { align: 'right' })
-    
-    doc.text(`Discount (${invoiceData.discount || 0}%):`, 140, finalY + 10)
-    doc.text(formatCurrency((invoiceData.subtotal || 0) * ((invoiceData.discount || 0) / 100)), 170, finalY + 10, { align: 'right' })
-    
-    doc.text(`Total:`, 140, finalY + 15)
-    doc.text(formatCurrency(invoiceData.total || 0), 170, finalY + 15, { align: 'right' })
-  
-    // Add notes & terms
-    if (invoiceData.notes) {
-      doc.text('Notes:', 14, finalY + 25)
-      doc.setFontSize(8)
-      doc.text(invoiceData.notes, 14, finalY + 30)
-    }
-  
-    if (invoiceData.terms) {
-      doc.setFontSize(10)
-      doc.text('Terms:', 14, finalY + 40)
-      doc.setFontSize(8)
-      doc.text(invoiceData.terms, 14, finalY + 45)
-    }
-  
-    // Save the PDF
-    doc.save(`Invoice-${invoiceData.number}.pdf`)
+  switch(selectedTemplate) {
+    case 'modern':
+      generateModernTemplate(doc)
+      break
+    case 'classic':
+      generateClassicTemplate(doc)
+      break
+    case 'minimal':
+      generateMinimalTemplate(doc)
+      break
+    case 'corporate':
+      generateCorporateTemplate(doc)
+      break
+    default:
+      generateModernTemplate(doc)
   }
+  
+  // Save the PDF
+  doc.save(`Invoice-${invoiceData.number}.pdf`)
+}
 
+// Modern Template (Your current template enhanced)
+const generateModernTemplate = (doc) => {
+  // Header with gradient effect
+  doc.setFillColor(79, 70, 229) // Indigo
+  doc.rect(0, 0, 210, 40, 'F')
+  
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(28)
+  doc.setFont('helvetica', 'bold')
+  doc.text('INVOICE', 14, 25)
+  
+  // Company info on right
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.text(invoiceData.sender.name || 'Your Company', 140, 15)
+  doc.text(invoiceData.sender.email || 'email@company.com', 140, 20)
+  doc.text(invoiceData.sender.phone || '+1 234 567 8900', 140, 25)
+  
+  // Reset text color
+  doc.setTextColor(0, 0, 0)
+  
+  // Invoice details
+  doc.setFontSize(12)
+  doc.setFont('helvetica', 'bold')
+  doc.text(`Invoice #: ${invoiceData.number}`, 14, 55)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`Date: ${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 14, 62)
+  doc.text(`Due Date: ${format(new Date(invoiceData.dueDate), "MMM d, yyyy")}`, 14, 69)
+  
+  // Client info with background
+  doc.setFillColor(248, 250, 252)
+  doc.rect(14, 80, 180, 35, 'F')
+  doc.setFont('helvetica', 'bold')
+  doc.text('Bill To:', 18, 90)
+  doc.setFont('helvetica', 'normal')
+  doc.text(invoiceData.client.name || 'Client Name', 18, 97)
+  doc.text(invoiceData.client.company || 'Company Name', 18, 104)
+  doc.text(invoiceData.client.address || 'Address', 18, 111)
+  
+  // Table
+  const tableData = invoiceData.items.map(item => [
+    item.feature || '',
+    item.description || '',
+    item.hours || '0',
+    formatCurrency(item.rate || 0),
+    formatCurrency((item.hours || 0) * (item.rate || 0))
+  ])
+  
+  doc.autoTable({
+    margin: { top: 125 },
+    head: [['Feature', 'Description', 'Hours', 'Rate', 'Amount']],
+    body: tableData,
+    theme: 'grid',
+    headStyles: {
+      fillColor: [79, 70, 229],
+      textColor: [255, 255, 255],
+      fontSize: 11,
+      fontStyle: 'bold'
+    },
+    styles: {
+      fontSize: 9,
+      cellPadding: 4
+    },
+    columnStyles: {
+      2: { halign: 'center' },
+      3: { halign: 'right' },
+      4: { halign: 'right' }
+    }
+  })
+  
+  addTotalsSection(doc)
+  addNotesAndTerms(doc)
+}
+
+// Classic Template
+const generateClassicTemplate = (doc) => {
+  // Simple header
+  doc.setFontSize(24)
+  doc.setFont('helvetica', 'bold')
+  doc.text('INVOICE', 14, 25)
+  
+  // Company info
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.text(invoiceData.sender.name || 'Your Company', 14, 35)
+  doc.text(invoiceData.sender.email || 'email@company.com', 14, 40)
+  
+  // Invoice details with borders
+  doc.rect(140, 15, 60, 30)
+  doc.text(`Invoice #: ${invoiceData.number}`, 142, 25)
+  doc.text(`Date: ${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 142, 30)
+  doc.text(`Due: ${format(new Date(invoiceData.dueDate), "MMM d, yyyy")}`, 142, 35)
+  
+  // Client section with border
+  doc.rect(14, 55, 180, 30)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Bill To:', 16, 65)
+  doc.setFont('helvetica', 'normal')
+  doc.text(invoiceData.client.name || 'Client Name', 16, 72)
+  doc.text(invoiceData.client.company || 'Company Name', 16, 77)
+  doc.text(invoiceData.client.address || 'Address', 16, 82)
+  
+  // Table with classic styling
+  const tableData = invoiceData.items.map(item => [
+    item.feature || '',
+    item.description || '',
+    item.hours || '0',
+    formatCurrency(item.rate || 0),
+    formatCurrency((item.hours || 0) * (item.rate || 0))
+  ])
+  
+  doc.autoTable({
+    margin: { top: 95 },
+    head: [['Feature', 'Description', 'Hours', 'Rate', 'Amount']],
+    body: tableData,
+    theme: 'plain',
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: [0, 0, 0],
+      fontSize: 11,
+      fontStyle: 'bold',
+      lineWidth: 0.5,
+      lineColor: [0, 0, 0]
+    },
+    styles: {
+      fontSize: 9,
+      cellPadding: 3,
+      lineWidth: 0.1,
+      lineColor: [128, 128, 128]
+    }
+  })
+  
+  addTotalsSection(doc)
+  addNotesAndTerms(doc)
+}
+
+// Minimal Template
+const generateMinimalTemplate = (doc) => {
+  // Clean header
+  doc.setFontSize(32)
+  doc.setFont('helvetica', 'normal')
+  doc.text('Invoice', 14, 30)
+  
+  // Minimal details
+  doc.setFontSize(10)
+  doc.text(`${invoiceData.number}`, 14, 40)
+  doc.text(`${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 14, 45)
+  
+  // Client info - minimal
+  doc.setFontSize(11)
+  doc.text(invoiceData.client.name || 'Client Name', 14, 65)
+  doc.setFontSize(9)
+  doc.text(invoiceData.client.company || 'Company Name', 14, 72)
+  
+  // Clean table
+  const tableData = invoiceData.items.map(item => [
+    item.feature || '',
+    item.description || '',
+    item.hours || '0',
+    formatCurrency(item.rate || 0),
+    formatCurrency((item.hours || 0) * (item.rate || 0))
+  ])
+  
+  doc.autoTable({
+    margin: { top: 85 },
+    head: [['Feature', 'Description', 'Hours', 'Rate', 'Amount']],
+    body: tableData,
+    theme: 'plain',
+    headStyles: {
+      fillColor: [255, 255, 255],
+      textColor: [0, 0, 0],
+      fontSize: 10,
+      fontStyle: 'normal'
+    },
+    styles: {
+      fontSize: 9,
+      cellPadding: 5
+    },
+    columnStyles: {
+      2: { halign: 'center' },
+      3: { halign: 'right' },
+      4: { halign: 'right' }
+    }
+  })
+  
+  addTotalsSection(doc)
+}
+
+// Corporate Template
+const generateCorporateTemplate = (doc) => {
+  // Professional header with logo space
+  doc.setFillColor(44, 62, 80) // Dark blue
+  doc.rect(0, 0, 210, 50, 'F')
+  
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(26)
+  doc.setFont('helvetica', 'bold')
+  doc.text('INVOICE', 14, 30)
+  
+  // Company details in header
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'normal')
+  doc.text(invoiceData.sender.name || 'Your Company Name', 120, 20)
+  doc.text(invoiceData.sender.email || 'contact@company.com', 120, 26)
+  doc.text(invoiceData.sender.phone || '+1 (555) 123-4567', 120, 32)
+  
+  // Invoice details section
+  doc.setTextColor(0, 0, 0)
+  doc.setFillColor(236, 240, 241)
+  doc.rect(14, 60, 180, 25, 'F')
+  
+  doc.setFontSize(11)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Invoice Details', 18, 70)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.text(`Invoice Number: ${invoiceData.number}`, 18, 77)
+  doc.text(`Invoice Date: ${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 100, 77)
+  doc.text(`Due Date: ${format(new Date(invoiceData.dueDate), "MMM d, yyyy")}`, 18, 82)
+  
+  // Client information
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.text('Bill To:', 14, 100)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  doc.text(invoiceData.client.name || 'Client Name', 14, 108)
+  doc.text(invoiceData.client.company || 'Company Name', 14, 115)
+  doc.text(invoiceData.client.address || 'Address', 14, 122)
+  
+  // Professional table
+  const tableData = invoiceData.items.map(item => [
+    item.feature || '',
+    item.description || '',
+    item.hours || '0',
+    formatCurrency(item.rate || 0),
+    formatCurrency((item.hours || 0) * (item.rate || 0))
+  ])
+  
+  doc.autoTable({
+    margin: { top: 135 },
+    head: [['Feature', 'Description', 'Hours', 'Rate', 'Amount']],
+    body: tableData,
+    theme: 'striped',
+    headStyles: {
+      fillColor: [44, 62, 80],
+      textColor: [255, 255, 255],
+      fontSize: 10,
+      fontStyle: 'bold'
+    },
+    alternateRowStyles: {
+      fillColor: [248, 249, 250]
+    },
+    styles: {
+      fontSize: 9,
+      cellPadding: 4
+    }
+  })
+  
+  addTotalsSection(doc)
+  addNotesAndTerms(doc)
+}
+
+// Helper function for totals section
+const addTotalsSection = (doc) => {
+  const finalY = doc.lastAutoTable.finalY + 15
+  
+  // Totals box
+  doc.setFillColor(248, 250, 252)
+  doc.rect(130, finalY - 5, 70, 35, 'F')
+  
+  doc.setFontSize(10)
+  doc.text(`Subtotal:`, 135, finalY + 2)
+  doc.text(formatCurrency(invoiceData.subtotal || 0), 190, finalY + 2, { align: 'right' })
+  
+  doc.text(`Tax (${invoiceData.tax || 0}%):`, 135, finalY + 8)
+  doc.text(formatCurrency((invoiceData.subtotal || 0) * ((invoiceData.tax || 0) / 100)), 190, finalY + 8, { align: 'right' })
+  
+  doc.text(`Discount (${invoiceData.discount || 0}%):`, 135, finalY + 14)
+  doc.text(formatCurrency((invoiceData.subtotal || 0) * ((invoiceData.discount || 0) / 100)), 190, finalY + 14, { align: 'right' })
+  
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(12)
+  doc.text(`Total:`, 135, finalY + 22)
+  doc.text(formatCurrency(invoiceData.total || 0), 190, finalY + 22, { align: 'right' })
+}
+
+// Helper function for notes and terms
+const addNotesAndTerms = (doc) => {
+  const finalY = doc.lastAutoTable.finalY + 55
+  
+  if (invoiceData.notes) {
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(10)
+    doc.text('Notes:', 14, finalY)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9)
+    const splitNotes = doc.splitTextToSize(invoiceData.notes, 180)
+    doc.text(splitNotes, 14, finalY + 5)
+  }
+  
+  if (invoiceData.terms) {
+    const notesHeight = invoiceData.notes ? 15 : 0
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(10)
+    doc.text('Terms & Conditions:', 14, finalY + notesHeight)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9)
+    const splitTerms = doc.splitTextToSize(invoiceData.terms, 180)
+    doc.text(splitTerms, 14, finalY + notesHeight + 5)
+  }
+}
 
   const saveInvoice = async() => {
     toast.loading('Saving invoice...')
@@ -266,6 +532,18 @@ useEffect(() => {
           {/* <Button variant="outline" onClick={() => setIsPreviewMode(!isPreviewMode)}>
             {isPreviewMode ? "Edit" : "Preview"}
           </Button> */}
+            <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+    <SelectTrigger className="w-[180px]">
+      <SelectValue placeholder="Select template" />
+    </SelectTrigger>
+    <SelectContent>
+      {Object.entries(INVOICE_TEMPLATES).map(([key, label]) => (
+        <SelectItem key={key} value={key}>
+          {label}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
           <Button onClick={saveInvoice} variant="outline">
             <Save className="mr-2 h-4 w-4" />
             Save

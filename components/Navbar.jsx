@@ -177,23 +177,25 @@ export function Navbar() {
                       <Avatar className="h-8 w-8">
                         <AvatarFallback>{fullName ? fullName.charAt(0) : "U"}</AvatarFallback>
                       </Avatar>
-
                       {IsPro && (
-                        <Crown
-                          className="absolute -top-1 -right-1 h-4 w-4 text-yellow-500 drop-shadow-md"
-                          strokeWidth={2}
-                          fill="currentColor"
-                        />
+                        <>
+                          {/* Premium ring effect */}
+                          <div className="absolute inset-0 rounded-full animate-pulse ring-2 ring-yellow-400" />
+                          {/* Crown icon */}
+                         
+                        </>
                       )}
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
                   <div className="flex items-center gap-2 p-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarFallback>{fullName ? fullName.charAt(0) : "U"}</AvatarFallback>
-
-                    </Avatar>
+                    <div className="relative">
+                      <Avatar className="h-10 w-10">
+                        <AvatarFallback>{fullName ? fullName.charAt(0) : "U"}</AvatarFallback>
+                      </Avatar>
+                     
+                    </div>
                     <div className="flex flex-col space-y-1">
                       <p className="font-medium">{fullName}</p>
                       <div className="flex flex-col space-y-1">
