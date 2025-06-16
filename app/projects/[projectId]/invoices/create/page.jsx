@@ -73,8 +73,40 @@ export default function CreateInvoicePage({params}) {
     terms: "Net 30"
   })
 
-  const [selectedTemplate, setSelectedTemplate] = useState('modern')
+  const [selectedTemplate, setSelectedTemplate] = useState('modern');
 
+  useEffect(() => {
+    fetchCompanySettings()
+  }, [])
+
+  const fetchCompanySettings = async () => {
+    try {
+      const token = localStorage.getItem('token')
+      const response = await fetch('/api/company/get-settings', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      const data = await response.json()
+      if (data.type === 'success') {
+        setCompanyData(data.company)
+        console.log('Company settings fetched:', data.company)
+        // Also update invoice sender data
+        setInvoiceData(prev => ({
+          ...prev,
+          sender: {
+            name: data.company.name || "",
+            email: data.company.email || "",
+            phone: data.company.phone || "",
+            address: data.company.address || "",
+            website: data.company.website || "",
+            logoUrl: data.company.logoUrl || ""
+          }
+        }))
+      }
+    } catch (error) {
+      console.error('Error fetching company settings:', error)
+    }
+  }
+  
 // Add template options constant
 const INVOICE_TEMPLATES = {
   modern: 'Modern',
@@ -82,6 +114,14 @@ const INVOICE_TEMPLATES = {
   minimal: 'Minimal',
   corporate: 'Corporate'
 }
+const [companyData, setCompanyData] = useState({
+  name: "",
+  email: "",
+  phone: "",
+  address: "",
+  website: "",
+  logoUrl: ""
+})
 
 
   const [projects, setProjects] = useState([])
@@ -158,32 +198,37 @@ useEffect(() => {
   }
 
 // Enhanced generatePDF function with templates
-const generatePDF = () => {
+const generatePDF = async() => {
   const doc = new jsPDF()
+
+    // Convert logo to base64 if it exists
+    var logoBase64 = null;
+    if (companyData.logoUrl) {
+      logoBase64 = await imageUrlToBase64(companyData.logoUrl);
+    }
   
   switch(selectedTemplate) {
     case 'modern':
-      generateModernTemplate(doc)
+      generateModernTemplate(doc, logoBase64)
       break
     case 'classic':
-      generateClassicTemplate(doc)
+      generateClassicTemplate(doc, logoBase64)
       break
     case 'minimal':
-      generateMinimalTemplate(doc)
+      generateMinimalTemplate(doc, logoBase64)
       break
     case 'corporate':
-      generateCorporateTemplate(doc)
+      generateCorporateTemplate(doc, logoBase64)
       break
     default:
-      generateModernTemplate(doc)
+      generateModernTemplate(doc, logoBase64)
   }
   
   // Save the PDF
   doc.save(`Invoice-${invoiceData.number}.pdf`)
 }
-
-// Modern Template (Your current template enhanced)
-const generateModernTemplate = (doc) => {
+// Modern Template (updated with logo)
+const generateModernTemplate = (doc, logoBase64) => {
   // Header with gradient effect
   doc.setFillColor(79, 70, 229) // Indigo
   doc.rect(0, 0, 210, 40, 'F')
@@ -193,35 +238,59 @@ const generateModernTemplate = (doc) => {
   doc.setFont('helvetica', 'bold')
   doc.text('INVOICE', 14, 25)
   
-  // Company info on right
+  // Add company logo if available (top right corner)
+  if (logoBase64) {
+    try {
+      doc.addImage(logoBase64, 'JPEG', 170, 5, 30, 30)
+    } catch (error) {
+      console.log('Error adding logo:', error)
+    }
+  }
+  
+  // Company info on right - positioned to avoid logo overlap
+  const companyInfoX = logoBase64 ? 120 : 140 // Move left if logo exists
   doc.setFontSize(10)
   doc.setFont('helvetica', 'normal')
-  doc.text(invoiceData.sender.name || 'Your Company', 140, 15)
-  doc.text(invoiceData.sender.email || 'email@company.com', 140, 20)
-  doc.text(invoiceData.sender.phone || '+1 234 567 8900', 140, 25)
+  doc.text(companyData.name || 'Your Company', companyInfoX, 15)
+  doc.text(companyData.email || 'email@company.com', companyInfoX, 20)
+  doc.text(companyData.phone || '+1 234 567 8900', companyInfoX, 25)
+  if (companyData.website) {
+    doc.text(companyData.website, companyInfoX, 30)
+  }
+  
+  // Add company address below header if available
+  if (companyData.address) {
+    doc.setTextColor(0, 0, 0)
+    doc.setFontSize(8)
+    doc.text('From:', 14, 48)
+    const addressLines = doc.splitTextToSize(companyData.address, 60)
+    doc.text(addressLines, 14, 52)
+  }
   
   // Reset text color
   doc.setTextColor(0, 0, 0)
   
-  // Invoice details
+  // Invoice details (adjust Y position if address is present)
+  const detailsY = companyData.address ? 65 : 55
   doc.setFontSize(12)
   doc.setFont('helvetica', 'bold')
-  doc.text(`Invoice #: ${invoiceData.number}`, 14, 55)
+  doc.text(`Invoice #: ${invoiceData.number}`, 14, detailsY)
   doc.setFont('helvetica', 'normal')
-  doc.text(`Date: ${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 14, 62)
-  doc.text(`Due Date: ${format(new Date(invoiceData.dueDate), "MMM d, yyyy")}`, 14, 69)
+  doc.text(`Date: ${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 14, detailsY + 7)
+  doc.text(`Due Date: ${format(new Date(invoiceData.dueDate), "MMM d, yyyy")}`, 14, detailsY + 14)
   
-  // Client info with background
+  // Client info with background (adjust Y position)
+  const clientY = companyData.address ? 90 : 80
   doc.setFillColor(248, 250, 252)
-  doc.rect(14, 80, 180, 35, 'F')
+  doc.rect(14, clientY, 180, 35, 'F')
   doc.setFont('helvetica', 'bold')
-  doc.text('Bill To:', 18, 90)
+  doc.text('Bill To:', 18, clientY + 10)
   doc.setFont('helvetica', 'normal')
-  doc.text(invoiceData.client.name || 'Client Name', 18, 97)
-  doc.text(invoiceData.client.company || 'Company Name', 18, 104)
-  doc.text(invoiceData.client.address || 'Address', 18, 111)
+  doc.text(invoiceData.client.name || 'Client Name', 18, clientY + 17)
+  doc.text(invoiceData.client.company || 'Company Name', 18, clientY + 24)
+  doc.text(invoiceData.client.address || 'Address', 18, clientY + 31)
   
-  // Table
+  // Table (adjust margin)
   const tableData = invoiceData.items.map(item => [
     item.feature || '',
     item.description || '',
@@ -231,7 +300,7 @@ const generateModernTemplate = (doc) => {
   ])
   
   doc.autoTable({
-    margin: { top: 125 },
+    margin: { top: clientY + 45 },
     head: [['Feature', 'Description', 'Hours', 'Rate', 'Amount']],
     body: tableData,
     theme: 'grid',
@@ -256,33 +325,75 @@ const generateModernTemplate = (doc) => {
   addNotesAndTerms(doc)
 }
 
-// Classic Template
-const generateClassicTemplate = (doc) => {
+
+const imageUrlToBase64 = async (url) => {
+  try {
+    // Use our proxy API route to avoid CORS issues
+    const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`
+    const response = await fetch(proxyUrl);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const blob = await response.blob();
+    
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (error) {
+    console.error('Error converting image to base64:', error);
+    return null;
+  }
+};
+
+// Classic Template (updated with logo)
+const generateClassicTemplate = (doc, logoBase64) => {
   // Simple header
   doc.setFontSize(24)
   doc.setFont('helvetica', 'bold')
   doc.text('INVOICE', 14, 25)
   
-  // Company info
+  // Add logo in top right
+  if (logoBase64) {
+    try {
+      doc.addImage(logoBase64, 'JPEG', 165, 5, 35, 35)
+    } catch (error) {
+      console.log('Error adding logo:', error)
+    }
+  }
+  
+  // Company info positioned to avoid logo collision
   doc.setFontSize(10)
   doc.setFont('helvetica', 'normal')
-  doc.text(invoiceData.sender.name || 'Your Company', 14, 35)
-  doc.text(invoiceData.sender.email || 'email@company.com', 14, 40)
+  doc.text(companyData.name || 'Your Company', 14, 35)
+  doc.text(companyData.email || 'email@company.com', 14, 40)
+  if (companyData.phone) {
+    doc.text(companyData.phone, 14, 45)
+  }
+  if (companyData.address) {
+    const addressLines = doc.splitTextToSize(companyData.address, 80)
+    doc.text(addressLines, 14, 50)
+  }
   
-  // Invoice details with borders
-  doc.rect(140, 15, 60, 30)
-  doc.text(`Invoice #: ${invoiceData.number}`, 142, 25)
-  doc.text(`Date: ${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 142, 30)
-  doc.text(`Due: ${format(new Date(invoiceData.dueDate), "MMM d, yyyy")}`, 142, 35)
+  // Invoice details with borders (positioned on right side)
+  doc.rect(120, 45, 80, 25)
+  doc.text(`Invoice #: ${invoiceData.number}`, 122, 55)
+  doc.text(`Date: ${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 122, 60)
+  doc.text(`Due: ${format(new Date(invoiceData.dueDate), "MMM d, yyyy")}`, 122, 65)
   
-  // Client section with border
-  doc.rect(14, 55, 180, 30)
+  // Client section with border (adjust Y based on company address)
+  const clientY = companyData.address ? 80 : 75
+  doc.rect(14, clientY, 180, 30)
   doc.setFont('helvetica', 'bold')
-  doc.text('Bill To:', 16, 65)
+  doc.text('Bill To:', 16, clientY + 10)
   doc.setFont('helvetica', 'normal')
-  doc.text(invoiceData.client.name || 'Client Name', 16, 72)
-  doc.text(invoiceData.client.company || 'Company Name', 16, 77)
-  doc.text(invoiceData.client.address || 'Address', 16, 82)
+  doc.text(invoiceData.client.name || 'Client Name', 16, clientY + 17)
+  doc.text(invoiceData.client.company || 'Company Name', 16, clientY + 22)
+  doc.text(invoiceData.client.address || 'Address', 16, clientY + 27)
   
   // Table with classic styling
   const tableData = invoiceData.items.map(item => [
@@ -294,7 +405,7 @@ const generateClassicTemplate = (doc) => {
   ])
   
   doc.autoTable({
-    margin: { top: 95 },
+    margin: { top: clientY + 40 },
     head: [['Feature', 'Description', 'Hours', 'Rate', 'Amount']],
     body: tableData,
     theme: 'plain',
@@ -318,23 +429,149 @@ const generateClassicTemplate = (doc) => {
   addNotesAndTerms(doc)
 }
 
-// Minimal Template
-const generateMinimalTemplate = (doc) => {
-  // Clean header
+
+// Corporate Template (updated with logo)
+const generateCorporateTemplate = (doc, logoBase64) => {
+  // Professional header with logo space
+  doc.setFillColor(44, 62, 80) // Dark blue
+  doc.rect(0, 0, 210, 50, 'F')
+  
+  doc.setTextColor(255, 255, 255)
+  doc.setFontSize(26)
+  doc.setFont('helvetica', 'bold')
+  doc.text('INVOICE', 14, 30)
+  
+  if (logoBase64) {
+    try {
+      doc.addImage(logoBase64, 'JPEG', 170, 5, 30, 30)
+    } catch (error) {
+      console.log('Error adding logo:', error)
+    }
+  }
+  
+  // Company details in header with real data
+  doc.setFontSize(9)
+  doc.setFont('helvetica', 'normal')
+  doc.text(companyData.name || 'Your Company Name', 120, 20)
+  doc.text(companyData.email || 'contact@company.com', 120, 26)
+  doc.text(companyData.phone || '+1 (555) 123-4567', 120, 32)
+  if (companyData.website) {
+    doc.text(companyData.website, 120, 38)
+  }
+  
+  // Company address below header
+  doc.setTextColor(0, 0, 0)
+  if (companyData.address) {
+    doc.setFontSize(8)
+    doc.text('Company Address:', 14, 58)
+    const addressLines = doc.splitTextToSize(companyData.address, 100)
+    doc.text(addressLines, 14, 62)
+  }
+  
+  // Invoice details section (adjust Y position)
+  const detailsY = companyData.address ? 75 : 60
+  doc.setFillColor(236, 240, 241)
+  doc.rect(14, detailsY, 180, 25, 'F')
+  
+  doc.setFontSize(11)
+  doc.setFont('helvetica', 'bold')
+  doc.text('Invoice Details', 18, detailsY + 10)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(9)
+  doc.text(`Invoice Number: ${invoiceData.number}`, 18, detailsY + 17)
+  doc.text(`Invoice Date: ${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 100, detailsY + 17)
+  doc.text(`Due Date: ${format(new Date(invoiceData.dueDate), "MMM d, yyyy")}`, 18, detailsY + 22)
+  
+  // Client information (adjust Y position)
+  const clientY = detailsY + 35
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(11)
+  doc.text('Bill To:', 14, clientY)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  doc.text(invoiceData.client.name || 'Client Name', 14, clientY + 8)
+  doc.text(invoiceData.client.company || 'Company Name', 14, clientY + 15)
+  doc.text(invoiceData.client.address || 'Address', 14, clientY + 22)
+  
+  // Professional table (adjust margin)
+  const tableData = invoiceData.items.map(item => [
+    item.feature || '',
+    item.description || '',
+    item.hours || '0',
+    formatCurrency(item.rate || 0),
+    formatCurrency((item.hours || 0) * (item.rate || 0))
+  ])
+  
+  doc.autoTable({
+    margin: { top: clientY + 35 },
+    head: [['Feature', 'Description', 'Hours', 'Rate', 'Amount']],
+    body: tableData,
+    theme: 'striped',
+    headStyles: {
+      fillColor: [44, 62, 80],
+      textColor: [255, 255, 255],
+      fontSize: 10,
+      fontStyle: 'bold'
+    },
+    alternateRowStyles: {
+      fillColor: [248, 249, 250]
+    },
+    styles: {
+      fontSize: 9,
+      cellPadding: 4
+    }
+  })
+  
+  addTotalsSection(doc)
+  addNotesAndTerms(doc)
+}
+
+
+// Minimal Template (updated with logo)
+const generateMinimalTemplate = (doc, logoBase64) => {
+  // Clean header with company name
   doc.setFontSize(32)
   doc.setFont('helvetica', 'normal')
   doc.text('Invoice', 14, 30)
   
-  // Minimal details
-  doc.setFontSize(10)
-  doc.text(`${invoiceData.number}`, 14, 40)
-  doc.text(`${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 14, 45)
+  // Add logo in top right corner
+  if (logoBase64) {
+    try {
+      doc.addImage(logoBase64, 'JPEG', 165, 5, 35, 35)
+    } catch (error) {
+      console.log('Error adding logo:', error)
+    }
+  }
   
-  // Client info - minimal
+  // Company info positioned to avoid logo overlap
+  doc.setFontSize(12)
+  doc.text(companyData.name || 'Your Company', 14, 45)
+  
+  // Company contact info (minimal) - positioned below company name
+  doc.setFontSize(8)
+  doc.text(companyData.email || 'email@company.com', 14, 52)
+  if (companyData.phone) {
+    doc.text(companyData.phone, 14, 57)
+  }
+  
+  // Company address if available (minimal style)
+  if (companyData.address) {
+    doc.setFontSize(7)
+    const addressLines = doc.splitTextToSize(companyData.address, 80)
+    doc.text(addressLines, 14, 62)
+  }
+  
+  // Minimal invoice details (positioned on right)
+  doc.setFontSize(10)
+  doc.text(`${invoiceData.number}`, 120, 45)
+  doc.text(`${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 120, 52)
+  
+  // Client info - minimal (adjust Y position)
+  const clientY = companyData.address ? 80 : 75
   doc.setFontSize(11)
-  doc.text(invoiceData.client.name || 'Client Name', 14, 65)
+  doc.text(invoiceData.client.name || 'Client Name', 14, clientY)
   doc.setFontSize(9)
-  doc.text(invoiceData.client.company || 'Company Name', 14, 72)
+  doc.text(invoiceData.client.company || 'Company Name', 14, clientY + 7)
   
   // Clean table
   const tableData = invoiceData.items.map(item => [
@@ -346,7 +583,7 @@ const generateMinimalTemplate = (doc) => {
   ])
   
   doc.autoTable({
-    margin: { top: 85 },
+    margin: { top: clientY + 20 },
     head: [['Feature', 'Description', 'Hours', 'Rate', 'Amount']],
     body: tableData,
     theme: 'plain',
@@ -370,80 +607,8 @@ const generateMinimalTemplate = (doc) => {
   addTotalsSection(doc)
 }
 
-// Corporate Template
-const generateCorporateTemplate = (doc) => {
-  // Professional header with logo space
-  doc.setFillColor(44, 62, 80) // Dark blue
-  doc.rect(0, 0, 210, 50, 'F')
-  
-  doc.setTextColor(255, 255, 255)
-  doc.setFontSize(26)
-  doc.setFont('helvetica', 'bold')
-  doc.text('INVOICE', 14, 30)
-  
-  // Company details in header
-  doc.setFontSize(9)
-  doc.setFont('helvetica', 'normal')
-  doc.text(invoiceData.sender.name || 'Your Company Name', 120, 20)
-  doc.text(invoiceData.sender.email || 'contact@company.com', 120, 26)
-  doc.text(invoiceData.sender.phone || '+1 (555) 123-4567', 120, 32)
-  
-  // Invoice details section
-  doc.setTextColor(0, 0, 0)
-  doc.setFillColor(236, 240, 241)
-  doc.rect(14, 60, 180, 25, 'F')
-  
-  doc.setFontSize(11)
-  doc.setFont('helvetica', 'bold')
-  doc.text('Invoice Details', 18, 70)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(9)
-  doc.text(`Invoice Number: ${invoiceData.number}`, 18, 77)
-  doc.text(`Invoice Date: ${format(new Date(invoiceData.date), "MMM d, yyyy")}`, 100, 77)
-  doc.text(`Due Date: ${format(new Date(invoiceData.dueDate), "MMM d, yyyy")}`, 18, 82)
-  
-  // Client information
-  doc.setFont('helvetica', 'bold')
-  doc.setFontSize(11)
-  doc.text('Bill To:', 14, 100)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(10)
-  doc.text(invoiceData.client.name || 'Client Name', 14, 108)
-  doc.text(invoiceData.client.company || 'Company Name', 14, 115)
-  doc.text(invoiceData.client.address || 'Address', 14, 122)
-  
-  // Professional table
-  const tableData = invoiceData.items.map(item => [
-    item.feature || '',
-    item.description || '',
-    item.hours || '0',
-    formatCurrency(item.rate || 0),
-    formatCurrency((item.hours || 0) * (item.rate || 0))
-  ])
-  
-  doc.autoTable({
-    margin: { top: 135 },
-    head: [['Feature', 'Description', 'Hours', 'Rate', 'Amount']],
-    body: tableData,
-    theme: 'striped',
-    headStyles: {
-      fillColor: [44, 62, 80],
-      textColor: [255, 255, 255],
-      fontSize: 10,
-      fontStyle: 'bold'
-    },
-    alternateRowStyles: {
-      fillColor: [248, 249, 250]
-    },
-    styles: {
-      fontSize: 9,
-      cellPadding: 4
-    }
-  })
-  
-  addTotalsSection(doc)
-  addNotesAndTerms(doc)
-}
+
+
 
 // Helper function for totals section
 const addTotalsSection = (doc) => {
