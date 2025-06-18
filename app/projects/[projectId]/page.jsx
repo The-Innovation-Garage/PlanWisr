@@ -649,7 +649,7 @@ const [loadingProgress, setLoadingProgress] = useState(0);
 
   if (!project) {
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center">
+      <div className="flex min-h-[100vh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
           <p className="text-lg font-medium">Loading project...</p>
@@ -716,11 +716,13 @@ if (isLoading) {
           <div className="w-full space-y-4">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground">Loading project data...</span>
-              <span className="text-primary font-medium">{loadingProgress}%</span>
+              <span className="font-medium bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+  {loadingProgress}%
+</span>
             </div>
             <div className="h-2 bg-muted rounded-full overflow-hidden">
               <div 
-                className="h-full bg-primary transition-all duration-300 ease-out"
+                className=" bg-gradient-to-r from-indigo-600 to-purple-600 h-full bg-primary transition-all duration-300 ease-out"
                 style={{ width: `${loadingProgress}%` }}
               ></div>
             </div>
@@ -857,7 +859,7 @@ if (isLoading) {
                       </span>
                     </div>
                     <Progress value={completedTasks/totalTasks*100}
-                     className="h-2" />
+                     className="h-2  bg-gradient-to-r from-indigo-600 to-purple-600 " />
                     <div className="flex items-center justify-between mt-2 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Clock className="h-4 w-4" />
@@ -895,7 +897,7 @@ if (isLoading) {
                 </TabsList>
 
                 <Button
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-gradient-to-r from-indigo-600 to-purple-600  hover:bg-primary/90"
                   onClick={() => openTaskDialog()}
                 >
                   <Plus className="mr-2 h-4 w-4" />

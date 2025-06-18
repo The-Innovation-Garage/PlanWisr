@@ -93,7 +93,9 @@ body {
   }
 }
 
-main {
-  margin-bottom: 0 !important;
-  padding-bottom: 1rem !important;
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }

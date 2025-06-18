@@ -304,7 +304,7 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
                 Pause
               </Button>
             ) : (
-              <Button className="bg-primary hover:bg-primary/90" onClick={startTimer}>
+              <Button className="bg-gradient-to-r from-indigo-600 to-purple-600  hover:bg-primary/90" onClick={startTimer}>
                 <Play className="mr-2 h-4 w-4" />
                 Start
               </Button>

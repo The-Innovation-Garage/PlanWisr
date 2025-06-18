@@ -22,7 +22,7 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const router = useRouter()
 
-  const { SetIsLogin, SetFullName, SetUsername, SetEmail, SetUserId } = useUserStore()
+  const { SetIsLogin, SetFullName, SetUsername, SetEmail, SetAiLimit, SetUserId } = useUserStore()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -50,6 +50,9 @@ export default function LoginPage() {
         SetFullName(data.user.name)
         SetUserId(data.user._id)
         SetEmail(data.user.email)
+        let limit = data.user.aiLimit || 0
+        console.log(limit, data.user.aiLimit)
+        SetAiLimit(limit)
         router.push("/projects")
       }
     } catch (err) {

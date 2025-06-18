@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { CheckCircle, Zap, Infinity, Brain, BarChart4, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
+import toast from "react-hot-toast"
 
 export default function ProPage() {
   const router = useRouter()
@@ -31,6 +32,26 @@ export default function ProPage() {
     }
   ]
 
+  const changeAccountPlan = async(subscriptionId) => {
+    const req = await fetch("/api/account/change-plan", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ subscriptionId })
+    });
+
+    console.log("Changing account plan to subscription ID:", subscriptionId);
+
+    let data = await req.json();
+    if (data.type === "success") {
+      toast.success(data.message);
+    }
+    console.log("Response from change plan API:", data);
+
+  }
+
   const handleBuySubscription = () => {
 
     window.openPocketsflowCheckout({
@@ -40,6 +61,9 @@ export default function ProPage() {
       isDarkMode: true,
       onSuccess: (data) => {
         console.log("success", data);
+        if (data.data.status === "succeeded") {
+          changeAccountPlan(data.paymentIntentId);
+        }
       }
     });
 

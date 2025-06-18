@@ -28,8 +28,8 @@ export function Navbar() {
   const router = useRouter()
 
   // User state from store
-  const { isLogin, fullName, lastName, IsPro } = useUserStore()
-  const { SetIsLogin, aiLimit, SetAiLimit, SetFullName, SetUsername, SetEmail, SetUserId } = useUserStore()
+  const { isLogin, fullName, lastName, IsPro, Projects } = useUserStore()
+  const { SetIsLogin, aiLimit, SetAiLimit, SetFullName, SetUsername, SetEmail, SetUserId, SetProjects } = useUserStore()
 
   // Scroll effect for navbar background
   useEffect(() => {
@@ -64,6 +64,7 @@ export function Navbar() {
         SetFullName(data.user.name)
         SetUserId(data.user._id)
         SetEmail(data.user.email)
+        SetProjects(data.projects || 0) // Set projects count if available
         let limit = data.user.aiLimit || 0
         console.log(limit, data.user.aiLimit)
         SetAiLimit(limit) // Default AI limit if not set
@@ -125,11 +126,8 @@ export function Navbar() {
         {/* Logo */}
         <div className="flex items-center gap-2 font-bold text-primary">
           <Link href="/" className="flex items-center gap-2" aria-label="Go to homepage">
-            {/* <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-black bg-gradient-to-r from-indigo-600 to-purple-600 text-black select-none">
-              E
-            </div> */}
             <Image className="rounded-full" src="/icon.png" alt="Effinova Logo" width={32} height={32} />
-            <span className="text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">Effinova</span>
+            <span className="text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">PlanWisr</span>
           </Link>
         </div>
 
@@ -148,8 +146,6 @@ export function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" aria-label="View notifications" title="Notifications">
                     <Bell className="w-5 h-5" />
-                    {/* Add badge if needed */}
-                    {/* <span className="absolute top-0 right-0 block w-2 h-2 bg-red-500 rounded-full"></span> */}
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-60" align="end" forceMount>
@@ -183,8 +179,6 @@ export function Navbar() {
                         <>
                           {/* Premium ring effect */}
                           <div className="absolute inset-0 rounded-full animate-pulse ring-2 ring-yellow-400" />
-                          {/* Crown icon */}
-                         
                         </>
                       )}
                     </div>
@@ -196,10 +190,11 @@ export function Navbar() {
                       <Avatar className="h-10 w-10">
                         <AvatarFallback>{fullName ? fullName.charAt(0) : "U"}</AvatarFallback>
                       </Avatar>
-                     
                     </div>
-                    <div className="flex flex-col space-y-1">
+                    <div className="flex flex-col space-y-1 flex-1">
                       <p className="font-medium">{fullName}</p>
+                      
+                      {/* AI Credits Progress */}
                       <div className="flex flex-col space-y-1">
                         <div className="flex justify-between text-xs">
                           <span className="text-muted-foreground">AI Credits</span>
@@ -211,6 +206,31 @@ export function Navbar() {
                             style={{ width: `${(aiLimit / 10) * 100}%` }}
                           />
                         </div>
+                      </div>
+
+                      {/* Projects Progress */}
+                      <div className="flex flex-col space-y-1">
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">Projects</span>
+                          <span className={`text-muted-foreground ${Projects >= 5 ? 'text-orange-500 font-medium' : ''}`}>
+                            {Projects}/5
+                          </span>
+                        </div>
+                        <div className="h-1 w-full bg-secondary rounded-full">
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${
+                              Projects >= 5 
+                                ? 'bg-orange-500' 
+                                : Projects >= 4 
+                                ? 'bg-yellow-500' 
+                                : 'bg-green-500'
+                            }`}
+                            style={{ width: `${Math.min((Projects / 5) * 100, 100)}%` }}
+                          />
+                        </div>
+                        {Projects >= 5 && (
+                          <p className="text-xs text-orange-500 font-medium">Project limit reached</p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -255,8 +275,6 @@ export function Navbar() {
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </Button>
-
-
         </div>
       </div>
 

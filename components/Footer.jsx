@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { Github, Twitter } from "lucide-react"
+import Image from "next/image"
 
 export function Footer() {
   return (
@@ -10,10 +11,8 @@ export function Footer() {
         <div className="flex flex-col sm:flex-row justify-between items-center sm:items-center gap-6"> {/* Reduced gap-8 to gap-6 */}
           <div className="space-y-3"> {/* Reduced space-y-4 to space-y-3 */}
             <div className="flex items-center gap-2 font-bold">
-              <div className="size-8 rounded-lg bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center text-primary-foreground">
-                E
-              </div>
-              <span>Effinova</span>
+             <Image className="rounded-full" src="/icon.png" alt="Effinova Logo" width={32} height={32} />
+                         <span className="text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">PlanWisr</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Simplify how you work. Effinova brings your projects, time, and productivity under one roof.

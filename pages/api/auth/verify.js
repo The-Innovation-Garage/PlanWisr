@@ -1,4 +1,5 @@
 import User from "../../../models/User";
+import Project from "../../../models/Project";
 import connectDB from "../../../middlewares/connectDB";
 import { verifyToken } from "../../../utils/jwt";
 
@@ -37,10 +38,14 @@ const handler = async (req, res) => {
       });
     }
 
+    let projects = await Project.find({createdBy: user._id}, {createdAt: 0, updatedAt: 0, __v: 0}).countDocuments();
+
+
     return res.status(200).json({
       type: "success",
       message: "Token verified successfully.",
       user,
+      projects
     });
 
   } catch (error) {
