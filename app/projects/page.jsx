@@ -488,7 +488,7 @@ export default function ProjectsPage() {
                 {/* Action button */}
                 <Button
                   asChild
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-300"
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-blue-700 hover:to-blue-800 text-white border-0 shadow-md hover:shadow-lg transition-all duration-300"
                 >
                   <Link href={`/projects/${project._id}`}>
                     Open Project
@@ -525,7 +525,7 @@ export default function ProjectsPage() {
         }
       </h3>
 
-      <p className="text-slate-600 mb-6 max-w-md leading-relaxed">
+      <p className="my-5 text-slate-600 mb-6 max-w-md leading-relaxed">
         {filteredAndSortedProjects.length === 0 && projects.length > 0
           ? "Try adjusting your search query or filters to find what you're looking for."
           : "Create your first project to start organizing your work and tracking progress."
@@ -535,7 +535,7 @@ export default function ProjectsPage() {
       <Button
         asChild
         size="lg"
-        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+        className="my-5  bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
       >
         <Link href="/projects/new">
           <Plus className="mr-2 h-5 w-5" />
@@ -569,7 +569,7 @@ export default function ProjectsPage() {
               <Button
                 asChild
                 size="lg"
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8"
+                className=" bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 px-8"
               >
                 <Link href="/projects/new">
                   <Plus className="mr-2 h-5 w-5" />

@@ -17,7 +17,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 
-
 export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
   // Timer state
   const [isRunning, setIsRunning] = useState(false)
@@ -35,12 +34,48 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
   // Refs
   const startTimeRef = useRef(null)
   const timerRef = useRef(null)
+  const originalTitleRef = useRef(null)
   const [startTime, setStartTime] = useState(null)
   const [pausedTime, setPausedTime] = useState(0)
 
   const [pauseStartTime, setPauseStartTime] = useState(null)
-const [totalPauseDuration, setTotalPauseDuration] = useState(0)
+  const [totalPauseDuration, setTotalPauseDuration] = useState(0)
 
+  // Store original title on mount
+  useEffect(() => {
+    originalTitleRef.current = document.title
+    return () => {
+      // Restore original title on unmount
+      if (originalTitleRef.current) {
+        document.title = originalTitleRef.current
+      }
+    }
+  }, [])
+
+  // Update document title when timer is running
+  useEffect(() => {
+    if (isRunning) {
+      const updateTitle = () => {
+        const currentTime = timerMode === "stopwatch" ? elapsedTime : countdownTime
+        const timeString = formatTime(currentTime)
+        const status = timerMode === "stopwatch" ? "Recording" : "Countdown"
+        document.title = `⏱️ ${status}: ${timeString} - PlanWisr`
+      }
+      
+      // Update immediately
+      updateTitle()
+      
+      // Update every second while running
+      const titleInterval = setInterval(updateTitle, 1000)
+      
+      return () => clearInterval(titleInterval)
+    } else {
+      // Restore original title when not running
+      if (originalTitleRef.current) {
+        document.title = originalTitleRef.current
+      }
+    }
+  }, [isRunning, elapsedTime, countdownTime, timerMode])
 
   // Format time as HH:MM:SS
   const formatTime = (timeInSeconds) => {
@@ -50,51 +85,51 @@ const [totalPauseDuration, setTotalPauseDuration] = useState(0)
 
     return `${hrs.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`
   }
-// Update the startTimer function to handle resume after pause
-const startTimer = () => {
-  if (!isRunning) {
-    const now = new Date()
-    
-    // If this is a resume after pause, calculate pause duration
-    if (pauseStartTime) {
-      const pauseDuration = Math.floor((now - pauseStartTime) / 1000)
-      setTotalPauseDuration(prev => prev + pauseDuration)
-      setPauseStartTime(null)
-    }
 
-    startTimeRef.current = startTimeRef.current || now
-    setStartTime(now)
-    setIsRunning(true)
-
-    timerRef.current = setInterval(() => {
-      if (timerMode === "stopwatch") {
-        const currentTime = new Date()
-        const timeDiff = Math.floor((currentTime - now) / 1000) + pausedTime
-        setElapsedTime(timeDiff)
-      } else {
-        setCountdownTime((prev) => {
-          if (prev <= 1) {
-            stopTimer()
-            return 0
-          }
-          return prev - 1
-        })
+  // Update the startTimer function to handle resume after pause
+  const startTimer = () => {
+    if (!isRunning) {
+      const now = new Date()
+      
+      // If this is a resume after pause, calculate pause duration
+      if (pauseStartTime) {
+        const pauseDuration = Math.floor((now - pauseStartTime) / 1000)
+        setTotalPauseDuration(prev => prev + pauseDuration)
+        setPauseStartTime(null)
       }
-    }, 1000)
-  }
-}
 
+      startTimeRef.current = startTimeRef.current || now
+      setStartTime(now)
+      setIsRunning(true)
 
-// Update the pauseTimer function
-const pauseTimer = () => {
-  if (isRunning && timerRef.current) {
-    clearInterval(timerRef.current)
-    timerRef.current = null
-    setIsRunning(false)
-    setPauseStartTime(new Date()) // Record when we paused
-    setPausedTime(elapsedTime)
+      timerRef.current = setInterval(() => {
+        if (timerMode === "stopwatch") {
+          const currentTime = new Date()
+          const timeDiff = Math.floor((currentTime - now) / 1000) + pausedTime
+          setElapsedTime(timeDiff)
+        } else {
+          setCountdownTime((prev) => {
+            if (prev <= 1) {
+              stopTimer()
+              return 0
+            }
+            return prev - 1
+          })
+        }
+      }, 1000)
+    }
   }
-}
+
+  // Update the pauseTimer function
+  const pauseTimer = () => {
+    if (isRunning && timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+      setIsRunning(false)
+      setPauseStartTime(new Date()) // Record when we paused
+      setPausedTime(elapsedTime)
+    }
+  }
 
   // Stop the timer and open dialog
   const stopTimer = () => {
@@ -107,65 +142,63 @@ const pauseTimer = () => {
     setIsDialogOpen(true)
   }
 
-// Update the resetTimer function
-const resetTimer = () => {
-  if (timerRef.current) {
-    clearInterval(timerRef.current)
-    timerRef.current = null
+  // Update the resetTimer function
+  const resetTimer = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+
+    setIsRunning(false)
+    setStartTime(null)
+    setPausedTime(0)
+    startTimeRef.current = null
+    setPauseStartTime(null)
+    setTotalPauseDuration(0)
+    
+    if (timerMode === "stopwatch") {
+      setElapsedTime(0)
+    } else {
+      const totalSeconds = hours * 3600 + minutes * 60 + seconds
+      setCountdownTime(totalSeconds > 0 ? totalSeconds : 25 * 60)
+    }
   }
 
-  setIsRunning(false)
-  setStartTime(null)
-  setPausedTime(0)
-  startTimeRef.current = null
-  setPauseStartTime(null)
-  setTotalPauseDuration(0)
-  
-  if (timerMode === "stopwatch") {
-    setElapsedTime(0)
-  } else {
-    const totalSeconds = hours * 3600 + minutes * 60 + seconds
-    setCountdownTime(totalSeconds > 0 ? totalSeconds : 25 * 60)
-  }
-}
+  // Update the saveTimeEntry function
+  const saveTimeEntry = () => {
+    if (!startTimeRef.current) return;
 
-// Update the saveTimeEntry function
-const saveTimeEntry = () => {
-  if (!startTimeRef.current) return;
+    const endTime = new Date();
+    let duration;
 
-  const endTime = new Date();
-  let duration;
+    if (timerMode === "stopwatch") {
+      // Calculate duration excluding pause time
+      duration = Math.floor((endTime - startTimeRef.current) / 1000) - totalPauseDuration;
+    } else {
+      // For countdown, use the set time minus remaining time
+      const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+      const remainingTime = countdownTime;
+      duration = totalSeconds - remainingTime;
+    }
 
-  if (timerMode === "stopwatch") {
-    // Calculate duration excluding pause time
-    duration = Math.floor((endTime - startTimeRef.current) / 1000) - totalPauseDuration;
-  } else {
-    // For countdown, use the set time minus remaining time
-    const totalSeconds = hours * 3600 + minutes * 60 + seconds;
-    const remainingTime = countdownTime;
-    duration = totalSeconds - remainingTime;
-  }
+    const timeEntry = {
+      projectId,
+      taskId,
+      startTime: startTimeRef.current.toISOString(),
+      endTime: endTime.toISOString(),
+      duration,
+      description,
+      mode: timerMode,
+    };
 
-  const timeEntry = {
-    projectId,
-    taskId,
-    startTime: startTimeRef.current.toISOString(),
-    endTime: endTime.toISOString(),
-    duration,
-    description,
-    mode: timerMode,
+    onSaveTimeEntry(timeEntry);
+
+    // Reset state
+    setDescription("");
+    resetTimer();
+    setIsDialogOpen(false);
   };
 
-  onSaveTimeEntry(timeEntry);
-
-  // Reset state
-  setDescription("");
-  resetTimer();
-  setIsDialogOpen(false);
-};
-
-
- 
   // Update countdown time when hours, minutes, or seconds change
   useEffect(() => {
     if (!isRunning && timerMode === "countdown") {
@@ -192,6 +225,11 @@ const saveTimeEntry = () => {
           <CardTitle className="flex items-center">
             <Clock className="mr-2 h-5 w-5" />
             Project Timer
+            {isRunning && (
+              <span className="ml-2 text-sm text-red-500 animate-pulse">
+                ● Recording
+              </span>
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -340,4 +378,3 @@ const saveTimeEntry = () => {
     </>
   )
 }
-
