@@ -34,7 +34,7 @@ export default function RootLayout({
           <Navbar/>
           {/* <FeedbackWidget/> */}
           {children}
-          <Footer/>
+          {/* <Footer/> */}
         </ThemeProvider>
       </body>
     </html>

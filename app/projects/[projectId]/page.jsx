@@ -739,7 +739,7 @@ if (isLoading) {
 
   return (
     <>
-      <main className="flex-1 py-8">
+      <main className="flex-1 pt-8">
         <div className="container px-4 md:px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1197,7 +1197,7 @@ if (isLoading) {
                     </Button>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-8">
+                    <div className="text-center py-3">
                       <Receipt className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
                       <h3 className="text-lg font-medium mb-2">Manage Project Invoices</h3>
                       <p className="text-muted-foreground mb-4">

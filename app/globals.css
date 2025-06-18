@@ -92,3 +92,8 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+main {
+  margin-bottom: 0 !important;
+  padding-bottom: 1rem !important;
+}

@@ -717,10 +717,10 @@ const addNotesAndTerms = (doc) => {
             <Download className="mr-2 h-4 w-4" />
             Download PDF
           </Button>
-          <Button>
+          {/* <Button>
             <Send className="mr-2 h-4 w-4" />
             Send to Client
-          </Button>
+          </Button> */}
         </div>
       </div>
 

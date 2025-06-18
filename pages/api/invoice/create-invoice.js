@@ -102,11 +102,12 @@ export async function generateInvoiceId() {
       invoiceId: new RegExp(`INV-${year}-`, 'i')
     }).sort({ invoiceId: -1 });
   
-    let sequence = '0001';
+    let sequence = 1;
     if (latestInvoice) {
       const lastSequence = parseInt(latestInvoice.invoiceId.split('-')[2]);
-      sequence = (lastSequence + 1).toString().padStart(4, '0');
+      sequence = lastSequence + 1;
     }
+    console.log(`Generated sequence: ${sequence} ${typeof sequence}`);
   
     return `INV-${year}${month}-${sequence}`;
   }
