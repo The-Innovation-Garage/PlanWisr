@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import { useUserStore } from "@/store/store"
+import Image from "next/image"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -124,9 +125,10 @@ export function Navbar() {
         {/* Logo */}
         <div className="flex items-center gap-2 font-bold text-primary">
           <Link href="/" className="flex items-center gap-2" aria-label="Go to homepage">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-black bg-gradient-to-r from-indigo-600 to-purple-600 text-black select-none">
+            {/* <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-black bg-gradient-to-r from-indigo-600 to-purple-600 text-black select-none">
               E
-            </div>
+            </div> */}
+            <Image className="rounded-full" src="/icon.png" alt="Effinova Logo" width={32} height={32} />
             <span className="text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">Effinova</span>
           </Link>
         </div>

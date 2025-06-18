@@ -5,7 +5,7 @@ import { Github, Twitter } from "lucide-react"
 
 export function Footer() {
   return (
-    <footer className="w-full border-t bg-background/95 backdrop-blur-sm">
+    <footer className="mt-10 w-full border-t bg-background/95 backdrop-blur-sm">
     <div className="container flex flex-col gap-8 px-4 py-10 md:px-6 lg:py-16">
       <div className="flex flex-col sm:flex-row justify-between items-center sm:items-center gap-8">
         <div className="space-y-4">
