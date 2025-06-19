@@ -680,37 +680,44 @@ export default function DashboardPage() {
         <h2 className="text-xl font-semibold">Time Tracking Overview</h2>
         <div className="text-right">
           <p className="text-sm text-muted-foreground">Total Time This Month</p>
-          <p className="text-2xl font-bold text-primary">{totalTime.formatted}</p>
+          <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+{totalTime.formatted}</p>
         </div>
       </div>
       <div className="h-[400px] w-full">
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            data={hoursData}
-            margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
-          >
-            <XAxis 
-              dataKey="date"
-              tick={{ fill: 'currentColor' }}
-            />
-            <YAxis 
-              tick={{ fill: 'currentColor' }}
-              label={{ 
-                value: 'Minutes', 
-                angle: -90, 
-                position: 'insideLeft',
-                fill: 'currentColor'
-              }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar 
-              dataKey="minutes" 
-              fill="hsl(var(--primary))"
-              radius={[4, 4, 0, 0]}
-              name="Time Spent"
-            />
-          </BarChart>
-        </ResponsiveContainer>
+      <ResponsiveContainer width="100%" height={400}>
+  <BarChart
+    data={hoursData}
+    margin={{ top: 20, right: 30, left: 40, bottom: 20 }}
+  >
+    <defs>
+  <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stopColor="#4f46e5" />
+    <stop offset="100%" stopColor="#9333ea" />
+  </linearGradient>
+</defs>
+    <XAxis 
+      dataKey="date"
+      tick={{ fill: 'currentColor' }}
+    />
+    <YAxis 
+      tick={{ fill: 'currentColor' }}
+      label={{ 
+        value: 'Minutes', 
+        angle: -90, 
+        position: 'insideLeft',
+        fill: 'currentColor'
+      }}
+    />
+    <Tooltip content={<CustomTooltip />} />
+    <Bar 
+      dataKey="minutes" 
+      fill="url(#barGradient)"
+      radius={[4, 4, 0, 0]}
+      name="Time Spent"
+    />
+  </BarChart>
+</ResponsiveContainer>
       </div>
     </CardContent>
   </Card>

@@ -178,7 +178,16 @@ export function Navbar() {
                       {IsPro && (
                         <>
                           {/* Premium ring effect */}
-                          <div className="absolute inset-0 rounded-full animate-pulse ring-2 ring-yellow-400" />
+                          <div
+                            className="absolute inset-0 rounded-full animate-pulse"
+                            style={{
+                              background: 'conic-gradient(from 0deg, #4f46e5, #9333ea, #4f46e5)',
+                              padding: '2px',
+                              borderRadius: '50%'
+                            }}
+                          >
+                            <div className="w-full h-full rounded-full bg-background"></div>
+                          </div>
                         </>
                       )}
                     </div>
@@ -193,7 +202,7 @@ export function Navbar() {
                     </div>
                     <div className="flex flex-col space-y-1 flex-1">
                       <p className="font-medium">{fullName}</p>
-                      
+
                       {/* AI Credits Progress */}
                       <div className="flex flex-col space-y-1">
                         <div className="flex justify-between text-xs">
@@ -218,13 +227,12 @@ export function Navbar() {
                         </div>
                         <div className="h-1 w-full bg-secondary rounded-full">
                           <div
-                            className={`h-full rounded-full transition-all duration-300 ${
-                              Projects >= 5 
-                                ? 'bg-orange-500' 
-                                : Projects >= 4 
-                                ? 'bg-yellow-500' 
-                                : 'bg-green-500'
-                            }`}
+                            className={`h-full rounded-full transition-all duration-300 ${Projects >= 5
+                                ? 'bg-orange-500'
+                                : Projects >= 4
+                                  ? 'bg-yellow-500'
+                                  : 'bg-green-500'
+                              }`}
                             style={{ width: `${Math.min((Projects / 5) * 100, 100)}%` }}
                           />
                         </div>
