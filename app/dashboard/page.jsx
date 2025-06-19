@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import interactionPlugin from "@fullcalendar/interaction"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogContent,
@@ -24,9 +24,8 @@ import { format } from "date-fns"
 import { PieChart, Pie, Cell, Legend } from 'recharts'
 
 import { Badge } from "@/components/ui/badge"
-import { Edit, Sparkles } from "lucide-react"
+import { Edit, Sparkles, DollarSign, Receipt, AlertCircle, Clock } from "lucide-react"
 import { useUserStore } from "@/store/store"
-
 
 export default function DashboardPage() {
   const [tasks, setTasks] = useState([])
@@ -37,8 +36,7 @@ export default function DashboardPage() {
   const [taskProject, setTaskProject] = useState("")
   const [taskDate, setTaskDate] = useState("")
   const [projects, setProjects] = useState([])
-  const [hoursData, setHoursData] = useState([]);
-
+  const [hoursData, setHoursData] = useState([])
 
   // State for projects data for pie chart of time spend per project
   const [projectsData, setProjectsData] = useState([])
@@ -46,11 +44,62 @@ export default function DashboardPage() {
   // State for today's tasks
   const [todayTasks, setTodayTasks] = useState([])
 
+  // State for invoice analytics
+  const [invoiceData, setInvoiceData] = useState({
+    totalInvoices: 0,
+    totalEarnings: 0,
+    pendingEarnings: 0,
+    overdueCount: 0,
+    overdueTotal: 0
+  })
 
-  const {SetAiLimit} = useUserStore();
 
+  const [totalTime, setTotalTime] = useState({
+    minutes: 0,
+    hours: 0,
+    remainingMinutes: 0,
+    formatted: '0h 0m'
+  });
+
+  const {SetAiLimit} = useUserStore()
 
   const router = useRouter()
+
+  // Format currency helper
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount)
+  }
+
+  // Fetch invoice analytics data
+  const getInvoiceData = async () => {
+    try {
+      const req = await fetch("/api/analytics/get-invoices-data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      const res = await req.json()
+      
+      if (res.type === "success") {
+        setInvoiceData({
+          totalInvoices: res.totalInvoices || 0,
+          totalEarnings: res.totalEarnings || 0,
+          pendingEarnings: res.pendingEarnings || 0,
+          overdueCount: res.overdueCount || 0,
+          overdueTotal: res.overdueTotal || 0
+        })
+      } else {
+        console.error("Failed to fetch invoice data:", res.message)
+      }
+    } catch (error) {
+      console.error("Error fetching invoice data:", error)
+    }
+  }
 
   const getTodayTasks = async() => {
     try {
@@ -76,7 +125,6 @@ export default function DashboardPage() {
       toast.error("Failed to load tasks")
     }
   }
-
 
   const fetchTasks = async () => {
     try {
@@ -225,8 +273,6 @@ export default function DashboardPage() {
     setTaskDate("")
   }
 
-
-
   const getHoursData = async() => {
     try {
       const req = await fetch("/api/analytics/get-hours-data", {
@@ -240,6 +286,23 @@ export default function DashboardPage() {
       const res = await req.json();
       
       if (res.type === 'success' && res.entries?.length > 0) {
+        // Calculate total minutes from all entries
+        const totalMinutesOverall = res.entries.reduce((total, entry) => {
+          return total + entry.totalMinutes;
+        }, 0);
+  
+        // Convert to hours and minutes for display
+        const totalHours = Math.floor(totalMinutesOverall / 60);
+        const remainingMinutes = Math.round(totalMinutesOverall % 60);
+        
+        // Store the total time
+        setTotalTime({
+          minutes: totalMinutesOverall,
+          hours: totalHours,
+          remainingMinutes: remainingMinutes,
+          formatted: `${totalHours}h ${remainingMinutes}m`
+        });
+  
         // Get current month's start and end dates
         const dates = res.entries.map(entry => new Date(entry._id));
         const now = new Date();
@@ -287,13 +350,27 @@ export default function DashboardPage() {
         });
         
         console.log('Formatted Data with zero values:', formattedData);
+        console.log('Total Time Overall:', `${totalHours}h ${remainingMinutes}m`);
         setHoursData(formattedData);
+      } else {
+        // Set zero values when no data
+        setTotalTime({
+          minutes: 0,
+          hours: 0,
+          remainingMinutes: 0,
+          formatted: '0h 0m'
+        });
       }
     } catch (error) {
       console.error('Error fetching hours data:', error);
+      setTotalTime({
+        minutes: 0,
+        hours: 0,
+        remainingMinutes: 0,
+        formatted: '0h 0m'
+      });
     }
   };
-
 
   // Add this custom tooltip component
   const CustomTooltip = ({ active, payload, label }) => {
@@ -310,6 +387,7 @@ export default function DashboardPage() {
     }
     return null
   }
+
   const getProjectsData = async () => {
     try {
       const req = await fetch("/api/analytics/get-projects-data", {
@@ -336,18 +414,16 @@ export default function DashboardPage() {
     }
   }
 
-
   useEffect(() => {
-    fetchTasks();
-    fetchProjects();
-    getHoursData();
-    getProjectsData();
-    getTodayTasks();
+    fetchTasks()
+    fetchProjects()
+    getHoursData()
+    getProjectsData()
+    getTodayTasks()
+    getInvoiceData() // Add this line
   }, [])
 
-
   const taskPrioritize = async () => {
-
     try {
       toast.loading("Prioritizing tasks with AI...")
       const req = await fetch("/api/ai/prioritize", {
@@ -376,14 +452,74 @@ export default function DashboardPage() {
     }
   }
 
-
-
   return (
     <main className="flex-1 py-8">
-        <h1  style={{
-        margin: "50px"
-      }} className="text-center my-10 font-bold text-3xl">Your Tasks</h1>
       <div className="container px-4 md:px-6">
+        <h1 style={{
+          margin: "40px 0px"
+        }} className="my-10 text-center my-10 font-bold text-3xl">Dashboard Overview</h1>
+        
+        {/* Invoice Analytics Cards */}
+        <div className=" grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Invoices</CardTitle>
+              <Receipt className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{invoiceData.totalInvoices}</div>
+              <p className="text-xs text-muted-foreground">
+                All invoices created
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">
+                {formatCurrency(invoiceData.totalEarnings)}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                From paid invoices
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Pending Earnings</CardTitle>
+              <Clock className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">
+                {formatCurrency(invoiceData.pendingEarnings)}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Awaiting payment
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Overdue</CardTitle>
+              <AlertCircle className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-red-600">{invoiceData.overdueCount}</div>
+              <p className="text-xs text-muted-foreground">
+                {formatCurrency(invoiceData.overdueTotal)} overdue
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <h2 className="text-center my-10 font-bold text-2xl">Your Tasks</h2>
+        
         <Card>
           <CardContent className="p-6">
             <FullCalendar
@@ -402,152 +538,151 @@ export default function DashboardPage() {
       </div>
 
       {/* Add after the existing bar chart Card */}
-<div style={{
-  margin: "20px 0px"
-}} className="container px-4 md:px-6 mt-6">
-<div className="grid md:grid-cols-2 gap-6">
-  {/* Today's Tasks Card */}
-  <Card  style={{
-        maxHeight: "500px", // Adjust based on your layout
-        minHeight: "500px", // Minimum height for the card
-
-      }} className="overflow-y-auto overflow-x-hidden ">
-      <CardContent className="pt-6">
-      <div className=" flex items-center justify-between mb-4">
-      <h2 className="text-xl font-semibold">Today's Tasks</h2>
-      <Button
-      onClick={taskPrioritize}
-        variant="outline"
-        size="sm"
-        className="flex items-center gap-2"
-      
-      >
-        <Sparkles className="h-4 w-4" />
-        AI Prioritize
-      </Button>
-    </div>
-        <div className="h-[400px] overflow-auto">
-          {todayTasks.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-              <p>No tasks due today</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {todayTasks.map((task) => (
-                <div
-                  key={task._id}
-                  className="p-4 rounded-lg border hover:bg-muted/50 transition-colors"
+      <div style={{
+        margin: "20px 0px"
+      }} className="container px-4 md:px-6 mt-6">
+        <div className="grid md:grid-cols-2 gap-6">
+          {/* Today's Tasks Card */}
+          <Card style={{
+            maxHeight: "500px",
+            minHeight: "500px",
+          }} className="overflow-y-auto overflow-x-hidden ">
+            <CardContent className="pt-6">
+              <div className=" flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Today's Tasks</h2>
+                <Button
+                  onClick={taskPrioritize}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
                 >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-medium">{task.title}</h3>
-                      {task.description && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {task.description}
-                        </p>
-                      )}
-                      <Badge className="mt-2" variant="secondary">
-                        {task.project ? task.project.title : "No Project"}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={task.status === 'completed' ? 'default' : 'secondary'}>
-                        {task.status === 'completed' ? 'Done' : 'Pending'}
-                      </Badge>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => {
-                          setCurrentTask(task);
-                          setTaskTitle(task.title);
-                          setTaskDescription(task.description);
-                          setTaskProject(task.project);
-                          setTaskDate(new Date(task.dueDate).toISOString().split('T')[0]);
-                          setIsDialogOpen(true);
-                        }}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </div>
+                  <Sparkles className="h-4 w-4" />
+                  AI Prioritize
+                </Button>
+              </div>
+              <div className="h-[400px] overflow-auto">
+                {todayTasks.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
+                    <p>No tasks due today</p>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ) : (
+                  <div className="space-y-4">
+                    {todayTasks.map((task) => (
+                      <div
+                        key={task._id}
+                        className="p-4 rounded-lg border hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="font-medium">{task.title}</h3>
+                            {task.description && (
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {task.description}
+                              </p>
+                            )}
+                            <Badge className="mt-2" variant="secondary">
+                              {task.project ? task.project.title : "No Project"}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Badge variant={task.status === 'completed' ? 'default' : 'secondary'}>
+                              {task.status === 'completed' ? 'Done' : 'Pending'}
+                            </Badge>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => {
+                                setCurrentTask(task);
+                                setTaskTitle(task.title);
+                                setTaskDescription(task.description);
+                                setTaskProject(task.project);
+                                setTaskDate(new Date(task.dueDate).toISOString().split('T')[0]);
+                                setIsDialogOpen(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Projects Time Distribution Card */}
+          <Card>
+            <CardContent className="pt-6">
+              <h2 className="text-xl font-semibold mb-4">Time Distribution by Project</h2>
+              <div className="h-[400px] w-full">
+                <ResponsiveContainer width="100%" height={400}>
+                  <PieChart>
+                    <Pie
+                      data={projectsData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={150}
+                      label={({
+                        cx,
+                        cy,
+                        midAngle,
+                        innerRadius,
+                        outerRadius,
+                        value,
+                        name
+                      }) => {
+                        const RADIAN = Math.PI / 180
+                        const radius = innerRadius + (outerRadius - innerRadius) * 0.5
+                        const x = cx + radius * Math.cos(-midAngle * RADIAN)
+                        const y = cy + radius * Math.sin(-midAngle * RADIAN)
+
+                        return (
+                          <text
+                            x={x}
+                            y={y}
+                            fill="currentColor"
+                            textAnchor={x > cx ? 'start' : 'end'}
+                            dominantBaseline="central"
+                          >
+                            {`${name} (${value.toFixed(0)}m)`}
+                          </text>
+                        )
+                      }}
+                    >
+                      {projectsData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={`hsl(${index * (360 / projectsData.length)}, 70%, 50%)`}
+                        />
+                      ))}
+                    </Pie>
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </CardContent>
-    </Card>
-
-  {/* Projects Time Distribution Card */}
-  <Card>
-    <CardContent className="pt-6">
-      <h2 className="text-xl font-semibold mb-4">Time Distribution by Project</h2>
-      <div className="h-[400px] w-full">
-        <ResponsiveContainer width="100%" height={400}>
-          <PieChart>
-            <Pie
-              data={projectsData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={150}
-              label={({
-                cx,
-                cy,
-                midAngle,
-                innerRadius,
-                outerRadius,
-                value,
-                name
-              }) => {
-                const RADIAN = Math.PI / 180
-                const radius = innerRadius + (outerRadius - innerRadius) * 0.5
-                const x = cx + radius * Math.cos(-midAngle * RADIAN)
-                const y = cy + radius * Math.sin(-midAngle * RADIAN)
-
-                return (
-                  <text
-                    x={x}
-                    y={y}
-                    fill="currentColor"
-                    textAnchor={x > cx ? 'start' : 'end'}
-                    dominantBaseline="central"
-                  >
-                    {`${name} (${value.toFixed(0)}m)`}
-                  </text>
-                )
-              }}
-            >
-              {projectsData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={`hsl(${index * (360 / projectsData.length)}, 70%, 50%)`}
-                />
-              ))}
-            </Pie>
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
       </div>
-    </CardContent>
-  </Card>
-  
-  </div>
-</div>
 
+      <h2 className="text-center my-10 font-bold text-2xl">Analytics</h2>
 
-
-
-      <h1 style={{
-        margin: "50px"
-      }} className="text-center my-10 font-bold text-3xl">Analytics</h1>
-
-      {/* Graph */}
-      <div className="container px-4 md:px-6">
+   
+    {/* Graph */}
+<div className="container px-4 md:px-6">
   <Card>
     <CardContent className="pt-6">
-      <h2 className="text-xl font-semibold mb-4">Time Tracking Overview</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Time Tracking Overview</h2>
+        <div className="text-right">
+          <p className="text-sm text-muted-foreground">Total Time This Month</p>
+          <p className="text-2xl font-bold text-primary">{totalTime.formatted}</p>
+        </div>
+      </div>
       <div className="h-[400px] w-full">
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
