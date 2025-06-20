@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import FullCalendar from "@fullcalendar/react"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import interactionPlugin from "@fullcalendar/interaction"
+import withAuth from '@/components/withAuth';
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
@@ -27,7 +29,7 @@ import { Badge } from "@/components/ui/badge"
 import { Edit, Sparkles, DollarSign, Receipt, AlertCircle, Clock } from "lucide-react"
 import { useUserStore } from "@/store/store"
 import HeatmapCalendar from "@/components/HeatmapCalendar"
-export default function DashboardPage() {
+function DashboardPage() {
   const [tasks, setTasks] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [currentTask, setCurrentTask] = useState(null)
@@ -798,3 +800,6 @@ export default function DashboardPage() {
     </main>
   )
 }
+
+
+export default withAuth(DashboardPage)

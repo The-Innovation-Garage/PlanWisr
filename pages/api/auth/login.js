@@ -53,6 +53,7 @@ const handler = async (req, res) => {
         email: user.email,
         name: user.name,
         aiLimit: user.aiLimit,
+        isPro: user.isPro
       };
 
       return res.status(200).json({

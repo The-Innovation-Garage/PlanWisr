@@ -28,8 +28,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import withAuth from '@/components/withAuth';
 
-export default function UpdateInvoicePage({ params }) {
+function UpdateInvoicePage({ params }) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { projectId } = use(params)
@@ -524,3 +525,5 @@ export default function UpdateInvoicePage({ params }) {
     </div>
   )
 }
+
+export default withAuth(UpdateInvoicePage)

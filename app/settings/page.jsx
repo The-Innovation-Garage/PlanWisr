@@ -1,5 +1,6 @@
 // app/settings/page.jsx
 "use client"
+import withAuth from '@/components/withAuth';
 
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
@@ -11,7 +12,7 @@ import { Upload, Save } from "lucide-react"
 import toast from "react-hot-toast"
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { storage } from "@/firebase/firebaseStorage"
-export default function CompanySettingsPage() {
+function CompanySettingsPage() {
     const [companyData, setCompanyData] = useState({
         name: "",
         email: "",
@@ -272,3 +273,5 @@ export default function CompanySettingsPage() {
         </div>
     )
 }
+
+export default withAuth(CompanySettingsPage);

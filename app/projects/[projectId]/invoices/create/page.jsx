@@ -34,8 +34,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import toast from "react-hot-toast"
+import withAuth from '@/components/withAuth';
 
-export default function CreateInvoicePage({params}) {
+function CreateInvoicePage({params}) {
   const { projectId } = use(params)
  const [invoiceData, setInvoiceData] = useState({
   projectId: projectId,
@@ -971,3 +972,6 @@ function formatCurrency(amount) {
     currency: 'USD'
   }).format(amount)
 }
+
+
+export default withAuth(CreateInvoicePage)

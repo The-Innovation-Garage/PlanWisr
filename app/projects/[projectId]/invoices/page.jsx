@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
 import jsPDF from 'jspdf'
 import 'jspdf-autotable'
+import withAuth from '@/components/withAuth';
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -49,7 +51,7 @@ const INVOICE_TEMPLATES = {
   corporate: 'Corporate'
 }
 
-export default function InvoicesPage({ params }) {
+function InvoicesPage({ params }) {
   const router = useRouter()
   const { projectId } = use(params)
   const [invoices, setInvoices] = useState([])
@@ -799,3 +801,6 @@ export default function InvoicesPage({ params }) {
     </div>
   )
 }
+
+
+export default withAuth(InvoicesPage)

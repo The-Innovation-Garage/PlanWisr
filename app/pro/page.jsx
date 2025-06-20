@@ -52,10 +52,19 @@ export default function ProPage() {
       toast.success(data.message);
     }
     console.log("Response from change plan API:", data);
+    router.push("/pro/success")
 
   }
 
+
+
   const handleBuySubscription = () => {
+    let token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("You need to be logged in to buy a subscription.");
+      router.push("/login");
+      return;
+    }
     console.log(`User id: ${userId}`);
     window.openPocketsflowCheckout({
       type: "subscription",
@@ -127,7 +136,7 @@ export default function ProPage() {
           transition={{ delay: 0.6 }}
           className="max-w-[400px] py-10 mx-auto bg-card border rounded-xl p-8 text-center"
         >
-          <div className="mb-4">
+          <div className="mb-4 pt-4">
             <span className="text-3xl font-bold">$15</span>
             <span className="text-muted-foreground">/month</span>
           </div>

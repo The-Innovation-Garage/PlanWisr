@@ -1,4 +1,5 @@
 "use client"
+import withAuth from '@/components/withAuth';
 
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
@@ -114,7 +115,7 @@ const PRIORITY_CONFIG = {
   low: { icon: Flag, color: "text-emerald-500", bgColor: "bg-emerald-50 border-emerald-200" }
 }
 
-export default function ProjectsPage() {
+function ProjectsPage() {
   // State management
   const router = useRouter()
   const [projects, setProjects] = useState([])
@@ -845,3 +846,6 @@ export default function ProjectsPage() {
         />
       )}
        */}
+
+
+export default withAuth(ProjectsPage);

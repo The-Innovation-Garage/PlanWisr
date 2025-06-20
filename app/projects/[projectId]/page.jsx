@@ -47,6 +47,9 @@ import { Progress } from "@/components/ui/progress"
 import { ProjectTimer } from "@/components/project-timer"
 import { TimeEntriesList } from "@/components/time-entries-list"
 import toast from "react-hot-toast"
+import withAuth from '@/components/withAuth';
+
+
 // Define the task statuses for the Kanban board
 const taskStatuses = ["not-started", "in-progress", "done"]
 
@@ -64,7 +67,7 @@ const priorityColors = {
   "high": "bg-red-500"
 }
 
-export default function ProjectDetailPage({ params }) {
+function ProjectDetailPage({ params }) {
   const [shareLink, setShareLink] = useState("")
 const [isLinkDialogOpen, setIsLinkDialogOpen] = useState(false)
 
@@ -1420,3 +1423,6 @@ if (isLoading) {
     </>
   )
 }
+
+
+export default withAuth(ProjectDetailPage)

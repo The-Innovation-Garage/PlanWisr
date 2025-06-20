@@ -116,6 +116,7 @@ export default function LandingPage() {
           "Basic analytics for overall performance",
           "50 AI credits per month"
         ],
+        link: "/signup",
         cta: "Get Started for Free",
       },
       {
@@ -129,7 +130,8 @@ export default function LandingPage() {
           "Advanced analytics for deeper insights",
           "500 AI credits per month",
         ],
-        cta: "Start Free Trial",
+        cta: "Buy Now",
+        link: "/pro",
         popular: true,
       },
     ];
@@ -544,10 +546,12 @@ export default function LandingPage() {
                             className={`w-full mt-auto rounded-full transition-all duration-200 ${plan.popular
                               ? "bg-primary hover:scale-105"
                               : "bg-muted hover:bg-muted/80 hover:scale-105"
-                              }`}
-                            variant={plan.popular ? "default" : "outline"}
-                          >
+                            }`}
+                            variant={plan.popular ? "default" : "outline"} asChild
+                            >
+                          <Link href={plan.link}>
                             {plan.cta}
+                            </Link>
                           </Button>
                         </CardContent>
                       </Card>

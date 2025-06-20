@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { format } from "date-fns"
+import withAuth from '@/components/withAuth';
+
 import { 
   FileText, AlertCircle, Info, Calendar as CalendarIcon,
   Activity, Flag, Tag, Lightbulb, Zap, Coins, ArrowLeft, Rocket, CheckCircle,
@@ -37,7 +39,7 @@ import { cn } from "@/lib/utils"
 import { Switch } from "@/components/ui/switch"
 import { useUserStore } from "@/store/store"
 
-export default function NewProjectPage() {
+function NewProjectPage() {
   const {SetAiLimit} = useUserStore();
 
   const user = { name: "John Doe" } // Replace with actual user data fetching logic
@@ -686,3 +688,6 @@ return (
   </div>
 )
 }
+
+
+export default withAuth(NewProjectPage);

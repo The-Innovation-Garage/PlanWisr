@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
@@ -10,11 +10,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import toast from "react-hot-toast"
 import { useUserStore } from "@/store/store"
+import { useSearchParams } from 'next/navigation';
 
 const MotionInput = motion(Input)
 const MotionButton = motion(Button)
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -22,7 +25,7 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const router = useRouter()
 
-  const { SetIsLogin, SetFullName, SetUsername, SetEmail, SetAiLimit, SetUserId } = useUserStore()
+  const { SetIsLogin, SetFullName, SetUsername, SetEmail, SetAiLimit, SetUserId, SetIsPro } = useUserStore()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -50,6 +53,7 @@ export default function LoginPage() {
         SetFullName(data.user.name)
         SetUserId(data.user._id)
         SetEmail(data.user.email)
+        SetIsPro(data.user.isPro || false)
         let limit = data.user.aiLimit || 0
         console.log(limit, data.user.aiLimit)
         SetAiLimit(limit)
@@ -63,6 +67,21 @@ export default function LoginPage() {
     }
   }
 
+  const checkForLoginError = async() => {
+   // Check for the error parameter on page load
+   const error = searchParams.get('error');
+   if (error === 'auth_required') {
+     toast.error("You must be logged in to view that page.");
+     // Optional: remove the error from the URL without reloading the page
+     window.history.replaceState(null, "", "/login");
+   }
+  }
+
+
+  
+  useEffect(() => {
+    checkForLoginError();
+  }, [searchParams]);
   return (
     <main className="flex-1 flex items-center justify-center py-12">
       <div className="container px-4 md:px-6">

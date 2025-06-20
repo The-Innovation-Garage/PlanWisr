@@ -208,7 +208,7 @@ export function Navbar() {
                       <div className="flex flex-col space-y-1">
                         <div className="flex justify-between text-xs">
                           <span className="text-muted-foreground">AI Credits</span>
-                          <span className="text-muted-foreground">{aiLimit}/10</span>
+                          <span className="text-muted-foreground">{aiLimit}/{IsPro?100:10}</span>
                         </div>
                         <div className="h-1 w-full bg-secondary rounded-full">
                           <div
@@ -223,7 +223,7 @@ export function Navbar() {
                         <div className="flex justify-between text-xs">
                           <span className="text-muted-foreground">Projects</span>
                           <span className={`text-muted-foreground ${Projects >= 5 ? 'text-orange-500 font-medium' : ''}`}>
-                            {Projects}/5
+                            {Projects}/{isPro?"Unlimited": 5}
                           </span>
                         </div>
                         <div className="h-1 w-full bg-secondary rounded-full">
@@ -237,7 +237,7 @@ export function Navbar() {
                             style={{ width: `${Math.min((Projects / 5) * 100, 100)}%` }}
                           />
                         </div>
-                        {Projects >= 5 && (
+                        {Projects >= 5 && IsPro === false && (
                           <p className="text-xs text-orange-500 font-medium">Project limit reached</p>
                         )}
                       </div>

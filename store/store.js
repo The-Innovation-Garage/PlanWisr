@@ -10,7 +10,7 @@ export const useUserStore = create((set) => ({
   uploadProgressCaption: "",
   attachmentProgress: 0,
   aiLimit: 0,
-  IsPro: true,
+  IsPro: false,
   Projects: 0,
   SetProjects: (newState) => set({ Projects:newState}),
   SetAttachmentProgress: (newState) => set({ attachmentProgress:newState}),
