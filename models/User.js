@@ -9,6 +9,8 @@ const userSchema = new Schema({
   aiLimit: { type: Number, default: 10 }, // Default AI limit
   isPro: { type: Boolean, default: false }, // Pro status
   subscriptionStatus: { type: String, default: "inactive" }, // Subscription status (active, cancelled, refunded, etc.)
+  paymentIntentId: { type: String, default: null }, // Payment Intent ID for Pro users
+  stripeCustomerId: { type: String, default: null }, // Stripe Customer ID for
   subscriptionId: { type: String, default: null }, // Subscription ID for Pro users
   companyDetails: {
     name: { type: String, default: "" },

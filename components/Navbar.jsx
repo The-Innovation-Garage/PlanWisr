@@ -62,6 +62,7 @@ export function Navbar() {
       if (data.type === "success") {
         SetIsLogin(true)
         SetFullName(data.user.name)
+        console.log(data.user._id)
         SetUserId(data.user._id)
         SetEmail(data.user.email)
         SetProjects(data.projects || 0) // Set projects count if available

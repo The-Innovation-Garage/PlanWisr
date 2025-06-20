@@ -28,7 +28,7 @@ const handler = async (req, res) => {
     }
     user.isPro = true;
     user.subscriptionStatus = 'active';
-    user.subscriptionId = req.body.subscriptionId || null;
+    user.paymentIntentId = req.body.subscriptionId || null;
     await user.save();
 
     return res.status(201).json({

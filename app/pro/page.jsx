@@ -5,9 +5,12 @@ import { CheckCircle, Zap, Infinity, Brain, BarChart4, Clock } from "lucide-reac
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import toast from "react-hot-toast"
+import { useUserStore } from "@/store/store"
 
 export default function ProPage() {
   const router = useRouter()
+
+  const {userId} = useUserStore();
 
   const features = [
     {
@@ -53,12 +56,15 @@ export default function ProPage() {
   }
 
   const handleBuySubscription = () => {
-
+    console.log(`User id: ${userId}`);
     window.openPocketsflowCheckout({
       type: "subscription",
       subscriptionId: "68499ec889fe16276c40b820",
       subdomain: "psychocoder",
       isDarkMode: true,
+      metadata: {
+        userId: userId
+      },
       onSuccess: (data) => {
         console.log("success", data);
         if (data.data.status === "succeeded") {

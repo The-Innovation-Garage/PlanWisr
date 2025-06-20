@@ -13,56 +13,59 @@ const handler = async (req, res) => {
   
       console.log("📦 Webhook Event:", payload);
       console.log("📩 Event received:", eventType);
+
+      let data = extractSubscriptionData(payload);
+      const {stripeCustomerId, stripeSubscriptionId, userId} = data;
      
     
       switch (eventType) {
         case 'order.completed':
-          console.log("✅ New Order Completed:", email);
+          console.log("✅ New Order Completed:", userId);
   
           // Update user as premium or create a subscription record
           // Example:
-          await User.updateOne({ email }, { isPro: true, subscriptionStatus: 'active', subscriptionId: orderId });
+          await User.updateOne({ _id: userId }, { isPro: true, subscriptionStatus: 'active', subscriptionId: orderId });
   
           break;
   
         case 'order.refunded':
-          console.log("💸 Order Refunded:", email);
+          console.log("💸 Order Refunded:", userId);
   
           // Downgrade user or revoke access
           // Example:
-          await User.updateOne({ email }, { isPro: false, subscriptionStatus: 'refunded' });
+          await User.updateOne({ _id: userId }, { isPro: false, subscriptionStatus: 'refunded' });
   
           break;
   
         case 'customer.subscription.deleted':
-          console.log("⛔ Subscription Cancelled:", email);
+          console.log("⛔ Subscription Cancelled:", userId);
   
           // Mark user as cancelled
-          await User.updateOne({ email }, { isPro: false, subscriptionStatus: 'cancelled' });
+          await User.updateOne({ _id: userId }, { isPro: false, subscriptionStatus: 'cancelled' });
   
           break;
   
         case 'customer.subscription.updated':
-          console.log("🔄 Subscription Updated:", email);
+          console.log("🔄 Subscription Updated:", userId);
   
           // You can update the status if changed
-          await User.updateOne({ email }, { subscriptionStatus: 'updated' });
+          await User.updateOne({ _id:userId }, { subscriptionStatus: 'updated' });
   
           break;
   
         case 'invoice.payment_succeeded':
-          console.log("💳 Subscription Renewed (Payment Succeeded):", email);
+          console.log("💳 Subscription Renewed (Payment Succeeded):", userId);
   
           // Ensure premium access stays active
-          await User.updateOne({ email }, { isPro: true, subscriptionStatus: 'active' });
+          await User.updateOne({ _id:userId }, { isPro: true, subscriptionStatus: 'active', subscriptionId: stripeSubscriptionId, stripeCustomerId, aiLimit: 500 });
   
           break;
   
         case 'invoice.payment_failed':
-          console.log("❌ Payment Failed:", email);
+          console.log("❌ Payment Failed:", userId);
   
           // Optionally mark user as inactive or notify them
-          await User.updateOne({ email }, { isPro: false, subscriptionStatus: 'payment_failed' });
+          await User.updateOne({ _id:userId }, { isPro: false, subscriptionStatus: 'payment_failed' });
   
           break;
   
@@ -77,5 +80,23 @@ const handler = async (req, res) => {
     }
   }
   
+  
+
+  const extractSubscriptionData = (webhookBody) => {
+    const metadata = webhookBody.subscription_details?.metadata || {};
+  
+    // Extract from webhookMetadata string (if available)
+    const rawWebhookMetadata = metadata.webhookMetadata?.replace(/^"|"$/g, "") || "";
+    const parsedMetadata = new URLSearchParams(rawWebhookMetadata);
+  
+    return {
+      userId: parsedMetadata.get("userId") || metadata.userId || null,
+      stripeSubscriptionId: webhookBody.subscription || metadata.subscription || null,
+      stripeCustomerId: webhookBody.customer || metadata.stripeCustomerId || null,
+    };
+  };
+
+
   export default connectDB(handler);
+
   

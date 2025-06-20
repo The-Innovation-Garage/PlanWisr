@@ -26,7 +26,7 @@ import { PieChart, Pie, Cell, Legend } from 'recharts'
 import { Badge } from "@/components/ui/badge"
 import { Edit, Sparkles, DollarSign, Receipt, AlertCircle, Clock } from "lucide-react"
 import { useUserStore } from "@/store/store"
-
+import HeatmapCalendar from "@/components/HeatmapCalendar"
 export default function DashboardPage() {
   const [tasks, setTasks] = useState([])
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -673,7 +673,9 @@ export default function DashboardPage() {
 
    
     {/* Graph */}
-<div className="container px-4 md:px-6">
+    <div className="container px-4 md:px-6 grid gap-6 lg:grid-cols-2 items-start">
+        
+       
   <Card>
     <CardContent className="pt-6">
       <div className="flex justify-between items-center mb-4">
@@ -721,6 +723,13 @@ export default function DashboardPage() {
       </div>
     </CardContent>
   </Card>
+
+  {/* New Heatmap Card */}
+  <Card>
+          <CardContent className="pt-6">
+            <HeatmapCalendar activityData={hoursData} />
+          </CardContent>
+        </Card>
 </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
