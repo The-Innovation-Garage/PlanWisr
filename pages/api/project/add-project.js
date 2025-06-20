@@ -1,4 +1,5 @@
 import Project from "../../../models/Project"
+import User from "../../../models/User"
 import connectDB from "../../../middlewares/connectDB";
 import { verifyToken } from '../../../utils/jwt';
 const handler = async (req, res) => {
@@ -13,6 +14,14 @@ const handler = async (req, res) => {
         console.log("Token:", token);
        const decoded = verifyToken(token, process.env.NEXT_PUBLIC_JWT_TOKEN);
        const userId = decoded.userId;
+       let user = await User.findById(userId);
+       if (user.isPro === false) {
+        let projectsCount = await Project.countDocuments({ createdBy: userId });
+        if (projectsCount >= 5) {
+          return res.status(403).json({ message: "You have reached the limit of 5 projects for free users. Please upgrade to Pro to create more projects.", type: "error" });
+        }
+
+       }
        const project = new Project({  
            title,
            description,

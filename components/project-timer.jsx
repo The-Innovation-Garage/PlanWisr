@@ -299,9 +299,9 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
         <CardFooter className="flex justify-between">
           <div>
             {isRunning ? (
-              <Button variant="outline" onClick={pauseTimer}>
+              <Button disabled={true} variant="outline">
                 <Pause className="mr-2 h-4 w-4" />
-                Pause
+                Start
               </Button>
             ) : (
               <Button className="bg-gradient-to-r from-indigo-600 to-purple-600  hover:bg-primary/90" onClick={startTimer}>
@@ -369,7 +369,7 @@ export function ProjectTimer({ projectId, taskId, onSaveTimeEntry }) {
             >
               Discard
             </Button>
-            <Button onClick={saveTimeEntry} className="bg-primary hover:bg-primary/90">
+            <Button onClick={saveTimeEntry} className="bg-gradient-to-r from-indigo-600 to-purple-600">
               Save Time Entry
             </Button>
           </DialogFooter>

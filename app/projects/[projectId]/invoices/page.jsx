@@ -632,7 +632,7 @@ function InvoicesPage({ params }) {
           <h1 className="text-2xl font-bold tracking-tight">Invoices</h1>
           <p className="text-muted-foreground">Manage and track your project invoices</p>
         </div>
-        <Button onClick={() => router.push(`/projects/${projectId}/invoices/create`)}>
+        <Button className="bg-gradient-to-r from-indigo-600 to-purple-600" onClick={() => router.push(`/projects/${projectId}/invoices/create`)}>
           <Plus className="mr-2 h-4 w-4" />
           Create Invoice
         </Button>

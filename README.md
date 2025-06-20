@@ -1,10 +1,10 @@
-# Effinova — All-in-One AI-Powered Workspace for Freelancers & Entrepreneurs
+# PlanWisr — All-in-One AI-Powered Workspace for Freelancers & Entrepreneurs
 
-Effinova is a unified project management suite designed specifically for freelancers, solopreneurs, and small teams. It combines task management, financial tracking, calendar integration, and AI-powered automation — eliminating the need to juggle 8+ different tools like Trello, QuickBooks, and Google Calendar.
+PlanWisr is a unified project management suite designed specifically for freelancers, solopreneurs, and small teams. It combines task management, financial tracking, calendar integration, and AI-powered automation — eliminating the need to juggle 8+ different tools like Trello, QuickBooks, and Google Calendar.
 
-## 🚀 Why Effinova?
+## 🚀 Why PlanWisr?
 
-Freelancers lose an average of 4.8 hours every week switching between apps to manage their work, communicate with clients, track payments, and stay on top of tasks. Effinova brings everything under one roof to streamline your workflow and boost productivity.
+Freelancers lose an average of 4.8 hours every week switching between apps to manage their work, communicate with clients, track payments, and stay on top of tasks. PlanWisr brings everything under one roof to streamline your workflow and boost productivity.
 
 ---
 ## ✨ Key Features
@@ -65,4 +65,4 @@ For any feedback, ideas, or collaboration requests, feel free to reach out:
 
 ---
 
-**Effinova — Simplify Work. Amplify Results.**
+**PlanWisr — Simplify Work. Amplify Results.**

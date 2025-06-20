@@ -29,4 +29,10 @@ export const useUserStore = create((set) => ({
   SetEmail: (newState) => set({ email:newState}),
   SetAiLimit: (newState) => set({ aiLimit:newState}),
   SetIsPro: (newState) => set({ IsPro:newState}),
+
+  // for PRO users
+  stripeCustomerId: "",
+  SetStripeCustomerId: (newState) => set({ stripeCustomerId:newState}),
+  subscriptionId: "",
+  SetSubscriptionId: (newState) => set({ subscriptionId:newState}),
 }))

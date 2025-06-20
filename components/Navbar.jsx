@@ -29,7 +29,7 @@ export function Navbar() {
 
   // User state from store
   const { isLogin, fullName, lastName, IsPro, Projects } = useUserStore()
-  const { SetIsLogin, aiLimit, SetAiLimit, SetFullName, SetUsername, SetEmail, SetUserId, SetProjects } = useUserStore()
+  const { SetIsLogin, aiLimit, SetAiLimit, SetFullName, SetUsername, SetEmail, SetUserId, SetProjects, SetStripeCustomerId, SetSubscriptionId, SetIsPro, subscriptionId, stripeCustomerId } = useUserStore()
 
   // Scroll effect for navbar background
   useEffect(() => {
@@ -68,6 +68,11 @@ export function Navbar() {
         SetProjects(data.projects || 0) // Set projects count if available
         let limit = data.user.aiLimit || 0
         console.log(limit, data.user.aiLimit)
+        SetIsPro(data.user.isPro || false) // Set Pro status
+        if (data.user.isPro) {
+          SetStripeCustomerId(data.user.stripeCustomerId || "")
+          SetSubscriptionId(data.user.subscriptionId || "")
+        }
         SetAiLimit(limit) // Default AI limit if not set
       } else {
         SetIsLogin(false)
@@ -105,9 +110,18 @@ export function Navbar() {
       <Link href="/" onClick={handleMobileLinkClick} className="py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
         Home
       </Link>
-      <Link href="/projects" onClick={handleMobileLinkClick} className="py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+      {
+        isLogin?(
+          <>
+          <Link href="/dashboard" onClick={handleMobileLinkClick} className="py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+        Dashboard
+      </Link>
+          <Link href="/projects" onClick={handleMobileLinkClick} className="py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
         Projects
       </Link>
+      </>
+        ):null
+      }
       <Link href="/#pricing" onClick={handleMobileLinkClick} className="py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
         Pricing
       </Link>
@@ -127,7 +141,7 @@ export function Navbar() {
         {/* Logo */}
         <div className="flex items-center gap-2 font-bold text-primary">
           <Link href="/" className="flex items-center gap-2" aria-label="Go to homepage">
-            <Image className="rounded-full" src="/icon.png" alt="Effinova Logo" width={32} height={32} />
+            <Image className="rounded-full" src="/icon.png" alt="PlanWisr Logo" width={32} height={32} />
             <span className="text-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-transparent bg-clip-text">PlanWisr</span>
           </Link>
         </div>
@@ -141,21 +155,7 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           {/* Desktop actions */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Notifications Dropdown */}
-            {isLogin && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" aria-label="View notifications" title="Notifications">
-                    <Bell className="w-5 h-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-60" align="end" forceMount>
-                  <p className="px-4 py-2 font-semibold">Notifications</p>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem disabled>No new notifications</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+           
 
             {/* Theme toggle */}
             <Button variant="ghost" size="icon" onClick={toggleTheme} aria-label="Toggle theme" title="Toggle dark/light mode" className="rounded-full">
@@ -208,7 +208,7 @@ export function Navbar() {
                       <div className="flex flex-col space-y-1">
                         <div className="flex justify-between text-xs">
                           <span className="text-muted-foreground">AI Credits</span>
-                          <span className="text-muted-foreground">{aiLimit}/{IsPro?100:10}</span>
+                          <span className="text-muted-foreground">{aiLimit}/{IsPro ? 500 : 10}</span>
                         </div>
                         <div className="h-1 w-full bg-secondary rounded-full">
                           <div
@@ -223,16 +223,16 @@ export function Navbar() {
                         <div className="flex justify-between text-xs">
                           <span className="text-muted-foreground">Projects</span>
                           <span className={`text-muted-foreground ${Projects >= 5 ? 'text-orange-500 font-medium' : ''}`}>
-                            {Projects}/{isPro?"Unlimited": 5}
+                            {Projects}/{IsPro ? "♾️" : 5}
                           </span>
                         </div>
                         <div className="h-1 w-full bg-secondary rounded-full">
                           <div
                             className={`h-full rounded-full transition-all duration-300 ${Projects >= 5
-                                ? 'bg-orange-500'
-                                : Projects >= 4
-                                  ? 'bg-yellow-500'
-                                  : 'bg-green-500'
+                              ? 'bg-orange-500'
+                              : Projects >= 4
+                                ? 'bg-yellow-500'
+                                : 'bg-green-500'
                               }`}
                             style={{ width: `${Math.min((Projects / 5) * 100, 100)}%` }}
                           />
@@ -254,6 +254,21 @@ export function Navbar() {
                       <Settings className="w-4 h-4" /> Settings
                     </Link>
                   </DropdownMenuItem>
+                  {
+                    IsPro ? (
+                      <DropdownMenuItem asChild>
+                        <a
+                          href={`https://merchant.pocketsflow.com/portal/${subscriptionId}/${stripeCustomerId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 w-full"
+                        >
+
+                          <Crown className="w-4 h-4" /> Manage Subscription
+                        </a>
+                      </DropdownMenuItem>
+                    ) : null
+                  }
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="cursor-pointer flex items-center gap-2">
                     <LogOut className="w-4 h-4" /> Logout
@@ -265,7 +280,7 @@ export function Navbar() {
                 <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                   Log in
                 </Link>
-                <Button className="rounded-full bg-primary hover:bg-primary/90">
+                <Button className="rounded-full bg-gradient-to-r from-indigo-600 to-purple-600">
                   <Link href="/signup" className="flex items-center gap-1 px-3 py-1 text-white">
                     Get Started <ChevronRight className="w-4 h-4" />
                   </Link>

@@ -25,7 +25,7 @@ export default function LoginPage() {
   const [error, setError] = useState("")
   const router = useRouter()
 
-  const { SetIsLogin, SetFullName, SetUsername, SetEmail, SetAiLimit, SetUserId, SetIsPro } = useUserStore()
+  const { SetIsLogin, SetFullName, SetUsername, SetEmail, SetAiLimit, SetUserId, SetIsPro, SetStripeCustomerId, SetSubscriptionId } = useUserStore()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -57,6 +57,8 @@ export default function LoginPage() {
         let limit = data.user.aiLimit || 0
         console.log(limit, data.user.aiLimit)
         SetAiLimit(limit)
+        SetStripeCustomerId(data.user.stripeCustomerId || "")
+        SetSubscriptionId(data.user.subscriptionId || "")
         router.push("/projects")
       }
     } catch (err) {
@@ -125,9 +127,7 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                    Forgot password?
-                  </Link>
+                  
                 </div>
 
                 <div className="relative">
@@ -162,7 +162,7 @@ export default function LoginPage() {
               <MotionButton
   type="submit"
   disabled={isLoading}
-  className="w-full flex items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-base font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+  className="w-full flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-3 text-base font-semibold text-white shadow-lg transition-all duration-300 ease-in-out hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
   whileTap={{ scale: 0.95 }}
   whileHover={{
     scale: 1.05,

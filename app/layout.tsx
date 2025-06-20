@@ -13,8 +13,8 @@ import Script from "next/script"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Home - PlanWise",
-  description: "Manage your time and tasks effectively with PlanWise.",
+  title: "Welcome to PlanWisr",
+  description: "Manage your time and tasks effectively with PlanWisr.",
 }
 
 export default function RootLayout({

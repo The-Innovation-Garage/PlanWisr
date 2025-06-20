@@ -202,7 +202,7 @@ export default function SignupPage() {
                     </div>
                   )}
                 </div>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90" disabled={isLoading}>
+                <Button type="submit" className="w-full bg-gradient-to-r from-indigo-600 to-purple-600" disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

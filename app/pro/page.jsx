@@ -65,10 +65,10 @@ export default function ProPage() {
       router.push("/login");
       return;
     }
-    console.log(`User id: ${userId}`);
+    // console.log(`User id: ${userId}`);
     window.openPocketsflowCheckout({
       type: "subscription",
-      subscriptionId: "68499ec889fe16276c40b820",
+      subscriptionId: "6845b98089fe16276c0a2536",
       subdomain: "psychocoder",
       isDarkMode: true,
       metadata: {
@@ -136,8 +136,8 @@ export default function ProPage() {
           transition={{ delay: 0.6 }}
           className="max-w-[400px] py-10 mx-auto bg-card border rounded-xl p-8 text-center"
         >
-          <div className="mb-4 pt-4">
-            <span className="text-3xl font-bold">$15</span>
+          <div className="mb-4 mt-4">
+            <span className="text-3xl font-bold">$10</span>
             <span className="text-muted-foreground">/month</span>
           </div>
           <ul className="space-y-3 mb-6">
@@ -164,7 +164,7 @@ export default function ProPage() {
           </ul>
 
           <Button size="lg"
-            className="w-full bg-primary hover:bg-primary/90" onClick={handleBuySubscription}>
+            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 " onClick={handleBuySubscription}>
             Buy Subscription
           </Button>
 

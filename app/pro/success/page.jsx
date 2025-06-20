@@ -75,7 +75,7 @@ export default function ProSuccessPage() {
       >
         <Card className="w-full max-w-md shadow-2xl z-10">
           <CardHeader className="text-center items-center">
-            <PartyPopper className="w-14 h-14 text-primary mb-4" />
+            <PartyPopper className="w-14 h-14  text-primary mb-4" />
             <CardTitle className="text-3xl font-bold">Congratulations!</CardTitle>
             <CardDescription className="text-md pt-1">
               You've successfully upgraded to PlanWisr Pro.
@@ -94,7 +94,7 @@ export default function ProSuccessPage() {
                     className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg"
                   >
                     {feature.icon}
-                    <span className="font-medium">{feature.title}</span>
+                    <span className="ml-2 font-medium">{feature.title}</span>
                   </motion.li>
                 ))}
               </ul>
@@ -103,7 +103,7 @@ export default function ProSuccessPage() {
           <CardFooter>
             <Button
               size="lg"
-              className="w-full"
+              className="w-full text-white bg-gradient-to-r from-indigo-600 to-purple-600"
               onClick={handleContinue}
             >
               Continue to Dashboard

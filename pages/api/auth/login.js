@@ -53,7 +53,9 @@ const handler = async (req, res) => {
         email: user.email,
         name: user.name,
         aiLimit: user.aiLimit,
-        isPro: user.isPro
+        isPro: user.isPro,
+        subscriptionId: user.subscriptionId || "",
+        stripeCustomerId: user.stripeCustomerId || "",
       };
 
       return res.status(200).json({

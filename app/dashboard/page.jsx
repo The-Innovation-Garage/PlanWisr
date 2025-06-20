@@ -63,7 +63,7 @@ function DashboardPage() {
     formatted: '0h 0m'
   });
 
-  const {SetAiLimit} = useUserStore()
+  const {SetAiLimit, IsPro} = useUserStore()
 
   const router = useRouter()
 
@@ -77,6 +77,9 @@ function DashboardPage() {
 
   // Fetch invoice analytics data
   const getInvoiceData = async () => {
+    if (IsPro == false) {
+      return;
+    }
     try {
       const req = await fetch("/api/analytics/get-invoices-data", {
         method: "POST",
@@ -462,7 +465,9 @@ function DashboardPage() {
         }} className="my-10 text-center my-10 font-bold text-3xl">Dashboard Overview</h1>
         
         {/* Invoice Analytics Cards */}
-        <div className=" grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+      {
+        IsPro?(
+          <div className=" grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Invoices</CardTitle>
@@ -519,6 +524,8 @@ function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+        ):null
+      }
 
         <h2 className="text-center my-10 font-bold text-2xl">Your Tasks</h2>
         
@@ -671,11 +678,13 @@ function DashboardPage() {
         </div>
       </div>
 
-      <h2 className="text-center my-10 font-bold text-2xl">Analytics</h2>
+      <h2 style={{
+        margin: "20px 0px"
+      }} className="text-center my-10 font-bold text-2xl">Analytics</h2>
 
    
     {/* Graph */}
-    <div className="container px-4 md:px-6 grid gap-6 lg:grid-cols-2 items-start">
+    <div className="container px-4 md:px-6 flex flex-col gap-6 mb-8">
         
        
   <Card>
@@ -726,12 +735,12 @@ function DashboardPage() {
     </CardContent>
   </Card>
 
-  {/* New Heatmap Card */}
+  {/* New Heatmap Card
   <Card>
           <CardContent className="pt-6">
             <HeatmapCalendar activityData={hoursData} />
           </CardContent>
-        </Card>
+        </Card> */}
 </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

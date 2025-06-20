@@ -212,7 +212,7 @@ function UpdateInvoicePage({ params }) {
             </p>
           </div>
         </div>
-        <Button onClick={saveInvoice} disabled={saving}>
+        <Button className="bg-gradient-to-r from-indigo-600 to-purple-600" onClick={saveInvoice} disabled={saving}>
           <Save className="mr-2 h-4 w-4" />
           {saving ? 'Saving...' : 'Save Changes'}
         </Button>

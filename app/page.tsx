@@ -63,47 +63,78 @@ export default function LandingPage() {
 
   const features = [
     {
-      icon: <FolderKanban className="text-primary w-6 h-6" />,
+      icon: (
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+          <FolderKanban className="w-6 h-6" />
+        </div>
+      ),
       title: "Project Management",
       description: "Create and organize unlimited projects, assign tasks, and define milestones in a clean visual layout."
     },
     {
-      icon: <CheckCircle className="text-primary w-6 h-6" />,
+      icon: (
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+          <CheckCircle className="w-6 h-6" />
+        </div>
+      ),
       title: "Smart Task Tracking",
       description: "Prioritize tasks, set due dates, and track status with AI-generated suggestions and auto-updates."
     },
     {
-      icon: <Timer className="text-primary w-6 h-6" />,
+      icon: (
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+          <Timer className="w-6 h-6" />
+        </div>
+      ),
       title: "Time Tracking",
       description: "Automatically track how much time you spend on each task to improve productivity and focus."
     },
     {
-      icon: <CalendarClock className="text-primary w-6 h-6" />,
+      icon: (
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+          <CalendarClock className="w-6 h-6" />
+        </div>
+      ),
       title: "AI-Powered Scheduling",
       description: "Our AI recommends optimal time slots for your tasks based on urgency, deadlines, and past habits."
     },
     {
-      icon: <BellRing className="text-primary w-6 h-6" />,
+      icon: (
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+          <BellRing className="w-6 h-6" />
+        </div>
+      ),
       title: "Sync & Smart Reminders",
       description: "Stay on track with real-time sync across devices and intelligent reminders before important tasks."
     },
     {
-      icon: <BarChart2 className="text-primary w-6 h-6" />,
+      icon: (
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+          <BarChart2 className="w-6 h-6" />
+        </div>
+      ),
       title: "Progress Insights",
       description: "Gain visual insights into your time usage, task completion, and productivity trends over time."
     },
     {
-      icon: <Users className="text-primary w-6 h-6" />,
+      icon: (
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+          <Users className="w-6 h-6" />
+        </div>
+      ),
       title: "Team Collaboration (Coming Soon)",
       description: "Invite team members, assign roles, and collaborate on projects with seamless updates and comments."
     },
     {
-      icon: <Smartphone className="text-primary w-6 h-6" />,
+      icon: (
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-500 text-white">
+          <Smartphone className="w-6 h-6" />
+        </div>
+      ),
       title: "Mobile App (Upcoming)",
       description: "Take Planwise on the go with our sleek mobile app — manage tasks from anywhere, anytime."
     }
   ];
-
   const getPlans = () => {
     const plans = [
       {
@@ -121,7 +152,7 @@ export default function LandingPage() {
       },
       {
         name: "Paid Plan",
-        price: 15,
+        price: 10,
         description: "Ideal for growing teams and businesses.",
         features: [
           "All Free Plan features",
@@ -171,7 +202,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="text-lg md:text-l max-w-3xl mx-auto text-gray-500 dark:text-gray-300 mb-12 leading-relaxed">
-                Whether you're a freelancer, indie hacker, or entrepreneur — Effinova brings your projects, tasks, time, and finances into one clean, AI-powered workspace. Build smarter. Stay focused. Grow faster.
+                Whether you're a freelancer, indie hacker, or entrepreneur — PlanWisr brings your projects, tasks, time, and finances into one clean, AI-powered workspace. Build smarter. Stay focused. Grow faster.
               </p>
 
               <div className="flex flex-col sm:flex-row justify-center gap-6 max-w-md mx-auto">
@@ -249,7 +280,7 @@ export default function LandingPage() {
             >
               <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
                 <Badge
-                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-primary/90 text-white hover:text-black dark:hover:text-white shadow-md"
+                  className="group bg-gradient-to-r from-indigo-600 to-purple-600 rounded-full px-4 py-1.5 text-sm font-medium  text-white hover:text-black dark:hover:text-white shadow-md"
                   variant="secondary"
                 >
                   <CheckCircle className="mr-2 h-4 w-4 group-hover:text-black dark:group-hover:text-white" />
@@ -260,7 +291,7 @@ export default function LandingPage() {
                 Smart Tools for Smarter Work
               </h2>
               <p className="max-w-[700px] text-muted-foreground md:text-lg">
-                Effinova combines intelligent automation, sleek UI, and powerful insights to help you stay organized and perform at your peak.
+                PlanWisr combines intelligent automation, sleek UI, and powerful insights to help you stay organized and perform at your peak.
               </p>
             </motion.div>
 
@@ -278,9 +309,9 @@ export default function LandingPage() {
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <Card className="h-full overflow-hidden border-border/40 bg-white/60 dark:bg-background/80 backdrop-blur-md transition-all hover:shadow-xl">
+                  <Card className="h-full overflow-hidden border-border/40 backdrop-blur-md transition-all hover:shadow-xl">
                     <CardContent className="p-6 flex flex-row gap-4 items-start">
-                      <div className="min-w-[40px] mt-1">{feature.icon}</div>
+                      <div className="min-w-[40px] mt-1 ">{feature.icon}</div>
                       <div>
                         <h3 className="text-lg font-semibold mb-1 text-gray-900 dark:text-white">
                           {feature.title}
@@ -311,7 +342,7 @@ export default function LandingPage() {
             >
               <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
                 <Badge
-                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-primary/90 text-white hover:text-black dark:hover:text-white shadow-md"
+                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:text-black dark:hover:text-white shadow-md"
                   variant="secondary"
                 >
                   <CalendarClock className="mr-2 h-4 w-4 group-hover:text-black dark:group-hover:text-white" />
@@ -322,7 +353,7 @@ export default function LandingPage() {
               From Idea to Invoice — All in One Place
               </h2>
               <p className="max-w-[700px] text-muted-foreground md:text-lg">
-                Effinova simplifies every step of your workflow — from planning tasks to getting paid. Just focus on building.
+                PlanWisr simplifies every step of your workflow — from planning tasks to getting paid. Just focus on building.
 
               </p>
             </motion.div>
@@ -355,7 +386,7 @@ export default function LandingPage() {
                     transition={{ duration: 0.5, delay: i * 0.1 }}
                     className="relative z-10 flex flex-col items-center text-center space-y-4"
                   >
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-primary-foreground text-xl font-bold shadow-lg">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-primary-foreground text-xl font-bold shadow-lg">
                       {step.step}
                     </div>
                     <h3 className="text-xl font-bold">{step.title}</h3>
@@ -484,7 +515,7 @@ export default function LandingPage() {
             >
               <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
                 <Badge
-                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-primary/90 text-white hover:text-black dark:hover:text-white shadow-md"
+                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:text-black dark:hover:text-white shadow-md"
                   variant="secondary"
                 >
                   <BarChart2 className="mr-2 h-4 w-4 group-hover:text-black dark:group-hover:text-white" />
@@ -495,18 +526,13 @@ export default function LandingPage() {
                 Simple, Transparent Pricing
               </h2>
               <p className="max-w-[700px] text-muted-foreground md:text-lg">
-                Choose the plan that's right for your business. All plans include a 14-day free trial.
+                Choose the plan that's right for your business.
               </p>
             </motion.div>
 
             {/* Tabs */}
             <Tabs defaultValue="monthly" className="w-full">
-              <div className="flex justify-center mb-10">
-                <TabsList className="rounded-full p-1 bg-muted/20 backdrop-blur">
-                  <TabsTrigger value="monthly" className="rounded-full px-6 text-base">Monthly</TabsTrigger>
-                </TabsList>
-              </div>
-
+             
               {/* Cards */}
               <TabsContent value="monthly" key="monthly">
                 <div className="grid gap-8 lg:grid-cols-2">
@@ -523,7 +549,7 @@ export default function LandingPage() {
                           }`}
                       >
                         {plan.popular && (
-                          <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg">
+                          <div className="absolute top-0 right-0 bg-gradient-to-r from-indigo-600 to-purple-600 text-primary-foreground px-3 py-1 text-xs font-medium rounded-bl-lg">
                             Most Popular
                           </div>
                         )}
@@ -544,7 +570,7 @@ export default function LandingPage() {
                           </ul>
                           <Button
                             className={`w-full mt-auto rounded-full transition-all duration-200 ${plan.popular
-                              ? "bg-primary hover:scale-105"
+                              ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:scale-105"
                               : "bg-muted hover:bg-muted/80 hover:scale-105"
                             }`}
                             variant={plan.popular ? "default" : "outline"} asChild
@@ -576,7 +602,7 @@ export default function LandingPage() {
             >
               <motion.div animate={{ scale: [1, 1.15, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
                 <Badge
-                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-primary/90 text-white hover:text-black dark:hover:text-white shadow-md"
+                  className="group rounded-full px-4 py-1.5 text-sm font-medium bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:text-black dark:hover:text-white shadow-md"
                   variant="secondary"
                 >
                   <BellRing className="mr-2 h-4 w-4 group-hover:text-black dark:group-hover:text-white" />
@@ -595,29 +621,29 @@ export default function LandingPage() {
               <Accordion type="single" collapsible className="w-full">
                 {[
                   {
-                    question: "Who is Effinova for?",
+                    question: "Who is PlanWisr for?",
                     answer:
-                      "Effinova is designed for freelancers, indie hackers, entrepreneurs, and anyone who manages multiple projects — whether you're working solo or in a small team.",
+                      "PlanWisr is designed for freelancers, indie hackers, entrepreneurs, and anyone who manages multiple projects — whether you're working solo or in a small team.",
                   },
                   {
-                    question: "Is Effinova free to use?",
+                    question: "Is PlanWisr free to use?",
                     answer:
-                      "Yes! You can get started with Effinova for free. We also offer premium features for advanced users like AI-based task scheduling, branded invoices, and more.",
+                      "Yes! You can get started with PlanWisr for free. We also offer premium features for advanced users like AI-based task scheduling, branded invoices, and more.",
                   },
                   {
                     question: "Can I track time and view progress?",
                     answer:
-                      "Absolutely. Effinova includes built-in time tracking and visual insights so you can monitor your productivity and understand where your time goes.",
+                      "Absolutely. PlanWisr includes built-in time tracking and visual insights so you can monitor your productivity and understand where your time goes.",
                   },
                   {
-                    question: "Do I need to use multiple tools with Effinova?",
+                    question: "Do I need to use multiple tools with PlanWisr?",
                     answer:
-                      "Nope. Effinova is built to replace your calendar, task manager, invoice generator, and time tracker — all in one clean, unified workspace.",
+                      "Nope. PlanWisr is built to replace your calendar, task manager, invoice generator, and time tracker — all in one clean, unified workspace.",
                   },
                   {
-                    question: "Will Effinova get more features in the future?",
+                    question: "Will PlanWisr get more features in the future?",
                     answer:
-                      "Yes! We're constantly improving Effinova based on user feedback. Expect powerful updates like mobile support, integrations, AI enhancements, and more.",
+                      "Yes! We're constantly improving PlanWisr based on user feedback. Expect powerful updates like mobile support, integrations, AI enhancements, and more.",
                   }
                 ].map((faq, i) => (
                   <motion.div

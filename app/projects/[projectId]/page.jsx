@@ -1195,6 +1195,7 @@ if (isLoading) {
                   <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle>Project Invoices</CardTitle>
                     <Button
+                    className="bg-gradient-to-r from-indigo-600 to-purple-600"
                       onClick={() => router.push(`/projects/${projectId}/invoices/create`)}
                     >
                       <Plus className="mr-2 h-4 w-4" />
@@ -1334,7 +1335,7 @@ if (isLoading) {
               <Button
                 onClick={handleTaskSubmit}
                 disabled={isSubmitting}
-                className="bg-primary hover:bg-primary/90"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600"
               >
                 {isSubmitting ? (
                   <>
@@ -1370,6 +1371,7 @@ if (isLoading) {
               Cancel
             </Button>
             <Button
+            className="bg-gradient-to-r from-indigo-600 to-purple-600"
               onClick={() => {
                 const updatedProject = {
                   ...project,
@@ -1404,6 +1406,7 @@ if (isLoading) {
         />
         <Button
           variant="secondary"
+          
           onClick={() => {
             navigator.clipboard.writeText(shareLink);
             toast.success("Link copied to clipboard!");

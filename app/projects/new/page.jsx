@@ -272,7 +272,7 @@ return (
                               Transform your ideas into actionable projects
                             </h2>
                             {/* <p className="max-w-[700px] text-muted-foreground md:text-lg">
-                              Effinova combines intelligent automation, sleek UI, and powerful insights to help you stay organized and perform at your peak.
+                              PlanWisr combines intelligent automation, sleek UI, and powerful insights to help you stay organized and perform at your peak.
                             </p> */}
                           </motion.div>
                           
