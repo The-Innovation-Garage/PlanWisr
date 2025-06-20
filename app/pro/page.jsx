@@ -10,7 +10,7 @@ import { useUserStore } from "@/store/store"
 export default function ProPage() {
   const router = useRouter()
 
-  const {userId} = useUserStore();
+  const {userId, IsPro} = useUserStore();
 
   const features = [
     {
@@ -63,6 +63,11 @@ export default function ProPage() {
     if (!token) {
       toast.error("You need to be logged in to buy a subscription.");
       router.push("/login");
+      return;
+    }
+
+    if (IsPro) {
+      toast.error("You are already a Pro user.");
       return;
     }
     // console.log(`User id: ${userId}`);
